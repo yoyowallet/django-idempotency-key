@@ -32,7 +32,7 @@ setup(
         'Django>=1.11'
     ],
     packages=[
-        'idempotency-key'
+        'idempotency_key'
     ],
     setup_requires=[
         'setuptools>=38.6.0'
