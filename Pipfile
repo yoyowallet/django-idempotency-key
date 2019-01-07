@@ -11,6 +11,8 @@ tox = "*"
 xenon = "*"
 "flake8" = "*"
 pytest-cov = "*"
+"bump2version" = "*"
+twine = "*"
 
 [packages]
 django = "*"
