@@ -28,7 +28,7 @@ bundle:
 	python setup.py sdist
 
 release-test:
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/idempotency-key-1.0.0.tar.gz
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.0.0.tar.gz
 
 release:
 	@echo -n "Are you sure you want to upload to PyPI? [y/N] " && read ans && [ $${ans:-N} == y ]

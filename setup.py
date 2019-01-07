@@ -6,16 +6,16 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(
-    name='idempotency-key',
+    name='django-idempotency-key',
     version='1.0.0',
     author='Del Hyman-Jones',
     author_email='dev@yoyowallet.com',
-    description='Django middleware',
+    description='Django middleware for idempotency key support in view and viewset functions.',
     long_description=long_description,
     long_description_content_type="text/markdown",
     platforms=['Any'],
     keywords=['django', 'idempotency', 'key', 'idempotency-key', 'middleware'],
-    url='https://github.com/yoyowallet/idempotency-key',
+    url='https://github.com/yoyowallet/django-idempotency-key',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
