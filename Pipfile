@@ -13,10 +13,10 @@ xenon = "*"
 pytest-cov = "*"
 "bump2version" = "*"
 twine = "*"
+djangorestframework = "*"
+django = "*"
 
 [packages]
-django = "*"
-djangorestframework = "*"
 
 [requires]
 python_version = "3.6"
