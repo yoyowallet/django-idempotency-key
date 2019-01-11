@@ -14,9 +14,10 @@ pytest-cov = "*"
 "bump2version" = "*"
 twine = "*"
 djangorestframework = "*"
-django = "*"
 
 [packages]
+django = "~=1.11"
+django-redis = "*"
 
 [requires]
 python_version = "3.6"
