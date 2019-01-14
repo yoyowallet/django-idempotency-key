@@ -21,4 +21,5 @@ from tests import views
 urlpatterns = [
     url('admin/', admin.site.urls),
     url('create-voucher/', views.create_voucher),
+    url('create-voucher-manual/', views.create_voucher_manual),
 ]
