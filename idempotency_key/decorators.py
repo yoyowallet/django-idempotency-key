@@ -44,10 +44,18 @@ def use_idempotency_key(*args, encoder=BasicKeyEncoder, storage=MemoryKeyStorage
             # If the view does not want to concern itself with idempotency-key checking and we have seen this key
             # before then return the same response.
             if not manual_override and key_exists:
+                response.status_code = status.HTTP_409_CONFLICT
                 return response
 
             # Call the original function
-            response = func(request=request, key_exists=key_exists, response=response, *args, **kwargs)
+            response = func(
+                request=request,
+                key_exists=key_exists,
+                encoded_key=encoded_key,
+                response=response,
+                *args,
+                **kwargs
+            )
 
             # If we are returning a 2XX status code then store the result and return the response
             if status.HTTP_200_OK <= response.status_code <= status.HTTP_207_MULTI_STATUS:

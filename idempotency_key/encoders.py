@@ -1,5 +1,6 @@
 import abc
 import hashlib
+import json
 
 
 class IdempotencyKeyEncoder(object):
@@ -15,5 +16,5 @@ class BasicKeyEncoder(IdempotencyKeyEncoder):
         m.update(key.encode('UTF-8'))
         m.update(request.path_info.encode('UTF-8'))
         m.update(request.method.encode('UTF-8'))
-        m.update(request.body)
+        m.update(json.dumps(request.data).encode('UTF-8'))
         return m.hexdigest()
