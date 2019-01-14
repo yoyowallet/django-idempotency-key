@@ -1,74 +1,48 @@
 from functools import wraps
 
-from rest_framework import status
-from rest_framework.exceptions import ValidationError
 
-from idempotency_key.encoders import BasicKeyEncoder, IdempotencyKeyEncoder
-from idempotency_key.storage import MemoryKeyStorage, IdempotencyKeyStorage
+# NOTE:
+# The following decorators must be specified BEFORE the @api_view decorator or the function will not be marked
+# correctly.
+#
+# i.e:
+#
+# @use_idempotency_key
+# @api_view(['POST'])
+# def my_view_func()
+#   ...
+
+def use_idempotency_key(view_func):
+    """
+    Mark a view function as requiring idempotency key protection.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        return view_func(*args, **kwargs)
+
+    wrapped_view.use_idempotency_key = True
+    return wraps(view_func)(wrapped_view)
 
 
-def _check_and_get_objects(encoder, storage):
-    if not issubclass(encoder, IdempotencyKeyEncoder):
-        raise ValidationError('Invalid encoder type. Expected a type derived from IdempotencyKeyEncoder.')
+def idempotency_key_exempt(view_func):
+    """
+    Mark a view function as being exempt from the idempotency key protection.
+    """
 
-    if not issubclass(storage, IdempotencyKeyStorage):
-        raise ValidationError('Invalid storage type. Expected a type derived from IdempotencyKeyStorage.')
+    def wrapped_view(*args, **kwargs):
+        return view_func(*args, **kwargs)
 
-    return encoder(), storage()
-
-
-def get_key_from_header(request):
-    key = request.META.get('HTTP_IDEMPOTENCY_KEY')
-    # If the key
-    if key is None:
-        raise ValidationError('Idempotency key missing in header.')
-    return key
+    wrapped_view.idempotency_key_exempt = True
+    return wraps(view_func)(wrapped_view)
 
 
-def use_idempotency_key(*args, encoder=BasicKeyEncoder, storage=MemoryKeyStorage, manual_override=False):
-    # Create instances of the encode and storage classes specific to the callback function
-    encoder_obj, storage_obj = _check_and_get_objects(encoder, storage)
+def use_idempotency_key_manual_override(view_func):
+    """
+    Mark a view function as requiring idempotency key protection but the view should control the response.
+    """
 
-    def _idempotency_key_required(func):
+    def wrapped_view(*args, **kwargs):
+        return view_func(*args, **kwargs)
 
-        @wraps(func)
-        def wrapper(request, *args, **kwargs):
-            key = get_key_from_header(request)
-
-            # Encode the key to ensure it is unique
-            encoded_key = encoder_obj.encode_key(request, key)
-
-            # try to retrieve the data
-            key_exists, response = storage_obj.retrieve_data(encoded_key)
-
-            # If the view does not want to concern itself with idempotency-key checking and we have seen this key
-            # before then return the same response.
-            if not manual_override and key_exists:
-                response.status_code = status.HTTP_409_CONFLICT
-                return response
-
-            # Call the original function
-            response = func(
-                request=request,
-                key_exists=key_exists,
-                encoded_key=encoded_key,
-                response=response,
-                *args,
-                **kwargs
-            )
-
-            # If we are returning a 2XX status code then store the result and return the response
-            if status.HTTP_200_OK <= response.status_code <= status.HTTP_207_MULTI_STATUS:
-                storage_obj.store_data(encoded_key, response)
-            return response
-
-        return wrapper
-
-    # Depending on how the decorator is used args[0] may contain the callback function
-    # i.e:
-    # @idempotency_key_required                            len(args) == 1, args[0] is function to be wrapped
-    # @idempotency_key_required(encoder=BasicKeyEncoder)   len(args) == 0
-    if len(args) == 1 and callable(args[0]):
-        return _idempotency_key_required(args[0])
-    else:
-        return _idempotency_key_required
+    wrapped_view.use_idempotency_key_manual_override = True
+    return wraps(view_func)(wrapped_view)

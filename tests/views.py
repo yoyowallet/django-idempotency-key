@@ -1,28 +1,39 @@
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from idempotency_key.decorators import use_idempotency_key
+from idempotency_key.decorators import use_idempotency_key, idempotency_key_exempt, use_idempotency_key_manual_override
 
 
+@api_view(['GET'])
+def get_voucher(request, *args, **kwargs):
+    return Response(status=200, data={'idempotency_key_exempt': request.idempotency_key_exempt})
+
+
+@idempotency_key_exempt
 @api_view(['POST'])
+def create_voucher_exempt(request, *args, **kwargs):
+    return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
+
+
 @use_idempotency_key
-def create_voucher(request, key_exists, encoded_key, response, *args, **kwargs):
-    return Response(
-        status=201,
-        data={'key_exists': key_exists, 'encoded_key': encoded_key, 'response': str(response)}
-    )
-
-
 @api_view(['POST'])
-@use_idempotency_key(manual_override=True)
-def create_voucher_manual(request, key_exists, encoded_key, response, *args, **kwargs):
-    if key_exists:
-        return Response(
-            status=200,
-            data={'key_exists': key_exists, 'encoded_key': encoded_key, 'response': str(response)}
-        )
+def create_voucher_bad_request(request, *args, **kwargs):
+    return Response(status=200, data={})
+
+
+@use_idempotency_key
+@api_view(['POST'])
+def create_voucher(request, *args, **kwargs):
+    return Response(status=201, data={})
+
+
+@use_idempotency_key_manual_override
+@api_view(['POST'])
+def create_voucher_manual(request, *args, **kwargs):
+    if request.idempotency_key_exists:
+        response = request.idempotency_key_response
+        response.status_code = status.HTTP_200_OK
+        return response
     else:
-        return Response(
-            status=201,
-            data={'key_exists': key_exists, 'encoded_key': encoded_key, 'response': str(response)}
-        )
+        return Response(status=status.HTTP_201_CREATED, data={})
