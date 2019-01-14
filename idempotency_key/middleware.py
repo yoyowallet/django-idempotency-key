@@ -5,11 +5,11 @@ from rest_framework.exceptions import bad_request
 
 
 def _get_storage_class():
-    return get_callable(settings.IDEMPOTENCY_KEY_STORAGE_CLASS)
+    return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage'))
 
 
 def _get_encoder_class():
-    return get_callable(settings.IDEMPOTENCY_KEY_ENCODER_CLASS)
+    return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_ENCODER_CLASS)', 'idempotency_key.encoders.BasicKeyEncoder'))
 
 
 class IdempotencyKeyMiddleware:

@@ -134,5 +134,5 @@ STATIC_URL = '/static/'
 
 # Idempotency Key
 
-IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
-IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
+#IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
+#IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
