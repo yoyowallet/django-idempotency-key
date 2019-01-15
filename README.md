@@ -3,7 +3,7 @@ Adds in some middleware to Django that pulls out the idempotency key from the re
 
 ## Installation
 
-`pip install idempotency_key`
+`pip install django_idempotency_key`
 
 ## Configuration
 
@@ -15,3 +15,4 @@ MIDDLEWARE = [
    'idempotency_key.middleware.IdempotencyKeyMiddleware',
 ]
 ```
+**WARNING** - Adding this ad middleware will require that all non-safe HTTP methods will require an indempotency key specified in the request header under HTTP_IDEMPOTENCY_KEY
