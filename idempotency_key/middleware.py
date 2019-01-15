@@ -9,7 +9,7 @@ def _get_storage_class():
 
 
 def _get_encoder_class():
-    return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_ENCODER_CLASS)', 'idempotency_key.encoders.BasicKeyEncoder'))
+    return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_ENCODER_CLASS', 'idempotency_key.encoders.BasicKeyEncoder'))
 
 
 def _get_conflict_code():

@@ -135,8 +135,11 @@ STATIC_URL = '/static/'
 
 # Idempotency Key
 
-#IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
-#IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
+# Specify the storage class to be used for idempotency keys
+IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
+
+# Specify the key encoder class to be used for idempotency keys
+IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
 
 # Set the response code on a conflict.
 # If not specified this defaults to HTTP_409_CONFLICT

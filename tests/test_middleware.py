@@ -1,5 +1,9 @@
-from django.conf import settings
+from typing import Tuple
+
 from rest_framework import status
+
+from idempotency_key.encoders import IdempotencyKeyEncoder
+from idempotency_key.storage import IdempotencyKeyStorage
 
 
 def test_get_exempt(client):
@@ -29,7 +33,7 @@ def test_bad_request_no_key_specified(client):
     assert request.idempotency_key_exempt is False
 
 
-def test_middleware_duplicate_request(client):
+def test_middleware_duplicate_request(client, settings):
     del settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE
     voucher_data = {
         'id': 1,
@@ -49,7 +53,7 @@ def test_middleware_duplicate_request(client):
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
 
-def test_middleware_duplicate_request_use_original_status_code(client):
+def test_middleware_duplicate_request_use_original_status_code(client, settings):
     settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = None
     voucher_data = {
         'id': 1,
@@ -69,7 +73,7 @@ def test_middleware_duplicate_request_use_original_status_code(client):
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
 
-def test_middleware_duplicate_request_use_different_status_code(client):
+def test_middleware_duplicate_request_use_different_status_code(client, settings):
     settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_200_OK
     voucher_data = {
         'id': 1,
@@ -108,3 +112,64 @@ def test_middleware_duplicate_request_manual_override(client):
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
     assert request.idempotency_key_encoded_key == '32841060cc2b1c721d9e6b9fdf1f9e17b54eaf63b8a407a330fd831dc487b4c9'
+
+
+class MyEncoder(IdempotencyKeyEncoder):
+    def encode_key(self, request, key):
+        return '0000000000000000000000000000000000000000000000000000000000000000'
+
+
+def test_middleware_custom_encoder(client, settings):
+    settings.IDEMPOTENCY_KEY_ENCODER_CLASS = 'tests.test_middleware.MyEncoder'
+    voucher_data = {
+        'id': 1,
+        'name': 'myvoucher0',
+        'internal_name': 'myvoucher0',
+    }
+
+    key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
+    response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert status.HTTP_201_CREATED == response.status_code
+
+    response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert response2.status_code == status.HTTP_409_CONFLICT
+    request = response2.wsgi_request
+    assert request.idempotency_key_exists is True
+    assert request.idempotency_key_exempt is False
+    assert request.idempotency_key_encoded_key == '0000000000000000000000000000000000000000000000000000000000000000'
+
+
+class MyStorage(IdempotencyKeyStorage):
+
+    def __init__(self):
+        self.idempotency_key_cache_data = dict()
+
+    def store_data(self, encoded_key: str, response: object) -> None:
+        pass
+
+    def retrieve_data(self, encoded_key: str) -> Tuple[bool, object]:
+        return False, None
+
+
+def test_middleware_custom_storage(client, settings):
+    """
+    In this test to prove the new custom storage class is being used by creating one that does not to store any
+    information. Therefore a 409 conflict should never occur and the key will never exist.
+    """
+    settings.IDEMPOTENCY_KEY_STORAGE_CLASS = 'tests.test_middleware.MyStorage'
+    voucher_data = {
+        'id': 1,
+        'name': 'myvoucher0',
+        'internal_name': 'myvoucher0',
+    }
+
+    key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
+    response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert status.HTTP_201_CREATED == response.status_code
+
+    response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert response2.status_code == status.HTTP_201_CREATED
+    request = response2.wsgi_request
+    assert request.idempotency_key_exists is False
+    assert request.idempotency_key_exempt is False
+    assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
