@@ -15,4 +15,4 @@ MIDDLEWARE = [
    'idempotency_key.middleware.IdempotencyKeyMiddleware',
 ]
 ```
-**WARNING** - Adding this ad middleware will require that all non-safe HTTP methods will require an indempotency key specified in the request header under HTTP_IDEMPOTENCY_KEY
+**WARNING** - Adding this as middleware will require that all non-safe HTTP methods will require an indempotency key specified in the request header under HTTP_IDEMPOTENCY_KEY
