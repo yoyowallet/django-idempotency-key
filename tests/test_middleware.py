@@ -1,5 +1,6 @@
 from typing import Tuple
 
+from django_redis import get_redis_connection
 from rest_framework import status
 
 from idempotency_key.encoders import IdempotencyKeyEncoder
@@ -171,5 +172,30 @@ def test_middleware_custom_storage(client, settings):
     assert response2.status_code == status.HTTP_201_CREATED
     request = response2.wsgi_request
     assert request.idempotency_key_exists is False
+    assert request.idempotency_key_exempt is False
+    assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+
+
+def test_middleware_cache_storage(client, settings):
+    """
+    In this test to prove the new custom storage class is being used by creating one that does not to store any
+    information. Therefore a 409 conflict should never occur and the key will never exist.
+    """
+    get_redis_connection("default").flushall()
+    settings.IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.CacheKeyStorage'
+    voucher_data = {
+        'id': 1,
+        'name': 'myvoucher0',
+        'internal_name': 'myvoucher0',
+    }
+
+    key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
+    response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert response2.status_code == status.HTTP_409_CONFLICT
+    request = response2.wsgi_request
+    assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
