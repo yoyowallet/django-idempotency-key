@@ -12,6 +12,19 @@ from functools import wraps
 # def my_view_func()
 #   ...
 
+
+def idempotency_key(view_func):
+    """
+    Mark a view function as requiring idempotency key protection but the view should control the response.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        return view_func(*args, **kwargs)
+
+    wrapped_view.idempotency_key = True
+    return wraps(view_func)(wrapped_view)
+
+
 def idempotency_key_exempt(view_func):
     """
     Mark a view function as being exempt from the idempotency key protection.
@@ -24,7 +37,7 @@ def idempotency_key_exempt(view_func):
     return wraps(view_func)(wrapped_view)
 
 
-def use_idempotency_key_manual_override(view_func):
+def idempotency_key_manual(view_func):
     """
     Mark a view function as requiring idempotency key protection but the view should control the response.
     """
@@ -32,5 +45,5 @@ def use_idempotency_key_manual_override(view_func):
     def wrapped_view(*args, **kwargs):
         return view_func(*args, **kwargs)
 
-    wrapped_view.use_idempotency_key_manual_override = True
+    wrapped_view.idempotency_key_manual = True
     return wraps(view_func)(wrapped_view)

@@ -8,7 +8,7 @@ from idempotency_key.storage import IdempotencyKeyStorage
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_get_exempt(client):
     """Basic GET method is exempt by default because it is a read-only function"""
@@ -16,11 +16,10 @@ def test_get_exempt(client):
     assert response.status_code == status.HTTP_200_OK
     request = response.wsgi_request
     assert request.idempotency_key_exempt is True
-    assert request.idempotency_key_manual is False
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_post_exempt(client):
     """Test a POST method that has been marked as exempt"""
@@ -28,11 +27,10 @@ def test_post_exempt(client):
     assert response.status_code == status.HTTP_201_CREATED
     request = response.wsgi_request
     assert request.idempotency_key_exempt is True
-    assert request.idempotency_key_manual is False
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_bad_request_no_key_specified(client):
     """
@@ -43,11 +41,10 @@ def test_bad_request_no_key_specified(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     request = response.wsgi_request
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_middleware_duplicate_request(client, settings):
     del settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE
@@ -66,12 +63,11 @@ def test_middleware_duplicate_request(client, settings):
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_middleware_duplicate_request_use_original_status_code(client, settings):
     settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = None
@@ -90,12 +86,11 @@ def test_middleware_duplicate_request_use_original_status_code(client, settings)
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_middleware_duplicate_request_use_different_status_code(client, settings):
     settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_200_OK
@@ -114,12 +109,11 @@ def test_middleware_duplicate_request_use_different_status_code(client, settings
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_middleware_duplicate_request_manual_override(client):
     voucher_data = {
@@ -141,7 +135,6 @@ def test_middleware_duplicate_request_manual_override(client):
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is True
     assert request.idempotency_key_encoded_key == '32841060cc2b1c721d9e6b9fdf1f9e17b54eaf63b8a407a330fd831dc487b4c9'
 
 
@@ -151,7 +144,7 @@ class MyEncoder(IdempotencyKeyEncoder):
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_middleware_custom_encoder(client, settings):
     settings.IDEMPOTENCY_KEY_ENCODER_CLASS = 'tests.test_middleware.MyEncoder'
@@ -170,7 +163,6 @@ def test_middleware_custom_encoder(client, settings):
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
     assert request.idempotency_key_encoded_key == '0000000000000000000000000000000000000000000000000000000000000000'
 
 
@@ -187,7 +179,7 @@ class MyStorage(IdempotencyKeyStorage):
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_middleware_custom_storage(client, settings):
     """
@@ -210,12 +202,11 @@ def test_middleware_custom_storage(client, settings):
     request = response2.wsgi_request
     assert request.idempotency_key_exists is False
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
     assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_idempotency_key_decorator(client):
     voucher_data = {
@@ -233,7 +224,6 @@ def test_idempotency_key_decorator(client):
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False
-    assert request.idempotency_key_manual is False
     assert request.idempotency_key_encoded_key == '0860e61d26b0b9fbc170e80a97ab2f934f3d437b5a58d8af8d1e99e44c180558'
 
 
@@ -257,4 +247,3 @@ def test_idempotency_key_exempt_2(client):
     assert status.HTTP_201_CREATED == response.status_code
     request = response.wsgi_request
     assert request.idempotency_key_exempt is True
-
