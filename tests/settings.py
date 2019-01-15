@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.conf import settings
+from rest_framework import status
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -136,3 +137,8 @@ STATIC_URL = '/static/'
 
 #IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
 #IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
+
+# Set the response code on a conflict.
+# If not specified this defaults to HTTP_409_CONFLICT
+# If set to None then the original request's status code is used
+IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_409_CONFLICT

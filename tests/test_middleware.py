@@ -1,5 +1,4 @@
-import uuid
-
+from django.conf import settings
 from rest_framework import status
 
 
@@ -31,6 +30,7 @@ def test_bad_request_no_key_specified(client):
 
 
 def test_middleware_duplicate_request(client):
+    del settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE
     voucher_data = {
         'id': 1,
         'name': 'myvoucher0',
@@ -43,6 +43,46 @@ def test_middleware_duplicate_request(client):
 
     response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
     assert response2.status_code == status.HTTP_409_CONFLICT
+    request = response2.wsgi_request
+    assert request.idempotency_key_exists is True
+    assert request.idempotency_key_exempt is False
+    assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+
+
+def test_middleware_duplicate_request_use_original_status_code(client):
+    settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = None
+    voucher_data = {
+        'id': 1,
+        'name': 'myvoucher0',
+        'internal_name': 'myvoucher0',
+    }
+
+    key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
+    response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert status.HTTP_201_CREATED == response.status_code
+
+    response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert response2.status_code == status.HTTP_201_CREATED
+    request = response2.wsgi_request
+    assert request.idempotency_key_exists is True
+    assert request.idempotency_key_exempt is False
+    assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+
+
+def test_middleware_duplicate_request_use_different_status_code(client):
+    settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_200_OK
+    voucher_data = {
+        'id': 1,
+        'name': 'myvoucher0',
+        'internal_name': 'myvoucher0',
+    }
+
+    key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
+    response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert status.HTTP_201_CREATED == response.status_code
+
+    response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=key)
+    assert response2.status_code == status.HTTP_200_OK
     request = response2.wsgi_request
     assert request.idempotency_key_exists is True
     assert request.idempotency_key_exempt is False

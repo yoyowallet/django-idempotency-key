@@ -12,6 +12,10 @@ def _get_encoder_class():
     return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_ENCODER_CLASS)', 'idempotency_key.encoders.BasicKeyEncoder'))
 
 
+def _get_conflict_code():
+    return getattr(settings, 'IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
+
+
 class IdempotencyKeyMiddleware:
 
     def __init__(self, get_response=None):
@@ -60,7 +64,9 @@ class IdempotencyKeyMiddleware:
 
         # If not manual override and the key already exists then return the original response as a 409 CONFLICT
         if not manual and key_exists:
-            response.status_code = status.HTTP_409_CONFLICT
+            status_code = _get_conflict_code()
+            if status_code is not None:
+                response.status_code = status_code
             return response
 
         return None
