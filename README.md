@@ -1,4 +1,4 @@
-# --== UNDER CONSTRUCTION Jan-2018 ==--
+# --== UNDER CONSTRUCTION Jan-2019 ==--
 This package is being actively worked on and is not ready just yet. Please check back later.
 
 ## Idempotency key Django middleware
