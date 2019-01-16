@@ -265,8 +265,7 @@ def test_idempotency_key_exempt_2(client):
 })
 def test_middleware_cache_storage(client, settings):
     """
-    In this test to prove the new custom storage class is being used by creating one that does not to store any
-    information. Therefore a 409 conflict should never occur and the key will never exist.
+    Test Django cache storage
     """
     get_redis_connection("default").flushall()
     settings.IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.CacheKeyStorage'
