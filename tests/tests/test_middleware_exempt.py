@@ -211,18 +211,18 @@ class TestMiddlewareExempt:
         }
 
         key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
-        response = client.post('/create-voucher-use-idempotency-key/', voucher_data, secure=True,
+        response = client.post('/create-voucher/', voucher_data, secure=True,
                                HTTP_IDEMPOTENCY_KEY=key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher-use-idempotency-key/', voucher_data, secure=True,
+        response2 = client.post('/create-voucher/', voucher_data, secure=True,
                                 HTTP_IDEMPOTENCY_KEY=key)
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '0860e61d26b0b9fbc170e80a97ab2f934f3d437b5a58d8af8d1e99e44c180558'
+        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
     @set_exempt_middleware
     def test_idempotency_key_exempt_1(self, client):
