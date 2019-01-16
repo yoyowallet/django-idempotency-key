@@ -58,7 +58,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
-
     @set_exempt_middleware
     def test_bad_request_no_key_specified(self, client):
         """

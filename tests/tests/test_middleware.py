@@ -1,7 +1,6 @@
 from functools import wraps
 from typing import Tuple
 
-from django.conf import settings
 from django.test import modify_settings
 from django_redis import get_redis_connection
 from rest_framework import status
