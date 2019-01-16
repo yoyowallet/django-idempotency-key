@@ -11,6 +11,11 @@ def get_voucher(request, *args, **kwargs):
     return Response(status=200, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
 
+@api_view(['POST'])
+def create_voucher_no_decorators(request, *args, **kwargs):
+    return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
+
+
 @idempotency_key_exempt
 @api_view(['POST'])
 def create_voucher_exempt(request, *args, **kwargs):

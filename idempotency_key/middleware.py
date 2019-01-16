@@ -118,10 +118,10 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
     def _set_flags_from_callback(self, request, callback):
         idempotency_key = getattr(callback, 'idempotency_key', None)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
-        idempotency_key_manual = getattr(callback, 'idempotency_key_manual', None)
+        idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
 
         request.idempotency_key_exempt = idempotency_key_exempt or (
-                idempotency_key_exempt is None and idempotency_key_manual is None and not idempotency_key
+                idempotency_key_exempt is None and not idempotency_key_manual and not idempotency_key
         )
 
         request.idempotency_key_manual = idempotency_key_manual

@@ -27,4 +27,5 @@ urlpatterns = [
     url('create-voucher-use-idempotency-key/', views.create_voucher_use_idempotency_key),
     url('create-voucher-exempt-test-1', views.create_voucher_exempt_test_1),
     url('create-voucher-exempt-test-2', views.create_voucher_exempt_test_2),
+    url('create-voucher-no-decorators', views.create_voucher_no_decorators)
 ]
