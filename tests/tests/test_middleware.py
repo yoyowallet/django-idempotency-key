@@ -154,7 +154,7 @@ class MyEncoder(IdempotencyKeyEncoder):
     'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
 })
 def test_middleware_custom_encoder(client, settings):
-    settings.IDEMPOTENCY_KEY_ENCODER_CLASS = 'tests.test_middleware.MyEncoder'
+    settings.IDEMPOTENCY_KEY_ENCODER_CLASS = 'tests.tests.test_middleware.MyEncoder'
     voucher_data = {
         'id': 1,
         'name': 'myvoucher0',
@@ -194,7 +194,7 @@ def test_middleware_custom_storage(client, settings):
     In this test to prove the new custom storage class is being used by creating one that does not to store any
     information. Therefore a 409 conflict should never occur and the key will never exist.
     """
-    settings.IDEMPOTENCY_KEY_STORAGE_CLASS = 'tests.test_middleware.MyStorage'
+    settings.IDEMPOTENCY_KEY_STORAGE_CLASS = 'tests.tests.test_middleware.MyStorage'
     voucher_data = {
         'id': 1,
         'name': 'myvoucher0',

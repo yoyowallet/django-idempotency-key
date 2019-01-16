@@ -69,8 +69,6 @@ class IdempotencyKeyMiddleware:
     def process_view(self, request, callback, callback_args, callback_kwargs):
         self._set_flags_from_callback(request, callback)
 
-        manual_override = self._is_manual(request)
-
         # Assume that anything defined as 'safe' by RFC7231 is exempt or if exempt is specified directly
         if self._is_exempt(request) or request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             request.idempotency_key_exempt = True
@@ -83,6 +81,7 @@ class IdempotencyKeyMiddleware:
             return self._reject(request, 'Idempotency key is required and was not specified in the header.')
 
         # Has the manual override decorator been specified? if so add it to the request
+        manual_override = self._is_manual(request)
         if manual_override:
             request.use_idempotency_key_manual_override = True
 
@@ -150,6 +149,7 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
 
         # Assume that anything defined as 'safe' by RFC7231 is exempt or if exempt is specified directly
         if self._is_exempt(request) or request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
+            request.idempotency_key_exempt = True
             return None
 
         request.idempotency_key_exempt = False
@@ -180,14 +180,3 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
             return response
 
         return None
-
-    def process_response(self, request, response):
-        if request.idempotency_key_exempt:
-            return response
-
-        if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
-            # If the response is 2XX then store the response
-            if status.HTTP_200_OK <= response.status_code <= status.HTTP_207_MULTI_STATUS:
-                self.storage.store_data(request.idempotency_key_encoded_key, response)
-
-        return response
