@@ -21,6 +21,11 @@ def _get_conflict_code():
 
 
 class IdempotencyKeyMiddleware:
+    """
+    This middleware class assumes that all non-safe HTTP methods will require an idempotency key to be specified in
+    the header.
+    View functions can opt-out using the @idempotency_key_exempt decorator
+    """
 
     def __init__(self, get_response=None):
         self.get_response = get_response
@@ -106,8 +111,8 @@ class IdempotencyKeyMiddleware:
 
 class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
     """
-    This middleware class assume all requests are exempt unless the @idempotency_key_exempt or @idempotency_key
-    decorators are specified.
+    This middleware class assume all requests are exempt and do not require an idempotency key to be specified.
+    View functions opt-in using the @idempotency_key or @idempotency_key_manual decorators.
     """
 
     def _set_flags_from_callback(self, request, callback):
