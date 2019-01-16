@@ -1,7 +1,11 @@
+import logging
+
 from django.conf import settings
 from django.urls import get_callable
 from rest_framework import status
 from rest_framework.exceptions import bad_request
+
+logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
 
 def _get_storage_class():
@@ -29,27 +33,44 @@ class IdempotencyKeyMiddleware:
         response = self.process_response(request, response)
         return response
 
+    @staticmethod
+    def _reject(request, reason):
+        response = bad_request(request, None)
+        logger.error(
+            'Error (%s): %s', reason, request.path,
+            extra={
+                'status_code': 400,
+                'request': request,
+            }
+        )
+        return response
+
+    def _set_flags_from_callback(self, request, callback):
+        request.idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', False)
+        request.idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
+
     def process_request(self, request):
         key = request.META.get('HTTP_IDEMPOTENCY_KEY')
         if key is not None:
             request.META['IDEMPOTENCY_KEY'] = key
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
+        self._set_flags_from_callback(request, callback)
 
         # Assume that anything defined as 'safe' by RFC7231 is exempt or if exempt is specified directly
-        if getattr(callback, 'idempotency_key_exempt', False) or request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
+        if request.idempotency_key_exempt or request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             request.idempotency_key_exempt = True
             return None
 
+        # At this point the view function is not exempt so mark it as such
         request.idempotency_key_exempt = False
 
         key = request.META.get('IDEMPOTENCY_KEY')
         if key is None:
-            return bad_request(request, None)
+            return self._reject(request, 'Idempotency key is required and was not specified in the header.')
 
         # Has the manual override decorator been specified? if so add it to the request
-        manual = getattr(callback, 'use_idempotency_key_manual_override', False)
-        if manual:
+        if request.idempotency_key_manual:
             request.use_idempotency_key_manual_override = True
 
         # encode the key and add it to the request
@@ -63,7 +84,7 @@ class IdempotencyKeyMiddleware:
         request.idempotency_key_response = response
 
         # If not manual override and the key already exists then return the original response as a 409 CONFLICT
-        if not manual and key_exists:
+        if not request.idempotency_key_manual and key_exists:
             status_code = _get_conflict_code()
             if status_code is not None:
                 response.status_code = status_code
@@ -81,3 +102,21 @@ class IdempotencyKeyMiddleware:
                 self.storage.store_data(request.idempotency_key_encoded_key, response)
 
         return response
+
+
+class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
+    """
+    This middleware class assume all requests are exempt unless the @idempotency_key_exempt or @idempotency_key
+    decorators are specified.
+    """
+
+    def _set_flags_from_callback(self, request, callback):
+        idempotency_key = getattr(callback, 'idempotency_key', None)
+        idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
+        idempotency_key_manual = getattr(callback, 'idempotency_key_manual', None)
+
+        request.idempotency_key_exempt = idempotency_key_exempt or (
+                idempotency_key_exempt is None and idempotency_key_manual is None and not idempotency_key
+        )
+
+        request.idempotency_key_manual = idempotency_key_manual
