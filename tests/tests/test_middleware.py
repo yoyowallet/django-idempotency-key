@@ -1,7 +1,6 @@
 from functools import wraps
 from typing import Tuple
 
-from django.conf import settings
 from django.test import modify_settings
 from rest_framework import status
 
@@ -264,4 +263,3 @@ class TestMiddlewareInclusive:
         assert status.HTTP_201_CREATED == response.status_code
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
-
