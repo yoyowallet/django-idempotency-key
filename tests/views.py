@@ -24,12 +24,6 @@ def create_voucher_exempt(request, *args, **kwargs):
 
 @idempotency_key
 @api_view(['POST'])
-def create_voucher_bad_request(request, *args, **kwargs):
-    return Response(status=200, data={})
-
-
-@idempotency_key
-@api_view(['POST'])
 def create_voucher(request, *args, **kwargs):
     return Response(status=201, data={})
 
@@ -43,12 +37,6 @@ def create_voucher_manual(request, *args, **kwargs):
         return response
     else:
         return Response(status=status.HTTP_201_CREATED, data={})
-
-
-@idempotency_key
-@api_view(['POST'])
-def create_voucher_use_idempotency_key(request, *args, **kwargs):
-    return Response(status=201, data={})
 
 
 @idempotency_key_exempt
