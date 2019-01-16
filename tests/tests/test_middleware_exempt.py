@@ -3,6 +3,8 @@ from functools import wraps
 from django.test import modify_settings
 from rest_framework import status
 
+from tests.tests.utils import for_all_methods
+
 
 def set_exempt_middleware(func):
     @wraps(func)
@@ -16,10 +18,10 @@ def set_exempt_middleware(func):
     return wrapper
 
 
+@for_all_methods(set_exempt_middleware)
 class TestMiddlewareExempt:
     the_key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
 
-    @set_exempt_middleware
     def test_get_exempt(self, client):
         """Basic GET method is exempt by default because it is a read-only function"""
         response = client.get('/get-voucher/', secure=True)
@@ -28,7 +30,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
-    @set_exempt_middleware
     def test_post_exempt(self, client):
         """Test a POST method that has been marked as exempt"""
         response = client.post('/create-voucher-exempt/', data={}, secure=True)
@@ -43,7 +44,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
-    @set_exempt_middleware
     def test_post_no_decorators(self, client):
         """Test a POST method that has been marked as exempt"""
         response = client.post('/create-voucher-no-decorators/', data={}, secure=True)
@@ -58,7 +58,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
-    @set_exempt_middleware
     def test_bad_request_no_key_specified(self, client):
         """
         POSTing to a view function that requires an idempotency key which is not specified in the header will cause a
@@ -70,7 +69,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
 
-    @set_exempt_middleware
     def test_middleware_duplicate_request(self, client, settings):
         del settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE
         voucher_data = {
@@ -90,7 +88,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    @set_exempt_middleware
     def test_middleware_duplicate_request_use_original_status_code(self, client, settings):
         settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = None
         voucher_data = {
@@ -110,7 +107,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    @set_exempt_middleware
     def test_middleware_duplicate_request_use_different_status_code(self, client, settings):
         settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_200_OK
         voucher_data = {
@@ -130,7 +126,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    @set_exempt_middleware
     def test_middleware_duplicate_request_manual_override(self, client):
         voucher_data = {
             'id': 1,
@@ -153,7 +148,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is True
         assert request.idempotency_key_encoded_key == '32841060cc2b1c721d9e6b9fdf1f9e17b54eaf63b8a407a330fd831dc487b4c9'
 
-    @set_exempt_middleware
     def test_middleware_custom_encoder(self, client, settings):
         settings.IDEMPOTENCY_KEY_ENCODER_CLASS = 'tests.tests.test_middleware.MyEncoder'
         voucher_data = {
@@ -173,7 +167,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '0000000000000000000000000000000000000000000000000000000000000000'
 
-    @set_exempt_middleware
     def test_middleware_custom_storage(self, client, settings):
         """
         In this test to prove the new custom storage class is being used by creating one that does not to store any
@@ -197,7 +190,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    @set_exempt_middleware
     def test_idempotency_key_decorator(self, client):
         voucher_data = {
             'id': 1,
@@ -218,7 +210,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    @set_exempt_middleware
     def test_idempotency_key_exempt_1(self, client):
         response = client.post('/create-voucher-exempt-test-1/', {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
@@ -226,7 +217,6 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
-    @set_exempt_middleware
     def test_idempotency_key_exempt_2(self, client):
         response = client.post('/create-voucher-exempt-test-2/', {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
