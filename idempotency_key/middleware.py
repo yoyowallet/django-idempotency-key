@@ -62,6 +62,7 @@ class IdempotencyKeyMiddleware:
             request.idempotency_key_exempt = True
             return None
 
+        # At this point the view function is not exempt so mark it as such
         request.idempotency_key_exempt = False
 
         key = request.META.get('IDEMPOTENCY_KEY')
@@ -110,24 +111,12 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
     """
 
     def _set_flags_from_callback(self, request, callback):
-        try:
-            idempotency_key = getattr(callback, 'idempotency_key')
-        except AttributeError:
-            idempotency_key = None
-
-        try:
-            idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt')
-        except AttributeError:
-            idempotency_key_exempt = None
-
-        try:
-            idempotency_key_manual = getattr(callback, 'idempotency_key_manual')
-        except AttributeError:
-            idempotency_key_manual = None
+        idempotency_key = getattr(callback, 'idempotency_key', None)
+        idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
+        idempotency_key_manual = getattr(callback, 'idempotency_key_manual', None)
 
         request.idempotency_key_exempt = idempotency_key_exempt or (
                 idempotency_key_exempt is None and idempotency_key_manual is None and not idempotency_key
         )
 
         request.idempotency_key_manual = idempotency_key_manual
-
