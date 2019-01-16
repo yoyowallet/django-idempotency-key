@@ -228,7 +228,7 @@ def test_idempotency_key_decorator(client):
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_idempotency_key_exempt_1(client):
     key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
@@ -239,7 +239,7 @@ def test_idempotency_key_exempt_1(client):
 
 
 @modify_settings(MIDDLEWARE={
-    'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
+    'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
 })
 def test_idempotency_key_exempt_2(client):
     key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
