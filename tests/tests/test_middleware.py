@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Tuple
 
-from django.test import modify_settings
+from django.test import modify_settings, override_settings
 from rest_framework import status
 
 from idempotency_key.encoders import IdempotencyKeyEncoder
@@ -92,8 +92,10 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
 
-    def test_middleware_duplicate_request(self, client, settings):
-        del settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE
+    @override_settings(
+        IDEMPOTENCY_KEY={}
+    )
+    def test_middleware_duplicate_request(self, client):
         voucher_data = {
             'id': 1,
             'name': 'myvoucher0',
@@ -111,8 +113,10 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    def test_middleware_duplicate_request_use_original_status_code(self, client, settings):
-        settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = None
+    @override_settings(
+        IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': None}
+    )
+    def test_middleware_duplicate_request_use_original_status_code(self, client):
         voucher_data = {
             'id': 1,
             'name': 'myvoucher0',
@@ -130,8 +134,10 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
 
-    def test_middleware_duplicate_request_use_different_status_code(self, client, settings):
-        settings.IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_200_OK
+    @override_settings(
+        IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': status.HTTP_200_OK}
+    )
+    def test_middleware_duplicate_request_use_different_status_code(self, client):
         voucher_data = {
             'id': 1,
             'name': 'myvoucher0',
@@ -171,8 +177,12 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_manual is True
         assert request.idempotency_key_encoded_key == '32841060cc2b1c721d9e6b9fdf1f9e17b54eaf63b8a407a330fd831dc487b4c9'
 
-    def test_middleware_custom_encoder(self, client, settings):
-        settings.IDEMPOTENCY_KEY_ENCODER_CLASS = 'tests.tests.test_middleware.MyEncoder'
+    @override_settings(
+        IDEMPOTENCY_KEY={
+            'ENCODER_CLASS': 'tests.tests.test_middleware.MyEncoder'
+        }
+    )
+    def test_middleware_custom_encoder(self, client):
         voucher_data = {
             'id': 1,
             'name': 'myvoucher0',
@@ -190,12 +200,16 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '0000000000000000000000000000000000000000000000000000000000000000'
 
-    def test_middleware_custom_storage(self, client, settings):
+    @override_settings(
+        IDEMPOTENCY_KEY={
+            'STORAGE_CLASS': 'tests.tests.test_middleware.MyStorage'
+        }
+    )
+    def test_middleware_custom_storage(self, client):
         """
         In this test to prove the new custom storage class is being used by creating one that does not to store any
         information. Therefore a 409 conflict should never occur and the key will never exist.
         """
-        settings.IDEMPOTENCY_KEY_STORAGE_CLASS = 'tests.tests.test_middleware.MyStorage'
         voucher_data = {
             'id': 1,
             'name': 'myvoucher0',

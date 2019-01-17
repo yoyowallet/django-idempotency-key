@@ -9,15 +9,18 @@ logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
 
 def _get_storage_class():
-    return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage'))
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return get_callable(idkey_settings.get('STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage'))
 
 
 def _get_encoder_class():
-    return get_callable(getattr(settings, 'IDEMPOTENCY_KEY_ENCODER_CLASS', 'idempotency_key.encoders.BasicKeyEncoder'))
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return get_callable(idkey_settings.get('ENCODER_CLASS', 'idempotency_key.encoders.BasicKeyEncoder'))
 
 
 def _get_conflict_code():
-    return getattr(settings, 'IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return idkey_settings.get('CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
 
 
 class IdempotencyKeyMiddleware:
