@@ -3,7 +3,6 @@ from typing import Tuple
 
 from django.core.cache import cache
 from django.test import modify_settings, override_settings
-from django_redis import get_redis_connection
 from rest_framework import status
 
 from idempotency_key.encoders import IdempotencyKeyEncoder
