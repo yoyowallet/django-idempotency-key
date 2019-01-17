@@ -133,14 +133,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Idempotency Key
+IDEMPOTENCY_KEY = {
+    # Specify the storage class to be used for idempotency keys
+    'STORAGE_CLASS': 'idempotency_key.storage.MemoryKeyStorage',
 
-# Specify the storage class to be used for idempotency keys
-IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
+    # Specify the key encoder class to be used for idempotency keys
+    'ENCODER_CLASS': 'idempotency_key.encoders.BasicKeyEncoder',
 
-# Specify the key encoder class to be used for idempotency keys
-IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
-
-# Set the response code on a conflict.
-# If not specified this defaults to HTTP_409_CONFLICT
-# If set to None then the original request's status code is used
-IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_409_CONFLICT
+    # Set the response code on a conflict.
+    # If not specified this defaults to HTTP_409_CONFLICT
+    # If set to None then the original request's status code is used
+    'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT
+}
