@@ -13,9 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
-from django.urls import path
+
+from tests import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url('admin/', admin.site.urls),
+    url('get-voucher/', views.get_voucher),
+    url('create-voucher/', views.create_voucher),
+    url('create-voucher-manual/', views.create_voucher_manual),
+    url('create-voucher-exempt/', views.create_voucher_exempt),
+    url('create-voucher-exempt-test-1', views.create_voucher_exempt_test_1),
+    url('create-voucher-exempt-test-2', views.create_voucher_exempt_test_2),
+    url('create-voucher-no-decorators', views.create_voucher_no_decorators)
 ]

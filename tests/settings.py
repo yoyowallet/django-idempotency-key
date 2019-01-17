@@ -13,8 +13,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from django.conf import settings
+from rest_framework import status
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -26,7 +28,6 @@ SECRET_KEY = '+ej4l-f8ajoy+&*8_)+++vdx%g35qecd^!lq01d7e@e7lmdmjl'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -69,7 +70,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tests.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -80,6 +80,21 @@ DATABASES = {
     }
 }
 
+# Caches
+#
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+    }
+}
+
+# Default cache time to live is 30 minutes.
+DEFAULT_CACHE_TTL = 60 * 30
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_CACHE_TTL)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -99,7 +114,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -113,8 +127,20 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Idempotency Key
+
+# Specify the storage class to be used for idempotency keys
+IDEMPOTENCY_KEY_STORAGE_CLASS = 'idempotency_key.storage.MemoryKeyStorage'
+
+# Specify the key encoder class to be used for idempotency keys
+IDEMPOTENCY_KEY_ENCODER_CLASS = 'idempotency_key.encoders.BasicKeyEncoder'
+
+# Set the response code on a conflict.
+# If not specified this defaults to HTTP_409_CONFLICT
+# If set to None then the original request's status code is used
+IDEMPOTENCY_KEY_CONFLICT_STATUS_CODE = status.HTTP_409_CONFLICT
