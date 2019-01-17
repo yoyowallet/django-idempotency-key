@@ -1,6 +1,3 @@
-# --== UNDER CONSTRUCTION Jan-2019 ==--
-This package is being actively worked on and is not ready just yet. Please check back later.
-
 ## Idempotency key Django middleware
 Middleware to Django that pulls out the idempotency key from the request header and will automatically return the previous response data if the idempotency key was already specified. 
 There are two middleware classes which allow view functions to opt-in or opt-out individually depending on your needs.
