@@ -61,3 +61,21 @@ By default `idempotency_key_response` will return a Response object
 ## Required header
 When a idempotnecy key is enabled on a view function the calling client must specify a unique key in the headers called HTTP_IDEMPOTENCY_KEY. If this is missing then a 400 BAD RESPONSE is returned.
 
+## Settings
+The following settings can be used to modify the behaviour of the idempotency key middleware.
+```
+IDEMPOTENCY_KEY = {
+    # Specify the storage class to be used for idempotency keys
+    # If not specified then defaults to 'idempotency_key.storage.MemoryKeyStorage'
+    'STORAGE_CLASS': 'idempotency_key.storage.MemoryKeyStorage',
+
+    # Specify the key encoder class to be used for idempotency keys.
+    # If not specified then defaults to 'idempotency_key.encoders.BasicKeyEncoder'
+    'ENCODER_CLASS': 'idempotency_key.encoders.BasicKeyEncoder',
+
+    # Set the response code on a conflict.
+    # If not specified this defaults to HTTP_409_CONFLICT
+    # If set to None then the original request's status code is used.
+    'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT
+}
+```
