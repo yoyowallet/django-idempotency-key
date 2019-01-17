@@ -7,7 +7,7 @@ from functools import wraps
 #
 # i.e:
 #
-# @use_idempotency_key
+# @idempotency_key
 # @api_view(['POST'])
 # def my_view_func()
 #   ...
