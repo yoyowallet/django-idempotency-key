@@ -1,7 +1,9 @@
 from functools import wraps
 from typing import Tuple
 
+from django.core.cache import cache
 from django.test import modify_settings, override_settings
+from django_redis import get_redis_connection
 from rest_framework import status
 
 from idempotency_key.encoders import IdempotencyKeyEncoder
@@ -258,3 +260,30 @@ class TestMiddlewareInclusive:
         assert status.HTTP_201_CREATED == response.status_code
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
+
+    @override_settings(
+        IDEMPOTENCY_KEY={
+            'STORAGE_CLASS': 'idempotency_key.storage.CacheKeyStorage'
+        }
+    )
+    @set_middleware
+    def test_middleware_cache_storage(self, client, settings):
+        """
+        Test Django cache storage
+        """
+        cache.clear()
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_409_CONFLICT
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is True
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'

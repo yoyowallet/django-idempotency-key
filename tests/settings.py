@@ -82,15 +82,31 @@ DATABASES = {
 
 # Caches
 #
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        },
+
+REDIS_AVAILABLE = os.getenv('REDIS_AVAILABLE', False)
+USERNAME = os.getenv('USERNAME')
+
+if REDIS_AVAILABLE:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "TIMEOUT": 300,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            },
+        }
     }
-}
+else:
+    cache_path = f'/home/{USERNAME}/django_cache/'
+    os.makedirs(cache_path, 0o755, exist_ok=True)
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': cache_path,
+        }
+    }
 
 # Default cache time to live is 30 minutes.
 DEFAULT_CACHE_TTL = 60 * 30
