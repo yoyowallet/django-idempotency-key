@@ -56,7 +56,7 @@ These two variables are defined as follows:
 (object) request.idempotency_key_response
 ```
 
-By default `idempotency_key_response` will return a Response object
+`idempotency_key_response` will always return a Response object if set.
 
 ## Required header
 When a idempotnecy key is enabled on a view function the calling client must specify a unique key in the headers called HTTP_IDEMPOTENCY_KEY. If this is missing then a 400 BAD RESPONSE is returned.
