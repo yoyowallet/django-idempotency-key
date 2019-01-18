@@ -140,11 +140,9 @@ class TestMiddlewareExempt:
             'internal_name': 'myvoucher0',
         }
 
-        print(f'Call POST')
         response = client.post('/create-voucher-manual/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        print(f'Call POST')
         response2 = client.post('/create-voucher-manual/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
 
         # The view code forces a 200 OK to be returned if this is a repeated request.
