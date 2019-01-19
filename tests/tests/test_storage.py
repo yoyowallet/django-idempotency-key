@@ -21,5 +21,3 @@ def test_memory_storage_retrieve_no_key():
     key_exists, value = obj.retrieve_data('key')
     assert key_exists is False
     assert value is None
-
-

@@ -22,15 +22,15 @@ test: static_analysis
 	tox $(pytest_args)
 
 coverage:
-	py.test --cov=idempotency-key tests/
+	py.test --cov=idempotency_key tests/ --cov-report html
 
-bundle:
+bundle: static_analysis coverage
 	python setup.py sdist
 
 release-test:
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.0.0.tar.gz
 
-release:
+release: static_analysis coverage
 	@echo -n "Are you sure you want to upload to PyPI? [y/N] " && read ans && [ $${ans:-N} == y ]
 	twine upload dist/*
 

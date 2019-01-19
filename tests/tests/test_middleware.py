@@ -110,6 +110,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
@@ -131,6 +132,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_201_CREATED
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
@@ -152,6 +154,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_200_OK
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
@@ -172,6 +175,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_200_OK
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is True
         assert request.idempotency_key_encoded_key == '32841060cc2b1c721d9e6b9fdf1f9e17b54eaf63b8a407a330fd831dc487b4c9'
@@ -195,6 +199,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '0000000000000000000000000000000000000000000000000000000000000000'
@@ -222,6 +227,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_201_CREATED
         request = response2.wsgi_request
         assert request.idempotency_key_exists is False
+        assert request.idempotency_key_response is None
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
@@ -242,6 +248,7 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
@@ -282,5 +289,6 @@ class TestMiddlewareInclusive:
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'

@@ -9,11 +9,11 @@ class IdempotencyKeyStorage(object):
 
     @abc.abstractmethod
     def store_data(self, encoded_key: str, response: object) -> None:
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def retrieve_data(self, encoded_key: str) -> Tuple[bool, object]:
-        pass
+        raise NotImplementedError
 
 
 class MemoryKeyStorage(IdempotencyKeyStorage):
