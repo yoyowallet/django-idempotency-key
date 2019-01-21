@@ -161,3 +161,11 @@ IDEMPOTENCY_KEY = {
     # If set to None then the original request's status code is used
     'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT
 }
+
+# djangorestframework
+REST_FRAMEWORK = {
+    # other settings...
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': [],
+}
