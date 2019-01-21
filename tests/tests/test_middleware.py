@@ -289,7 +289,6 @@ class TestMiddlewareInclusive:
             'STORAGE_CLASS': 'idempotency_key.storage.CacheKeyStorage'
         }
     )
-    @set_middleware
     def test_middleware_cache_storage(self, client, settings):
         """
         Test Django cache storage
