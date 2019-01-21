@@ -20,11 +20,11 @@ from tests import views
 
 urlpatterns = [
     url('admin/', admin.site.urls),
-    url('get-voucher/', views.get_voucher),
-    url('create-voucher/', views.create_voucher),
-    url('create-voucher-manual/', views.create_voucher_manual),
-    url('create-voucher-exempt/', views.create_voucher_exempt),
-    url('create-voucher-exempt-test-1', views.create_voucher_exempt_test_1),
-    url('create-voucher-exempt-test-2', views.create_voucher_exempt_test_2),
-    url('create-voucher-no-decorators', views.create_voucher_no_decorators)
+    url('views/get-voucher/', views.get_voucher),
+    url('views/create-voucher/', views.create_voucher),
+    url('views/create-voucher-manual/', views.create_voucher_manual),
+    url('views/create-voucher-exempt/', views.create_voucher_exempt),
+    url('views/create-voucher-exempt-test-1', views.create_voucher_exempt_test_1),
+    url('views/create-voucher-exempt-test-2', views.create_voucher_exempt_test_2),
+    url('views/create-voucher-no-decorators', views.create_voucher_no_decorators)
 ]

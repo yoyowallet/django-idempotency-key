@@ -45,7 +45,7 @@ class TestMiddlewareInclusive:
 
     def test_get_exempt(self, client):
         """Basic GET method is exempt by default because it is a read-only function"""
-        response = client.get('/get-voucher/', secure=True)
+        response = client.get('/views/get-voucher/', secure=True)
         assert response.status_code == status.HTTP_200_OK
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
@@ -53,41 +53,41 @@ class TestMiddlewareInclusive:
 
     def test_post_exempt(self, client):
         """Test a POST method that has been marked as exempt"""
-        response = client.post('/create-voucher-exempt/', data={}, secure=True)
+        response = client.post('/views/create-voucher-exempt/', data={}, secure=True)
         assert response.status_code == status.HTTP_201_CREATED
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
-        response = client.post('/create-voucher-exempt/', data={}, secure=True)
+        response = client.post('/views/create-voucher-exempt/', data={}, secure=True)
         assert response.status_code == status.HTTP_201_CREATED
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
 
     def test_post_no_decorators(self, client):
-        response = client.post('/create-voucher-no-decorators/', data={}, secure=True,
+        response = client.post('/views/create-voucher-no-decorators/', data={}, secure=True,
                                HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response.status_code == status.HTTP_201_CREATED
         request = response.wsgi_request
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
 
-        response = client.post('/create-voucher-no-decorators/', data={}, secure=True,
+        response = client.post('/views/create-voucher-no-decorators/', data={}, secure=True,
                                HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response.status_code == status.HTTP_409_CONFLICT
         request = response.wsgi_request
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '77b403cbe9350611437f02786e9e1e46b7cadcf6ee0de2dec45bf4c030905836'
+        assert request.idempotency_key_encoded_key == '4d500807b9fcd9f19b7d0d60878f92564eae80e9bff8b18e1a4257080c3d5325'
 
     def test_bad_request_no_key_specified(self, client):
         """
         POSTing to a view function that requires an idempotency key which is not specified in the header will cause a
         400 BAD REQUEST to be generated.
         """
-        response = client.post('/create-voucher/', secure=True)
+        response = client.post('/views/create-voucher/', secure=True)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         request = response.wsgi_request
         assert request.idempotency_key_exempt is False
@@ -103,17 +103,17 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+        assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': None}
@@ -125,17 +125,17 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_201_CREATED
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+        assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': status.HTTP_200_OK}
@@ -147,17 +147,17 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_200_OK
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+        assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
 
     def test_middleware_duplicate_request_manual_override(self, client):
         voucher_data = {
@@ -166,10 +166,12 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher-manual/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher-manual/', voucher_data, secure=True,
+                               HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher-manual/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher-manual/', voucher_data, secure=True,
+                                HTTP_IDEMPOTENCY_KEY=self.the_key)
 
         # The view code forces a 200 OK to be returned if this is a repeated request.
         assert response2.status_code == status.HTTP_200_OK
@@ -178,7 +180,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is True
-        assert request.idempotency_key_encoded_key == '32841060cc2b1c721d9e6b9fdf1f9e17b54eaf63b8a407a330fd831dc487b4c9'
+        assert request.idempotency_key_encoded_key == '96cbe9a5f3e24c87f6cc8808b6cd2d91ecd2bf9b8e52fa4b34ad6b3d5626dabb'
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -192,10 +194,10 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
@@ -220,17 +222,17 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_201_CREATED
         request = response2.wsgi_request
         assert request.idempotency_key_exists is False
         assert request.idempotency_key_response is None
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+        assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
 
     def test_idempotency_key_decorator(self, client):
         voucher_data = {
@@ -239,11 +241,11 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True,
+        response = client.post('/views/create-voucher/', voucher_data, secure=True,
                                HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True,
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True,
                                 HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
@@ -251,16 +253,18 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+        assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
 
     def test_idempotency_key_exempt_1(self, client):
-        response = client.post('/create-voucher-exempt-test-1/', {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher-exempt-test-1/', {}, secure=True,
+                               HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
 
     def test_idempotency_key_exempt_2(self, client):
-        response = client.post('/create-voucher-exempt-test-2/', {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher-exempt-test-2/', {}, secure=True,
+                               HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert status.HTTP_201_CREATED == response.status_code
         request = response.wsgi_request
         assert request.idempotency_key_exempt is True
@@ -282,13 +286,13 @@ class TestMiddlewareInclusive:
             'internal_name': 'myvoucher0',
         }
 
-        response = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response.status_code == status.HTTP_201_CREATED
 
-        response2 = client.post('/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        response2 = client.post('/views/create-voucher/', voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
         assert response2.status_code == status.HTTP_409_CONFLICT
         request = response2.wsgi_request
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
-        assert request.idempotency_key_encoded_key == '562be6fe17ab443a60b287e022b42c40d57f74432e6c41f0fd0035558209d22e'
+        assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
