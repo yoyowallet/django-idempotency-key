@@ -54,6 +54,11 @@ class IdempotencyKeyMiddleware:
         return response
 
     def _set_flags_from_callback(self, request, callback):
+        # If there is an actions attribute then the function is wrapped in a DRF viewset
+        if hasattr(callback, 'actions'):
+            # get a reference to the function to access any attributes we might be interested in.
+            callback = dict(callback.cls.__dict__)[list(callback.actions.values())[0]]
+
         request.idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', False)
         request.idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
 
@@ -119,6 +124,11 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
     """
 
     def _set_flags_from_callback(self, request, callback):
+        # If there is an actions attribute then the function is wrapped in a DRF viewset
+        if hasattr(callback, 'actions'):
+            # get a reference to the function to access any attributes we might be interested in.
+            callback = dict(callback.cls.__dict__)[list(callback.actions.values())[0]]
+
         idempotency_key = getattr(callback, 'idempotency_key', None)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
