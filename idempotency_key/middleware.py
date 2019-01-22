@@ -6,7 +6,7 @@ from django.urls import get_callable
 from rest_framework import status
 from rest_framework.exceptions import bad_request
 
-from idempotency_key.exceptions import MutuallyExclusiveError
+from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
@@ -68,9 +68,15 @@ class IdempotencyKeyMiddleware:
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', False)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
 
-        if (idempotency_key or idempotency_key_manual) and idempotency_key_exempt:
-            raise MutuallyExclusiveError('@idempotency_key and @idempotency_key_exempt decorators are mutually '
-                                         'exclusive for function "{}"'.format(func_name))
+        if idempotency_key and idempotency_key_exempt:
+            raise DecoratorsMutuallyExclusiveError(
+                '@idempotency_key and @idempotency_key_exempt decorators are mutually exclusive for '
+                'function "{}"'.format(func_name))
+
+        if idempotency_key_manual and idempotency_key_exempt:
+            raise DecoratorsMutuallyExclusiveError(
+                '@idempotency_key_manual and @idempotency_key_exempt decorators are mutually exclusive for '
+                'function "{}"'.format(func_name))
 
         request.idempotency_key_exempt = idempotency_key_exempt
         request.idempotency_key_manual = idempotency_key_manual
@@ -167,9 +173,15 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
 
-        if (idempotency_key or idempotency_key_manual) and idempotency_key_exempt:
-            raise MutuallyExclusiveError('@idempotency_key and @idempotency_key_exempt decorators are mutually '
-                                         'exclusive for function "{}"'.format(func_name))
+        if idempotency_key and idempotency_key_exempt:
+            raise DecoratorsMutuallyExclusiveError(
+                '@idempotency_key and @idempotency_key_exempt decorators are mutually exclusive for '
+                'function "{}"'.format(func_name))
+
+        if idempotency_key_manual and idempotency_key_exempt:
+            raise DecoratorsMutuallyExclusiveError(
+                '@idempotency_key_manual and @idempotency_key_exempt decorators are mutually exclusive for '
+                'function "{}"'.format(func_name))
 
         request.idempotency_key_exempt = idempotency_key_exempt or (
                 idempotency_key_exempt is None and not idempotency_key_manual and not idempotency_key

@@ -11,5 +11,5 @@ class MissingIdempotencyKeyError(Exception):
     pass
 
 
-class MutuallyExclusiveError(Exception):
+class DecoratorsMutuallyExclusiveError(Exception):
     pass

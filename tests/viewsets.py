@@ -52,3 +52,37 @@ class MyViewSet(ViewSet):
     @idempotency_key_manual
     def create_manual_exempt_2(self, request, *args, **kwargs):
         return Response(status=201, data={})
+
+
+class MyModelViewSet(ViewSet):
+    def create(self, request, *args, **kwargs):
+        return Response(status=201, data={})
+
+
+class MyMixin(MyModelViewSet):
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class ViewSetBase(MyModelViewSet):
+    @idempotency_key
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+# NOTE: the base classes must be specified in the correct order where the decorators appear in the first base class
+# or they will not be detected by the middleware.
+class MyViewSet2(ViewSetBase, MyMixin):
+    pass
+
+
+class ViewSetBaseExempt(MyModelViewSet):
+    @idempotency_key_exempt
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+# NOTE: the base classes must be specified in the correct order where the decorators appear in the first base class
+# or they will not be detected by the middleware.
+class MyViewSet2Exempt(ViewSetBaseExempt, MyMixin):
+    pass

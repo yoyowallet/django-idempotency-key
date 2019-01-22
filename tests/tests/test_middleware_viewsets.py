@@ -7,7 +7,7 @@ import pytest
 from rest_framework import status
 
 from idempotency_key.encoders import IdempotencyKeyEncoder
-from idempotency_key.exceptions import MutuallyExclusiveError
+from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from idempotency_key.storage import IdempotencyKeyStorage
 from tests.tests.utils import for_all_methods
 
@@ -47,7 +47,8 @@ class TestMiddlewareInclusive:
     urls = {
         name: '/viewsets/{}/'.format(name) for name in
         ['get', 'create', 'create-exempt', 'create-no-decorators', 'create-manual', 'create-exempt-test-1',
-         'create-exempt-test-2', 'create-manual-exempt-1', 'create-manual-exempt-2']
+         'create-exempt-test-2', 'create-manual-exempt-1', 'create-manual-exempt-2', 'create-nested-decorator',
+         'create-nested-decorator-exempt']
     }
 
     def test_get_exempt(self, client):
@@ -273,21 +274,21 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
 
     def test_idempotency_key_exempt_mutually_exclusive_1(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-exempt-test-1'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
             pass
 
     def test_idempotency_key_exempt_mutually_exclusive_2(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-exempt-test-2'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
 
     def test_manual_exempt_mutually_exclusive_1(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-manual-exempt-1'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
             pass
 
     def test_manual_exempt_mutually_exclusive_2(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-manual-exempt-2'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
 
     @override_settings(
@@ -319,3 +320,40 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+
+    def test_nested_decorator(self, client):
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+        response = client.post(self.urls['create-nested-decorator'], voucher_data, secure=True,
+                               HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+        response2 = client.post(self.urls['create-nested-decorator'], voucher_data, secure=True,
+                                HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_409_CONFLICT
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response2
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_encoded_key == 'a11c925489ff44b7f4672ddc0b79d339b3f41067526968de7696e7a02e5e6689'
+
+    def test_nested_decorator_exempt(self, client):
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+        response = client.post(self.urls['create-nested-decorator-exempt'], voucher_data, secure=True,
+                               HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+        response2 = client.post(self.urls['create-nested-decorator-exempt'], voucher_data, secure=True,
+                                HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_201_CREATED
+        request = response2.wsgi_request
+        assert hasattr(request, 'idempotency_key_exists') is False
+        assert hasattr(request, 'idempotency_key_response') is False
+        assert request.idempotency_key_exempt is True
+        assert request.idempotency_key_manual is False
+        assert hasattr(request, 'idempotency_key_encoded_key') is False

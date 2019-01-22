@@ -5,7 +5,7 @@ from django.test import modify_settings, override_settings
 import pytest
 from rest_framework import status
 
-from idempotency_key.exceptions import MutuallyExclusiveError
+from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from tests.tests.utils import for_all_methods
 
 
@@ -243,21 +243,21 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
 
     def test_idempotency_key_exempt_mutually_exclusive_1(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-exempt-test-1'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
             pass
 
     def test_idempotency_key_exempt_mutually_exclusive_2(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-exempt-test-2'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
 
     def test_manual_exempt_mutually_exclusive_1(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-manual-exempt-1'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
             pass
 
     def test_manual_exempt_mutually_exclusive_2(self, client):
-        with pytest.raises(MutuallyExclusiveError):
+        with pytest.raises(DecoratorsMutuallyExclusiveError):
             client.post(self.urls['create-manual-exempt-2'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
 
     @override_settings(
