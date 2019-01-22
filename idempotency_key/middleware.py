@@ -26,6 +26,11 @@ def _get_conflict_code():
     return idkey_settings.get('CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
 
 
+def _get_cache_name():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return idkey_settings.get('CACHE_NAME', 'default')
+
+
 class IdempotencyKeyMiddleware:
     """
     This middleware class assumes that all non-safe HTTP methods will require an idempotency key to be specified in

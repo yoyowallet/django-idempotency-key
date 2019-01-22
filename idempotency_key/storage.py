@@ -2,7 +2,9 @@ import abc
 import pickle
 from typing import Tuple
 
-from django.core.cache import cache
+from django.core.cache import caches
+
+from idempotency_key.middleware import _get_cache_name
 
 
 class IdempotencyKeyStorage(object):
@@ -33,13 +35,17 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
 
 class CacheKeyStorage(IdempotencyKeyStorage):
 
+    def __init__(self):
+        self.cache_name = _get_cache_name()
+        self.the_cache = caches[self.cache_name]
+
     def store_data(self, encoded_key: str, response: object) -> None:
         str_response = pickle.dumps(response)
-        cache.set(encoded_key, str_response)
+        self.the_cache.set(encoded_key, str_response)
 
     def retrieve_data(self, encoded_key: str) -> Tuple[bool, object]:
-        if cache.__contains__(encoded_key):
-            str_response = cache.get(encoded_key)
+        if self.the_cache.__contains__(encoded_key):
+            str_response = self.the_cache.get(encoded_key)
             return True, pickle.loads(str_response)
 
         return False, None
