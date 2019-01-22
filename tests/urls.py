@@ -13,7 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+import debug_toolbar
+from django.conf.urls import url, include
 from django.contrib import admin
 
 from tests import views
@@ -38,3 +39,5 @@ urlpatterns = [
     url(r'^viewsets/create-voucher-exempt-test-2/$', MyViewSet.as_view({'post': 'create_voucher_exempt_test_2'})),
     url(r'^viewsets/create-voucher-no-decorators/$', MyViewSet.as_view({'post': 'create_voucher_no_decorators'})),
 ]
+
+urlpatterns = [url(r'^__debug__/', include(debug_toolbar.urls))] + urlpatterns

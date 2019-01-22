@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -169,3 +170,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [],
 }
+
+# django-debug-toolbar
+#
+# The toolbar is included by the test cases as this has know issues with this middleware
+from debug_toolbar.settings import PANELS_DEFAULTS
+
+DEBUG_TOOLBAR_PANELS = PANELS_DEFAULTS + [
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+]
+
+INTERNAL_IPS = ['127.0.0.1']
