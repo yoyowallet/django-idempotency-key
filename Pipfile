@@ -14,10 +14,12 @@ pytest-cov = "*"
 "bump2version" = "*"
 twine = "*"
 djangorestframework = "*"
+django-debug-toolbar = "==1.10.1"
 
 [packages]
 django = "~=1.11"
 django-redis = "*"
+patterns = "*"
 
 [requires]
 python_version = "3.6"
