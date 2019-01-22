@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import get_callable
 from rest_framework import status
 from rest_framework.exceptions import bad_request
@@ -67,8 +68,14 @@ class IdempotencyKeyMiddleware:
         if key is not None:
             request.META['IDEMPOTENCY_KEY'] = key
 
+        # Use this attribute to check that process_view has been called.
+        request.idempotency_key_done = False
+
     def process_view(self, request, callback, callback_args, callback_kwargs):
         self._set_flags_from_callback(request, callback)
+
+        # signal the process_view has been called
+        request.idempotency_key_done = True
 
         # Assume that anything defined as 'safe' by RFC7231 is exempt or if exempt is specified directly
         if request.idempotency_key_exempt or request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
@@ -106,7 +113,16 @@ class IdempotencyKeyMiddleware:
         return None
 
     def process_response(self, request, response):
-        if request.idempotency_key_exempt:
+        # Make sure that process_view is called otherwise the use of idempotency keys will be overridden without us
+        # knowing about it.
+        if not getattr(request, 'idempotency_key_done', False):
+            raise ImproperlyConfigured(
+                'Idempotency key middleware\'s \'process_view\' function was not called! '
+                'There maybe another middleware stopping this from happening which means your functions will not '
+                'be properly protected with idempotency keys.'
+            )
+
+        if getattr(request, 'idempotency_key_exempt', True):
             return response
 
         if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
