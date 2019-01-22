@@ -6,6 +6,8 @@ from django.urls import get_callable
 from rest_framework import status
 from rest_framework.exceptions import bad_request
 
+from idempotency_key.exceptions import MutuallyExclusiveError
+
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
 
@@ -56,12 +58,22 @@ class IdempotencyKeyMiddleware:
 
     def _set_flags_from_callback(self, request, callback):
         # If there is an actions attribute then the function is wrapped in a DRF viewset
+        func_name = callback.__name__
         if hasattr(callback, 'actions'):
+            func_name = callback.actions[request.method.lower()]
             # get a reference to the function to access any attributes we might be interested in.
-            callback = getattr(callback.cls, callback.actions[request.method.lower()], callback)
+            callback = getattr(callback.cls, func_name, callback)
 
-        request.idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', False)
-        request.idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
+        idempotency_key = getattr(callback, 'idempotency_key', None)
+        idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', False)
+        idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
+
+        if (idempotency_key or idempotency_key_manual) and idempotency_key_exempt:
+            raise MutuallyExclusiveError('@idempotency_key and @idempotency_key_exempt decorators are mutually '
+                                         'exclusive for function "{}"'.format(func_name))
+
+        request.idempotency_key_exempt = idempotency_key_exempt
+        request.idempotency_key_manual = idempotency_key_manual
 
     def process_request(self, request):
         key = request.META.get('HTTP_IDEMPOTENCY_KEY')
@@ -113,6 +125,10 @@ class IdempotencyKeyMiddleware:
         return None
 
     def process_response(self, request, response):
+        # if there has been a server error then just return the response
+        if response and response.status_code in [500]:
+            return response
+
         # Make sure that process_view is called otherwise the use of idempotency keys will be overridden without us
         # knowing about it.
         if not getattr(request, 'idempotency_key_done', False):
@@ -140,14 +156,20 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
     """
 
     def _set_flags_from_callback(self, request, callback):
+        func_name = callback.__name__
         # If there is an actions attribute then the function is wrapped in a DRF viewset
         if hasattr(callback, 'actions'):
+            func_name = callback.actions[request.method.lower()]
             # get a reference to the function to access any attributes we might be interested in.
-            callback = getattr(callback.cls, callback.actions[request.method.lower()], callback)
+            callback = getattr(callback.cls, func_name, callback)
 
-        idempotency_key = getattr(callback, 'idempotency_key', None)
+        idempotency_key = getattr(callback, 'idempotency_key', False)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
+
+        if (idempotency_key or idempotency_key_manual) and idempotency_key_exempt:
+            raise MutuallyExclusiveError('@idempotency_key and @idempotency_key_exempt decorators are mutually '
+                                         'exclusive for function "{}"'.format(func_name))
 
         request.idempotency_key_exempt = idempotency_key_exempt or (
                 idempotency_key_exempt is None and not idempotency_key_manual and not idempotency_key

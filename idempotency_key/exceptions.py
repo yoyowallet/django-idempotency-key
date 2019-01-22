@@ -9,3 +9,7 @@ class MissingIdempotencyKeyError(Exception):
     Raised when an idempotency key has not been specified
     """
     pass
+
+
+class MutuallyExclusiveError(Exception):
+    pass

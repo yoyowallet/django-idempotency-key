@@ -30,6 +30,8 @@ urlpatterns = [
     url(r'^views/create-exempt-test-1/$', views.create_exempt_test_1),
     url(r'^views/create-exempt-test-2/$', views.create_exempt_test_2),
     url(r'^views/create-no-decorators/$', views.create_no_decorators),
+    url(r'^views/create-manual-exempt-1', views.create_manual_exempt_1),
+    url(r'^views/create-manual-exempt-2', views.create_manual_exempt_2),
 
     url(r'^viewsets/get/$', MyViewSet.as_view({'get': 'get'})),
     url(r'^viewsets/create/$', MyViewSet.as_view({'post': 'create'})),
@@ -38,6 +40,8 @@ urlpatterns = [
     url(r'^viewsets/create-exempt-test-1/$', MyViewSet.as_view({'post': 'create_exempt_test_1'})),
     url(r'^viewsets/create-exempt-test-2/$', MyViewSet.as_view({'post': 'create_exempt_test_2'})),
     url(r'^viewsets/create-no-decorators/$', MyViewSet.as_view({'post': 'create_no_decorators'})),
+    url(r'^viewsets/create-manual-exempt-1', MyViewSet.as_view({'post': 'create_manual_exempt_1'})),
+    url(r'^viewsets/create-manual-exempt-2', MyViewSet.as_view({'post': 'create_manual_exempt_2'})),
 ]
 
 urlpatterns = [url(r'^__debug__/', include(debug_toolbar.urls))] + urlpatterns

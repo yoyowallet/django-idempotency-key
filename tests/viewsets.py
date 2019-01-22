@@ -42,3 +42,13 @@ class MyViewSet(ViewSet):
     @idempotency_key_exempt
     def create_exempt_test_2(self, request, *args, **kwargs):
         return Response(status=201, data={})
+
+    @idempotency_key_manual
+    @idempotency_key_exempt
+    def create_manual_exempt_1(self, request, *args, **kwargs):
+        return Response(status=201, data={})
+
+    @idempotency_key_exempt
+    @idempotency_key_manual
+    def create_manual_exempt_2(self, request, *args, **kwargs):
+        return Response(status=201, data={})

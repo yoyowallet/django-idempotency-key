@@ -2,8 +2,10 @@ from functools import wraps
 
 from django.core.cache import cache
 from django.test import modify_settings, override_settings
+import pytest
 from rest_framework import status
 
+from idempotency_key.exceptions import MutuallyExclusiveError
 from tests.tests.utils import for_all_methods
 
 
@@ -24,8 +26,8 @@ class TestMiddlewareExempt:
     the_key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
     urls = {
         name: '/views/{}/'.format(name) for name in
-        ['get', 'create', 'create-exempt', 'create-no-decorators',
-         'create-manual', 'create-exempt-test-1', 'create-exempt-test-2']
+        ['get', 'create', 'create-exempt', 'create-no-decorators', 'create-manual',
+         'create-exempt-test-1', 'create-exempt-test-2', 'create-manual-exempt-1', 'create-manual-exempt-2']
     }
 
     def test_get_exempt(self, client):
@@ -240,21 +242,23 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
 
-    def test_idempotency_key_exempt_1(self, client):
-        response = client.post(self.urls['create-exempt-test-1'], {}, secure=True,
-                               HTTP_IDEMPOTENCY_KEY=self.the_key)
-        assert status.HTTP_201_CREATED == response.status_code
-        request = response.wsgi_request
-        assert request.idempotency_key_exempt is True
-        assert request.idempotency_key_manual is False
+    def test_idempotency_key_exempt_mutually_exclusive_1(self, client):
+        with pytest.raises(MutuallyExclusiveError):
+            client.post(self.urls['create-exempt-test-1'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+            pass
 
-    def test_idempotency_key_exempt_2(self, client):
-        response = client.post(self.urls['create-exempt-test-2'], {}, secure=True,
-                               HTTP_IDEMPOTENCY_KEY=self.the_key)
-        assert status.HTTP_201_CREATED == response.status_code
-        request = response.wsgi_request
-        assert request.idempotency_key_exempt is True
-        assert request.idempotency_key_manual is False
+    def test_idempotency_key_exempt_mutually_exclusive_2(self, client):
+        with pytest.raises(MutuallyExclusiveError):
+            client.post(self.urls['create-exempt-test-2'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+
+    def test_manual_exempt_mutually_exclusive_1(self, client):
+        with pytest.raises(MutuallyExclusiveError):
+            client.post(self.urls['create-manual-exempt-1'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+            pass
+
+    def test_manual_exempt_mutually_exclusive_2(self, client):
+        with pytest.raises(MutuallyExclusiveError):
+            client.post(self.urls['create-manual-exempt-2'], {}, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={

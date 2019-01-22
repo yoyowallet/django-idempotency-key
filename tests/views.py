@@ -51,3 +51,17 @@ def create_exempt_test_1(request, *args, **kwargs):
 @api_view(['POST'])
 def create_exempt_test_2(request, *args, **kwargs):
     return Response(status=201, data={})
+
+
+@idempotency_key_manual
+@idempotency_key_exempt
+@api_view(['POST'])
+def create_manual_exempt_1(request, *args, **kwargs):
+    return Response(status=201, data={})
+
+
+@idempotency_key_exempt
+@idempotency_key_manual
+@api_view(['POST'])
+def create_manual_exempt_2(request, *args, **kwargs):
+    return Response(status=201, data={})
