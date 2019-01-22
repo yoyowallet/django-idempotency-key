@@ -285,11 +285,9 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exempt is True
 
     @override_settings(
-        IDEMPOTENCY_KEY={
-            'STORAGE_CLASS': 'idempotency_key.storage.CacheKeyStorage'
-        }
+        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'idempotency_key.storage.CacheKeyStorage'},
     )
-    def test_middleware_cache_storage(self, client, settings):
+    def test_middleware_cache_storage(self, client):
         """
         Test Django cache storage
         """
@@ -312,3 +310,4 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_encoded_key == 'b204f77b6555b66c71296426364f22f65ffde694152e1e5b17f8f024b33e2df3'
+
