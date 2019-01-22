@@ -10,22 +10,22 @@ from idempotency_key.utils import idempotency_key_exists
 class MyViewSet(ViewSet):
     renderer_classes = (JSONRenderer,)
 
-    def get_voucher(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         return Response(status=200, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
-    def create_voucher_no_decorators(self, request, *args, **kwargs):
+    def create_no_decorators(self, request, *args, **kwargs):
         return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
     @idempotency_key_exempt
-    def create_voucher_exempt(self, request, *args, **kwargs):
+    def create_exempt(self, request, *args, **kwargs):
         return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
     @idempotency_key
-    def create_voucher(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         return Response(status=201, data={})
 
     @idempotency_key_manual
-    def create_voucher_manual(self, request, *args, **kwargs):
+    def create_manual(self, request, *args, **kwargs):
         if idempotency_key_exists(request):
             response = request.idempotency_key_response
             response.status_code = status.HTTP_200_OK
@@ -35,10 +35,10 @@ class MyViewSet(ViewSet):
 
     @idempotency_key_exempt
     @idempotency_key
-    def create_voucher_exempt_test_1(self, request, *args, **kwargs):
+    def create_exempt_test_1(self, request, *args, **kwargs):
         return Response(status=201, data={})
 
     @idempotency_key
     @idempotency_key_exempt
-    def create_voucher_exempt_test_2(self, request, *args, **kwargs):
+    def create_exempt_test_2(self, request, *args, **kwargs):
         return Response(status=201, data={})

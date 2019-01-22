@@ -23,21 +23,21 @@ from tests.viewsets import MyViewSet
 urlpatterns = [
     url('admin/', admin.site.urls),
 
-    url(r'^views/get-voucher/$', views.get_voucher),
-    url(r'^views/create-voucher/$', views.create_voucher),
-    url(r'^views/create-voucher-manual/$', views.create_voucher_manual),
-    url(r'^views/create-voucher-exempt/$', views.create_voucher_exempt),
-    url(r'^views/create-voucher-exempt-test-1/$', views.create_voucher_exempt_test_1),
-    url(r'^views/create-voucher-exempt-test-2/$', views.create_voucher_exempt_test_2),
-    url(r'^views/create-voucher-no-decorators/$', views.create_voucher_no_decorators),
+    url(r'^views/get/$', views.get),
+    url(r'^views/create/$', views.create),
+    url(r'^views/create-manual/$', views.create_manual),
+    url(r'^views/create-exempt/$', views.create_exempt),
+    url(r'^views/create-exempt-test-1/$', views.create_exempt_test_1),
+    url(r'^views/create-exempt-test-2/$', views.create_exempt_test_2),
+    url(r'^views/create-no-decorators/$', views.create_no_decorators),
 
-    url(r'^viewsets/get-voucher/$', MyViewSet.as_view({'get': 'get_voucher'})),
-    url(r'^viewsets/create-voucher/$', MyViewSet.as_view({'post': 'create_voucher'})),
-    url(r'^viewsets/create-voucher-manual/$', MyViewSet.as_view({'post': 'create_voucher_manual'})),
-    url(r'^viewsets/create-voucher-exempt/$', MyViewSet.as_view({'post': 'create_voucher_exempt'})),
-    url(r'^viewsets/create-voucher-exempt-test-1/$', MyViewSet.as_view({'post': 'create_voucher_exempt_test_1'})),
-    url(r'^viewsets/create-voucher-exempt-test-2/$', MyViewSet.as_view({'post': 'create_voucher_exempt_test_2'})),
-    url(r'^viewsets/create-voucher-no-decorators/$', MyViewSet.as_view({'post': 'create_voucher_no_decorators'})),
+    url(r'^viewsets/get/$', MyViewSet.as_view({'get': 'get'})),
+    url(r'^viewsets/create/$', MyViewSet.as_view({'post': 'create'})),
+    url(r'^viewsets/create-manual/$', MyViewSet.as_view({'post': 'create_manual'})),
+    url(r'^viewsets/create-exempt/$', MyViewSet.as_view({'post': 'create_exempt'})),
+    url(r'^viewsets/create-exempt-test-1/$', MyViewSet.as_view({'post': 'create_exempt_test_1'})),
+    url(r'^viewsets/create-exempt-test-2/$', MyViewSet.as_view({'post': 'create_exempt_test_2'})),
+    url(r'^viewsets/create-no-decorators/$', MyViewSet.as_view({'post': 'create_no_decorators'})),
 ]
 
 urlpatterns = [url(r'^__debug__/', include(debug_toolbar.urls))] + urlpatterns

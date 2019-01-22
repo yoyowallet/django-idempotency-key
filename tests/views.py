@@ -7,30 +7,30 @@ from idempotency_key.utils import idempotency_key_exists
 
 
 @api_view(['GET'])
-def get_voucher(request, *args, **kwargs):
+def get(request, *args, **kwargs):
     return Response(status=200, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
 
 @api_view(['POST'])
-def create_voucher_no_decorators(request, *args, **kwargs):
+def create_no_decorators(request, *args, **kwargs):
     return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
 
 @idempotency_key_exempt
 @api_view(['POST'])
-def create_voucher_exempt(request, *args, **kwargs):
+def create_exempt(request, *args, **kwargs):
     return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
 
 
 @idempotency_key
 @api_view(['POST'])
-def create_voucher(request, *args, **kwargs):
+def create(request, *args, **kwargs):
     return Response(status=201, data={})
 
 
 @idempotency_key_manual
 @api_view(['POST'])
-def create_voucher_manual(request, *args, **kwargs):
+def create_manual(request, *args, **kwargs):
     if idempotency_key_exists(request):
         response = request.idempotency_key_response
         response.status_code = status.HTTP_200_OK
@@ -42,12 +42,12 @@ def create_voucher_manual(request, *args, **kwargs):
 @idempotency_key_exempt
 @idempotency_key
 @api_view(['POST'])
-def create_voucher_exempt_test_1(request, *args, **kwargs):
+def create_exempt_test_1(request, *args, **kwargs):
     return Response(status=201, data={})
 
 
 @idempotency_key
 @idempotency_key_exempt
 @api_view(['POST'])
-def create_voucher_exempt_test_2(request, *args, **kwargs):
+def create_exempt_test_2(request, *args, **kwargs):
     return Response(status=201, data={})

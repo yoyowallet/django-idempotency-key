@@ -27,7 +27,7 @@ def set_debug_toolbar_middleware(func):
 class TestDjangoDebugToolbar:
     urls = {
         name: '/views/{}/'.format(name) for name in
-        ['create-voucher']
+        ['create']
     }
 
     def test_post(self, client):
@@ -36,4 +36,4 @@ class TestDjangoDebugToolbar:
         exception is throw to work the user that idempotency keys will not work correctly.
         """
         with pytest.raises(ImproperlyConfigured):
-            client.post(self.urls['create-voucher'], data={}, secure=True)
+            client.post(self.urls['create'], data={}, secure=True)
