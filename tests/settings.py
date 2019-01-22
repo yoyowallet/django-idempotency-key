@@ -100,7 +100,7 @@ if REDIS_AVAILABLE:
         }
     }
 else:
-    cache_path = f'/home/{USERNAME}/django_cache/'
+    cache_path = '/home/{}/django_cache/'.format(USERNAME)
     os.makedirs(cache_path, 0o755, exist_ok=True)
 
     CACHES = {
