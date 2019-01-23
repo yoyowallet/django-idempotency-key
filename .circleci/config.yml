@@ -6,4 +6,4 @@ jobs:
     steps:
       - checkout
       - run: pip install --no-cache-dir pipenv && pipenv install --dev
-      - run: pipenv run "make test"
+      - run: pipenv run -- make test
