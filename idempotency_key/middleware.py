@@ -30,8 +30,8 @@ class IdempotencyKeyMiddleware:
     @staticmethod
     def _reject(request, reason):
         response = bad_request(request, None)
-        logger.error(
-            'Error (%s): %s', reason, request.path,
+        logger.debug(
+            'Bad Request (%s): %s', reason, request.path,
             extra={
                 'status_code': 400,
                 'request': request,
