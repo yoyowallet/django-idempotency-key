@@ -4,7 +4,7 @@ from typing import Tuple
 
 from django.core.cache import caches
 
-from idempotency_key.middleware import _get_cache_name
+from idempotency_key.utils import get_cache_name
 
 
 class IdempotencyKeyStorage(object):
@@ -36,7 +36,7 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
 class CacheKeyStorage(IdempotencyKeyStorage):
 
     def __init__(self):
-        self.cache_name = _get_cache_name()
+        self.cache_name = get_cache_name()
         self.the_cache = caches[self.cache_name]
 
     def store_data(self, encoded_key: str, response: object) -> None:

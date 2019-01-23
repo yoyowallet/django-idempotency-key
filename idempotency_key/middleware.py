@@ -1,34 +1,13 @@
 import logging
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import module_loading
 from rest_framework import status
 from rest_framework.exceptions import bad_request
 
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
+from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code
 
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
-
-
-def _get_storage_class():
-    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return module_loading.import_string(idkey_settings.get('STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage'))
-
-
-def _get_encoder_class():
-    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return module_loading.import_string(idkey_settings.get('ENCODER_CLASS', 'idempotency_key.encoders.BasicKeyEncoder'))
-
-
-def _get_conflict_code():
-    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return idkey_settings.get('CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
-
-
-def _get_cache_name():
-    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return idkey_settings.get('CACHE_NAME', 'default')
 
 
 class IdempotencyKeyMiddleware:
@@ -40,8 +19,8 @@ class IdempotencyKeyMiddleware:
 
     def __init__(self, get_response=None):
         self.get_response = get_response
-        self.storage = _get_storage_class()()
-        self.encoder = _get_encoder_class()()
+        self.storage = get_storage_class()()
+        self.encoder = get_encoder_class()()
 
     def __call__(self, request):
         self.process_request(request)
@@ -128,7 +107,7 @@ class IdempotencyKeyMiddleware:
 
         # If not manual override and the key already exists then return the original response as a 409 CONFLICT
         if not request.idempotency_key_manual and key_exists:
-            status_code = _get_conflict_code()
+            status_code = get_conflict_code()
             if status_code is not None:
                 response.status_code = status_code
             return response
