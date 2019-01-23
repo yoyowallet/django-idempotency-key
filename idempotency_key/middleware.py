@@ -90,10 +90,6 @@ class IdempotencyKeyMiddleware:
         if key is None:
             return self._reject(request, 'Idempotency key is required and was not specified in the header.')
 
-        # Has the manual override decorator been specified? if so add it to the request
-        if request.idempotency_key_manual:
-            request.use_idempotency_key_manual_override = True
-
         # encode the key and add it to the request
         encoded_key = request.idempotency_key_encoded_key = self.encoder.encode_key(request, key)
 
