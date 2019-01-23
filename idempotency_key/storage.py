@@ -72,7 +72,7 @@ class CacheKeyStorage(IdempotencyKeyStorage):
         self.the_cache.set(encoded_key, str_response)
 
     def retrieve_data(self, encoded_key: str) -> Tuple[bool, object]:
-        if self.the_cache.__contains__(encoded_key):
+        if encoded_key in self.the_cache:
             str_response = self.the_cache.get(encoded_key)
             return True, pickle.loads(str_response)
 
