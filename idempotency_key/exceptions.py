@@ -1,3 +1,8 @@
+from django.http import JsonResponse
+
+from idempotency_key import status
+
+
 class MissingIdempotencyKeyError(Exception):
 
     def __init__(self, msg=None):
@@ -13,3 +18,13 @@ class MissingIdempotencyKeyError(Exception):
 
 class DecoratorsMutuallyExclusiveError(Exception):
     pass
+
+
+def bad_request(request, exception, *args, **kwargs):
+    """
+    Generic 400 error handler.
+    """
+    data = {
+        'error': 'Bad Request (400)'
+    }
+    return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)

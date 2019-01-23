@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.utils import module_loading
-from rest_framework import status
+
+from idempotency_key import status
 
 
 def idempotency_key_exists(request):

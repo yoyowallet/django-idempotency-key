@@ -4,8 +4,8 @@ from typing import Tuple
 from django.core.cache import cache
 from django.test import modify_settings, override_settings
 import pytest
-from rest_framework import status
 
+from idempotency_key import status
 from idempotency_key.encoders import IdempotencyKeyEncoder
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from idempotency_key.storage import IdempotencyKeyStorage

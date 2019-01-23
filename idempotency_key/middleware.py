@@ -1,10 +1,9 @@
 import logging
 
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import status
-from rest_framework.exceptions import bad_request
 
-from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
+from idempotency_key import status
+from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_request
 from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code
 
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')

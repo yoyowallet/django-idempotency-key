@@ -3,8 +3,8 @@ from functools import wraps
 from django.core.cache import cache
 from django.test import modify_settings, override_settings
 import pytest
-from rest_framework import status
 
+from idempotency_key import status
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from tests.tests.utils import for_all_methods
 
