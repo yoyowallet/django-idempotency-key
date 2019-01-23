@@ -28,3 +28,13 @@ def bad_request(request, exception, *args, **kwargs):
         'error': 'Bad Request (400)'
     }
     return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+def resource_locked(request, exception, *args, **kwargs):
+    """
+    Generic 423 error handler.
+    """
+    data = {
+        'error': 'Resource Locked (423)'
+    }
+    return JsonResponse(data, status=status.HTTP_423_LOCKED)

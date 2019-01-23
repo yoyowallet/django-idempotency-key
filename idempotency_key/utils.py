@@ -30,3 +30,13 @@ def get_conflict_code():
 def get_cache_name():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
     return idkey_settings.get('CACHE_NAME', 'default')
+
+
+def get_lock_timeout():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return idkey_settings.get('LOCKING_TIMEOUT', 0.1)  # default to 100ms
+
+
+def get_enable_lock():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return idkey_settings.get('ENABLE_LOCK', True)

@@ -77,5 +77,15 @@ IDEMPOTENCY_KEY = {
     
     # Name of the django cache configuration to use for the CacheStorageKey storage class
     'CACHE_NAME': 'default',
+    
+    # The use of a lock around the storage object so that only one thread at a time can access it.
+    # By default this is set to true. WARNING: setting this to false may allow duplicate calls to occur if the timing 
+    # is right. 
+    'ENABLE_LOCK': True,
+    
+    # If the ENABLE_LOCK setting is True above then this represents the timeout (in seconds as a floating point number) 
+    # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED 
+    # response.
+    'LOCKING_TIMEOUT': '0.1',
 }
 ```
