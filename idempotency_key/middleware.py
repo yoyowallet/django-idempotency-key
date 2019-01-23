@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import get_callable
+from django.utils import module_loading
 from rest_framework import status
 from rest_framework.exceptions import bad_request
 
@@ -13,12 +13,12 @@ logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
 def _get_storage_class():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return get_callable(idkey_settings.get('STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage'))
+    return module_loading.import_string(idkey_settings.get('STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage'))
 
 
 def _get_encoder_class():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return get_callable(idkey_settings.get('ENCODER_CLASS', 'idempotency_key.encoders.BasicKeyEncoder'))
+    return module_loading.import_string(idkey_settings.get('ENCODER_CLASS', 'idempotency_key.encoders.BasicKeyEncoder'))
 
 
 def _get_conflict_code():
