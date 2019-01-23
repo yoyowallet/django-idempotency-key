@@ -357,3 +357,46 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exempt is True
         assert request.idempotency_key_manual is False
         assert hasattr(request, 'idempotency_key_encoded_key') is False
+
+    @override_settings(
+        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus207Storage'},
+    )
+    def test_store_on_statuses_does_not_store(self, client):
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        response2 = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_201_CREATED
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is False
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+
+    @override_settings(
+        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus201Storage'},
+    )
+    def test_store_on_statuses_does_store(self, client):
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        response2 = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_409_CONFLICT
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'

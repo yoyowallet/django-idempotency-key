@@ -8,7 +8,7 @@ import pytest
 from idempotency_key import status
 from idempotency_key.encoders import IdempotencyKeyEncoder
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
-from idempotency_key.storage import IdempotencyKeyStorage
+from idempotency_key.storage import IdempotencyKeyStorage, MemoryKeyStorage
 from tests.tests.utils import for_all_methods
 
 
@@ -39,6 +39,16 @@ class MyStorage(IdempotencyKeyStorage):
 
     def retrieve_data(self, encoded_key: str) -> Tuple[bool, object]:
         return False, None
+
+
+class TestStatus207Storage(MemoryKeyStorage):
+    def store_on_statuses(self):
+        return [status.HTTP_207_MULTI_STATUS]
+
+
+class TestStatus201Storage(MemoryKeyStorage):
+    def store_on_statuses(self):
+        return [status.HTTP_201_CREATED]
 
 
 @for_all_methods(set_middleware)
@@ -315,4 +325,47 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+
+    @override_settings(
+        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus207Storage'},
+    )
+    def test_store_on_statuses_does_not_store(self, client):
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        response2 = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_201_CREATED
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is False
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+
+    @override_settings(
+        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus201Storage'},
+    )
+    def test_store_on_statuses_does_store(self, client):
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        response2 = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_409_CONFLICT
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'

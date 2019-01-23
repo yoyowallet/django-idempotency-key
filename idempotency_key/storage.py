@@ -4,6 +4,7 @@ from typing import Tuple
 
 from django.core.cache import caches
 
+from idempotency_key import status
 from idempotency_key.utils import get_cache_name
 
 
@@ -11,11 +12,38 @@ class IdempotencyKeyStorage(object):
 
     @abc.abstractmethod
     def store_data(self, encoded_key: str, response: object) -> None:
+        """
+        called when data should be stored in the storage medium
+        :param encoded_key: the key used to store the response data under
+        :param response: The response data to store
+        :return: None
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def retrieve_data(self, encoded_key: str) -> Tuple[bool, object]:
+        """
+        Retrieve data from the sore using the specified key.
+        :param encoded_key: The key that was used to store the response data
+        :return: the response data
+        """
         raise NotImplementedError
+
+    def store_on_statuses(self):
+        """
+        returns a list of statuses in which the data should be stored. Override this function to change.
+        :return: list of status codes
+        """
+        return [
+            status.HTTP_200_OK,
+            status.HTTP_201_CREATED,
+            status.HTTP_202_ACCEPTED,
+            status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            status.HTTP_204_NO_CONTENT,
+            status.HTTP_205_RESET_CONTENT,
+            status.HTTP_206_PARTIAL_CONTENT,
+            status.HTTP_207_MULTI_STATUS,
+        ]
 
 
 class MemoryKeyStorage(IdempotencyKeyStorage):
