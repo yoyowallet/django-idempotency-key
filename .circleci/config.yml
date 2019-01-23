@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: pip install --no-cache-dir pipenv && pipenv install --system
+      - run: make test
