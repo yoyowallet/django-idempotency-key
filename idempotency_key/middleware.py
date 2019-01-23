@@ -100,9 +100,11 @@ class IdempotencyKeyMiddleware:
         request.idempotency_key_exists = key_exists
         request.idempotency_key_response = response
 
-        # If not manual override and the key already exists then return the original response as a 409 CONFLICT
+        # If not manual override and the key already exists
         if not request.idempotency_key_manual and key_exists:
+            # Get the required return status code from settings
             status_code = get_conflict_code()
+            # if None then return whatever the status code was originally otherwise use the specified status code
             if status_code is not None:
                 response.status_code = status_code
             return response
