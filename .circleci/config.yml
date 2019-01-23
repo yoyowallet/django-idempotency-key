@@ -5,5 +5,5 @@ jobs:
       - image: circleci/python:3.6
     steps:
       - checkout
-      - run: pip install --no-cache-dir pipenv && pipenv install --user
-      - run: make test
+      - run: pip install --no-cache-dir pipenv && pipenv install --dev
+      - run: pipenv run "make test"
