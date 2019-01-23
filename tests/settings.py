@@ -87,7 +87,6 @@ DATABASES = {
 #
 
 REDIS_AVAILABLE = os.getenv('REDIS_AVAILABLE', False)
-USERNAME = os.getenv('USERNAME')
 
 if REDIS_AVAILABLE:
     CACHES = {
@@ -101,13 +100,13 @@ if REDIS_AVAILABLE:
         }
     }
 else:
-    cache_path = '/home/{}/django_cache/'.format(USERNAME)
-    os.makedirs(cache_path, 0o755, exist_ok=True)
+    import tempfile
+    tempdir = tempfile.TemporaryDirectory()
 
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': cache_path,
+            'LOCATION': tempdir.name,
         }
     }
 
