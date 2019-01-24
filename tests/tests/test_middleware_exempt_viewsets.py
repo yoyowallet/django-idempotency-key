@@ -330,7 +330,7 @@ class TestMiddlewareExemptViewSets:
         assert hasattr(request, 'idempotency_key_encoded_key') is False
 
     @override_settings(
-        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus207Storage'},
+        IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_207_MULTI_STATUS]},
     )
     def test_store_on_statuses_does_not_store(self, client):
         voucher_data = {
@@ -351,7 +351,7 @@ class TestMiddlewareExemptViewSets:
         assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
 
     @override_settings(
-        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus201Storage'},
+        IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_201_CREATED]},
     )
     def test_store_on_statuses_does_store(self, client):
         voucher_data = {
