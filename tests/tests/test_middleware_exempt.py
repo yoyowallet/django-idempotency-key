@@ -290,7 +290,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
 
     @override_settings(
-        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus207Storage'},
+        IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_207_MULTI_STATUS]},
     )
     def test_store_on_statuses_does_not_store(self, client):
         voucher_data = {
@@ -311,7 +311,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
 
     @override_settings(
-        IDEMPOTENCY_KEY={'STORAGE_CLASS': 'tests.tests.test_middleware.TestStatus201Storage'},
+        IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_201_CREATED]},
     )
     def test_store_on_statuses_does_store(self, client):
         voucher_data = {

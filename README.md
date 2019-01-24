@@ -61,6 +61,8 @@ When an idempotency key is enabled on a view function the calling client must sp
 ## Settings
 The following settings can be used to modify the behaviour of the idempotency key middleware.
 ```
+from idempotency_key import status
+
 IDEMPOTENCY_KEY = {
     # Specify the storage class to be used for idempotency keys
     # If not specified then defaults to 'idempotency_key.storage.MemoryKeyStorage'
@@ -77,5 +79,19 @@ IDEMPOTENCY_KEY = {
     
     # Name of the django cache configuration to use for the CacheStorageKey storage class
     'CACHE_NAME': 'default',
+    
+    # When the response is to be stored you have the option of deciding when this happens based on the responses
+    # status code. If the response status code matches one of the statuses below then it will be stored.
+    # The statuses below are the defaults used if this setting is not specified.
+    'STORE_ON_STATUSES': [
+        status.HTTP_200_OK,
+        status.HTTP_201_CREATED,
+        status.HTTP_202_ACCEPTED,
+        status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+        status.HTTP_204_NO_CONTENT,
+        status.HTTP_205_RESET_CONTENT,
+        status.HTTP_206_PARTIAL_CONTENT,
+        status.HTTP_207_MULTI_STATUS,
+    ]
 }
 ```
