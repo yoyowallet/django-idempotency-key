@@ -92,7 +92,7 @@ IDEMPOTENCY_KEY = {
     
     # When the response is to be stored you have the option of deciding when this happens based on the responses
     # status code. If the response status code matches one of the statuses below then it will be stored.
-    # The statuses specific below are the defaults used if this setting is not specified.
+    # The statuses below are the defaults used if this setting is not specified.
     'STORE_ON_STATUSES': [
         status.HTTP_200_OK,
         status.HTTP_201_CREATED,
