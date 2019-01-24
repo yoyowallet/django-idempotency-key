@@ -18,11 +18,13 @@ xenon:
 	@echo "Running xenon over codebase"
 	xenon --max-absolute B --max-modules B --max-average A --exclude test_*.py idempotency-key/\
 
-test: static_analysis
+test: static_analysis coverage
 	tox $(pytest_args)
 
 coverage:
 	py.test --cov=idempotency_key tests/ --cov-report html
+	@echo Access the report here:
+	@echo file://${PWD}/htmlcov/index.html
 
 bundle: static_analysis coverage
 	python setup.py sdist
