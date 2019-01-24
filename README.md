@@ -1,3 +1,5 @@
+[![Circle CI](https://circleci.com/gh/yoyowallet/django-idempotency-key/tree/master.png?style=badge)](https://circleci.com/gh/yoyowallet/django-idempotency-key) [![codecov.io](https://codecov.io/gh/yoyowallet/django-idempotency-key/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/yoyowallet/django-idempotency-key)
+
 ## Idempotency key Django middleware
 Middleware to Django that pulls out the idempotency key from the request header and will automatically return the previous response data if the idempotency key was already specified. 
 There are two middleware classes which allow view functions to opt-in or opt-out individually depending on your needs.
