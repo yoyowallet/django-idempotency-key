@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_request, resource_locked
 from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code, get_lock_timeout, \
-    get_enable_lock
+    get_enable_lock, get_store_on_statuses
 
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
@@ -153,7 +153,7 @@ class IdempotencyKeyMiddleware:
 
         if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             # If the response matches that given by the store_on_statuses function then store the data
-            if response.status_code in self.storage.store_on_statuses():
+            if response.status_code in get_store_on_statuses():
                 self.storage.store_data(request.idempotency_key_encoded_key, response)
 
         return response
