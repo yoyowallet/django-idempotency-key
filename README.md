@@ -88,7 +88,7 @@ IDEMPOTENCY_KEY = {
     # If the ENABLE_LOCK setting is True above then this represents the timeout (in seconds as a floating point number) 
     # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED 
     # response.
-    'LOCKING_TIMEOUT': '0.1',
+    'LOCKING_TIMEOUT': 0.1,
     
     # When the response is to be stored you have the option of deciding when this happens based on the responses
     # status code. If the response status code matches one of the statuses below then it will be stored.
