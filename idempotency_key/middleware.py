@@ -3,6 +3,7 @@ import threading
 
 from django.core.exceptions import ImproperlyConfigured
 
+from idempotency_key import status
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_request, resource_locked
 from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code, get_lock_timeout, \
     get_enable_lock, get_store_on_statuses
@@ -135,8 +136,18 @@ class IdempotencyKeyMiddleware:
         return self.generate_response(request, encoded_key)
 
     def process_response(self, request, response):
-        # if there has been a server error then just return the response
-        if response and response.status_code in [500]:
+        # If the response is not in the 20X range then return the response because at this point protecting it with an
+        # idempotency key is meaningless.
+        if response and response.status_code not in [
+            status.HTTP_200_OK,
+            status.HTTP_201_CREATED,
+            status.HTTP_202_ACCEPTED,
+            status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            status.HTTP_204_NO_CONTENT,
+            status.HTTP_205_RESET_CONTENT,
+            status.HTTP_206_PARTIAL_CONTENT,
+            status.HTTP_207_MULTI_STATUS,
+        ]:
             return response
 
         # Make sure that process_view is called otherwise the use of idempotency keys will be overridden without us
@@ -169,9 +180,14 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         func_name = callback.__name__
         # If there is an actions attribute then the function is wrapped in a DRF viewset
         if hasattr(callback, 'actions'):
-            func_name = callback.actions[request.method.lower()]
-            # get a reference to the function to access any attributes we might be interested in.
-            callback = getattr(callback.cls, func_name, callback)
+            actual_func_name = callback.actions.get(request.method.lower())
+            # if for some reason the method is not available in the viewset then just proceed as normal
+            # and let the framework handle the problem.
+            if actual_func_name is not None:
+                func_name = actual_func_name
+
+                # get a reference to the function to access any attributes we might be interested in.
+                callback = getattr(callback.cls, func_name, callback)
 
         idempotency_key = getattr(callback, 'idempotency_key', False)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
