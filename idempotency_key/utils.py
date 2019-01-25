@@ -32,6 +32,16 @@ def get_cache_name():
     return idkey_settings.get('CACHE_NAME', 'default')
 
 
+def get_lock_timeout():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return idkey_settings.get('LOCKING_TIMEOUT', 0.1)  # default to 100ms
+
+
+def get_enable_lock():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return idkey_settings.get('ENABLE_LOCK', True)
+
+
 def get_store_on_statuses():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
     return idkey_settings.get(

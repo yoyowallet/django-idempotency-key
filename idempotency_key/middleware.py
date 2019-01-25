@@ -1,9 +1,11 @@
 import logging
+import threading
 
 from django.core.exceptions import ImproperlyConfigured
 
-from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_request
-from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code, get_store_on_statuses
+from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_request, resource_locked
+from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code, get_lock_timeout, \
+    get_enable_lock, get_store_on_statuses
 
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
@@ -19,6 +21,7 @@ class IdempotencyKeyMiddleware:
         self.get_response = get_response
         self.storage = get_storage_class()()
         self.encoder = get_encoder_class()()
+        self.storage_lock = threading.Lock()
 
     def __call__(self, request):
         self.process_request(request)
@@ -63,6 +66,42 @@ class IdempotencyKeyMiddleware:
         request.idempotency_key_exempt = idempotency_key_exempt
         request.idempotency_key_manual = idempotency_key_manual
 
+    def perform_generate_response(self, request, encoded_key):
+        # Check if a response already exists for the encoded key
+        key_exists, response = self.storage.retrieve_data(encoded_key)
+
+        # add the key exists result and the original request if it exists
+        request.idempotency_key_exists = key_exists
+        request.idempotency_key_response = response
+
+        # If not manual override and the key already exists
+        if not request.idempotency_key_manual and key_exists:
+            # Get the required return status code from settings
+            status_code = get_conflict_code()
+            # if None then return whatever the status code was originally otherwise use the specified status code
+            if status_code is not None:
+                response.status_code = status_code
+            return response
+
+        return None
+
+    def generate_response(self, request, encoded_key, lock=None):
+        if lock is None:
+            lock = get_enable_lock()
+
+        if not lock:
+            return self.perform_generate_response(request, encoded_key)
+
+        lock_result = self.storage_lock.acquire(blocking=True, timeout=get_lock_timeout())
+        # If there was a timeout for a lock on the storage object then return a HTTP_423_LOCKED
+        if not lock_result:
+            return resource_locked(request, None)
+
+        try:
+            return self.perform_generate_response(request, encoded_key)
+        finally:
+            self.storage_lock.release()
+
     def process_request(self, request):
         key = request.META.get('HTTP_IDEMPOTENCY_KEY')
         if key is not None:
@@ -92,23 +131,8 @@ class IdempotencyKeyMiddleware:
         # encode the key and add it to the request
         encoded_key = request.idempotency_key_encoded_key = self.encoder.encode_key(request, key)
 
-        # Check if a response already exists for the encoded key
-        key_exists, response = self.storage.retrieve_data(encoded_key)
-
-        # add the key exists result and the original request if it exists
-        request.idempotency_key_exists = key_exists
-        request.idempotency_key_response = response
-
-        # If not manual override and the key already exists
-        if not request.idempotency_key_manual and key_exists:
-            # Get the required return status code from settings
-            status_code = get_conflict_code()
-            # if None then return whatever the status code was originally otherwise use the specified status code
-            if status_code is not None:
-                response.status_code = status_code
-            return response
-
-        return None
+        # Generate the response
+        return self.generate_response(request, encoded_key)
 
     def process_response(self, request, response):
         # if there has been a server error then just return the response
