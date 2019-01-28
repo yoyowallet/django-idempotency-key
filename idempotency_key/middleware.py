@@ -1,12 +1,10 @@
 import logging
-import threading
 
 from django.core.exceptions import ImproperlyConfigured
 
 from idempotency_key import status
+from idempotency_key import utils
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_request, resource_locked
-from idempotency_key.utils import get_storage_class, get_encoder_class, get_conflict_code, get_lock_timeout, \
-    get_enable_lock, get_store_on_statuses
 
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
@@ -20,9 +18,9 @@ class IdempotencyKeyMiddleware:
 
     def __init__(self, get_response=None):
         self.get_response = get_response
-        self.storage = get_storage_class()()
-        self.encoder = get_encoder_class()()
-        self.storage_lock = threading.Lock()
+        self.storage = utils.get_storage_class()()
+        self.encoder = utils.get_encoder_class()()
+        self.storage_lock = utils.get_lock_class()()
 
     def __call__(self, request):
         self.process_request(request)
@@ -78,7 +76,7 @@ class IdempotencyKeyMiddleware:
         # If not manual override and the key already exists
         if not request.idempotency_key_manual and key_exists:
             # Get the required return status code from settings
-            status_code = get_conflict_code()
+            status_code = utils.get_conflict_code()
             # if None then return whatever the status code was originally otherwise use the specified status code
             if status_code is not None:
                 response.status_code = status_code
@@ -88,14 +86,13 @@ class IdempotencyKeyMiddleware:
 
     def generate_response(self, request, encoded_key, lock=None):
         if lock is None:
-            lock = get_enable_lock()
+            lock = utils.get_enable_lock()
 
         if not lock:
             return self.perform_generate_response(request, encoded_key)
 
-        lock_result = self.storage_lock.acquire(blocking=True, timeout=get_lock_timeout())
         # If there was a timeout for a lock on the storage object then return a HTTP_423_LOCKED
-        if not lock_result:
+        if not self.storage_lock.acquire():
             return resource_locked(request, None)
 
         try:
@@ -164,7 +161,7 @@ class IdempotencyKeyMiddleware:
 
         if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             # If the response matches that given by the store_on_statuses function then store the data
-            if response.status_code in get_store_on_statuses():
+            if response.status_code in utils.get_store_on_statuses():
                 self.storage.store_data(request.idempotency_key_encoded_key, response)
 
         return response
