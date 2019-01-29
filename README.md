@@ -103,6 +103,13 @@ IDEMPOTENCY_KEY = {
         # If not specified then defaults to 'idempotency_key.locks.SingleProcessLock'
         'CLASS': 'idempotency_key.locks.SingleProcessLock',
     
+        # The unique name to be used accross processes for the lock. Only used by the MultiProcessLock class
+        'NAME': 'MyLock',
+        
+        # The maximum time to live for the lock. If a lock is given and is never released this timeout forces the release
+        # The lock time is in seconds and the default is None which means lock until it is manually released
+        'TTL': None,
+    
         # The use of a lock around the storage object so that only one thread at a time can access it.
         # By default this is set to true. WARNING: setting this to false may allow duplicate calls to occur if the timing 
         # is right. 

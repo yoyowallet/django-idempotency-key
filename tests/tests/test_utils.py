@@ -109,3 +109,31 @@ def test_get_lock_enable_default():
 )
 def test_get_lock_enable_default():
     assert utils.get_lock_enable() is False
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={}
+)
+def test_get_lock_ttl_default():
+    assert utils.get_lock_time_to_live() is None
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'TTL': 1}}
+)
+def test_get_lock_ttl_default():
+    assert utils.get_lock_time_to_live() == 1
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={}
+)
+def test_get_lock_name_default():
+    assert utils.get_lock_name() is 'MyLock'
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'NAME': 'testname'}}
+)
+def test_get_lock_name_default():
+    assert utils.get_lock_name() == 'testname'

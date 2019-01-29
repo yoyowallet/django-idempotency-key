@@ -50,6 +50,18 @@ def get_lock_enable():
     return lock_settings.get('ENABLE', True)
 
 
+def get_lock_time_to_live():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
+    return lock_settings.get('TTL', None)
+
+
+def get_lock_name():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
+    return lock_settings.get('NAME', 'MyLock')
+
+
 def get_store_on_statuses():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
     return idkey_settings.get(
