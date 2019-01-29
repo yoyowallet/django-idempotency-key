@@ -5,6 +5,7 @@ jobs:
   build:
     docker:
       - image: circleci/python:3.6
+      - image: circleci/redis
     steps:
       - checkout
       - run: pip install --no-cache-dir pipenv && pipenv install --dev
