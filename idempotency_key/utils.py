@@ -34,19 +34,19 @@ def get_cache_name():
 
 def get_lock_class():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    lock_settings = getattr(idkey_settings, 'LOCK', dict())
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
     return module_loading.import_string(lock_settings.get('CLASS', 'idempotency_key.locks.SingleProcessLock'))
 
 
 def get_lock_timeout():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    lock_settings = getattr(idkey_settings, 'LOCK', dict())
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
     return lock_settings.get('TIMEOUT', 0.1)  # default to 100ms
 
 
 def get_lock_enable():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    lock_settings = getattr(idkey_settings, 'LOCK', dict())
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
     return lock_settings.get('ENABLE', True)
 
 

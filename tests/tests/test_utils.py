@@ -1,7 +1,8 @@
 from django.test import override_settings
 
 from idempotency_key import status
-from idempotency_key.utils import idempotency_key_exists, idempotency_key_response, get_store_on_statuses
+from idempotency_key import storage
+from idempotency_key import utils
 
 
 class Request(object):
@@ -14,31 +15,31 @@ class Response(object):
 
 def test_idempotency_key_exists_none():
     request = Request()
-    assert idempotency_key_exists(request) is False
+    assert utils.idempotency_key_exists(request) is False
 
 
 def test_idempotency_key_exists_false():
     request = Request()
     request.idempotency_key_exists = False
-    assert idempotency_key_exists(request) is False
+    assert utils.idempotency_key_exists(request) is False
 
 
 def test_idempotency_key_exists_true():
     request = Request()
     request.idempotency_key_exists = True
-    assert idempotency_key_exists(request) is True
+    assert utils.idempotency_key_exists(request) is True
 
 
 def test_idempotency_key_response_none():
     request = Request()
-    assert idempotency_key_response(request) is None
+    assert utils.idempotency_key_response(request) is None
 
 
 def test_idempotency_key_response_object():
     request = Request()
     response = Response()
     request.idempotency_key_response = response
-    assert idempotency_key_response(request) is response
+    assert utils.idempotency_key_response(request) is response
 
 
 @override_settings(
@@ -47,7 +48,7 @@ def test_idempotency_key_response_object():
     }
 )
 def test_get_store_on_statuses_default():
-    assert get_store_on_statuses() == [
+    assert utils.get_store_on_statuses() == [
         status.HTTP_200_OK
     ]
 
@@ -56,7 +57,7 @@ def test_get_store_on_statuses_default():
     IDEMPOTENCY_KEY={}
 )
 def test_get_store_on_statuses_not_specified():
-    assert get_store_on_statuses() == [
+    assert utils.get_store_on_statuses() == [
         status.HTTP_200_OK,
         status.HTTP_201_CREATED,
         status.HTTP_202_ACCEPTED,
@@ -66,3 +67,45 @@ def test_get_store_on_statuses_not_specified():
         status.HTTP_206_PARTIAL_CONTENT,
         status.HTTP_207_MULTI_STATUS,
     ]
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={}
+)
+def test_get_lock_class_default():
+    assert utils.get_lock_class() is storage.MemoryKeyStorage
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'CLASS': 'idempotency_key.storage.CacheKeyStorage'}}
+)
+def test_get_lock_class_default():
+    assert utils.get_lock_class() is storage.CacheKeyStorage
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={}
+)
+def test_get_lock_timeout_default():
+    assert utils.get_lock_timeout() == 0.1
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'TIMEOUT': 1.8}}
+)
+def test_get_lock_timeout_default():
+    assert utils.get_lock_timeout() == 1.8
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={}
+)
+def test_get_lock_enable_default():
+    assert utils.get_lock_enable() is True
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'ENABLE': False}}
+)
+def test_get_lock_enable_default():
+    assert utils.get_lock_enable() is False

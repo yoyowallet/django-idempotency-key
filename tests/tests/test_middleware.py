@@ -361,7 +361,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
 
     @override_settings(
-        IDEMPOTENCY_KEY={'ENABLE_LOCK': False},
+        IDEMPOTENCY_KEY={'LOCK': {'ENABLE': False}},
     )
     def test_no_locking_on_store(self, client):
         voucher_data = {
