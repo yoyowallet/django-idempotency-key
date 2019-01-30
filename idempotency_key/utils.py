@@ -32,6 +32,11 @@ def get_cache_name():
     return idkey_settings.get('CACHE_NAME', 'default')
 
 
+def get_lock_class():
+    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
+    return module_loading.import_string(idkey_settings.get('LOCK_CLASS', 'idempotency_key.locks.ThreadLock'))
+
+
 def get_lock_timeout():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
     return idkey_settings.get('LOCKING_TIMEOUT', 0.1)  # default to 100ms
