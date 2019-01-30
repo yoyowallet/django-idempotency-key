@@ -103,10 +103,14 @@ IDEMPOTENCY_KEY = {
     # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
     'LOCK': {    
         # Specify the key object locking class to be used for locking access to the cache storage object.
-        # If not specified then defaults to 'idempotency_key.locks.SingleProcessLock'
-        'CLASS': 'idempotency_key.locks.SingleProcessLock',
+        # If not specified then defaults to 'idempotency_key.locks.ThreadLock'
+        'CLASS': 'idempotency_key.locks.ThreadLock',
     
-        # The unique name to be used accross processes for the lock. Only used by the MultiProcessLock class
+        # Location of the Redis server if MultiProcessRedisLock is used otherwise this is ignored.
+        # The host name can be specified or both the host name and the port separated by a colon ':'        
+        'LOCATION': 'localhost:6379'
+    
+        # The unique name to be used accross processes for the lock. Only used by the MultiProcessRedisLock class
         'NAME': 'MyLock',
         
         # The maximum time to live for the lock. If a lock is given and is never released this timeout forces the release

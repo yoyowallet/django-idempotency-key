@@ -1,4 +1,5 @@
 from django.test import override_settings
+import pytest
 
 from idempotency_key import status
 from idempotency_key import storage
@@ -135,3 +136,43 @@ def test_get_lock_name_default():
 )
 def test_get_lock_name_default():
     assert utils.get_lock_name() == 'testname'
+
+
+def test_get_lock_location_default():
+    host, port = utils.get_lock_location()
+    assert host == 'localhost'
+    assert port == 6379
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': 'testname'}}
+)
+def test_get_lock_location_only_host():
+    host, port = utils.get_lock_location()
+    assert host == 'testname'
+    assert port == 6379
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': 'testname:1234'}}
+)
+def test_get_lock_location_host_and_port():
+    host, port = utils.get_lock_location()
+    assert host == 'testname'
+    assert port == 1234
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': None}}
+)
+def test_get_lock_location_cannot_be_none():
+    with pytest.raises(ValueError):
+        utils.get_lock_location()
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': ''}}
+)
+def test_get_lock_location_cannot_be_empty_string():
+    with pytest.raises(ValueError):
+        utils.get_lock_location()
