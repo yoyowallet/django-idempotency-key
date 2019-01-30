@@ -35,7 +35,7 @@ def get_cache_name():
 def get_lock_class():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
     lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
-    return module_loading.import_string(lock_settings.get('CLASS', 'idempotency_key.locks.SingleProcessLock'))
+    return module_loading.import_string(lock_settings.get('CLASS', 'idempotency_key.locks.ThreadLock'))
 
 
 def get_lock_timeout():
