@@ -137,3 +137,27 @@ def test_get_lock_name_default():
 )
 def test_get_lock_name_default():
     assert utils.get_lock_name() == 'testname'
+
+
+def test_get_lock_location_default():
+    host, port = utils.get_lock_location()
+    assert host == 'localhost'
+    assert port == 6379
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': 'testname'}}
+)
+def test_get_lock_location_only_host():
+    host, port = utils.get_lock_location()
+    assert host == 'testname'
+    assert port == 6379
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': 'testname:1234'}}
+)
+def test_get_lock_location_host_and_port():
+    host, port = utils.get_lock_location()
+    assert host == 'testname'
+    assert port == 1234
