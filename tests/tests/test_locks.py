@@ -2,7 +2,7 @@ from idempotency_key import locks
 
 
 def test_single_thread_lock():
-    obj = locks.SingleProcessLock()
+    obj = locks.ThreadLock()
     assert obj.acquire() is True
     assert obj.acquire() is False
     obj.release()
