@@ -14,11 +14,19 @@ from functools import wraps
 
 
 def idempotency_key(*args, cache_name=None):
+    """
+    Allows an optional cache name to be specified so that different cache settings can be used on a per-view function
+    basis.
+    :param args: optioanl arguments. This can contain the view function object if cache_name is not specified
+    :param cache_name: The name of the cache to use from the settings file under CACHES={...}
+    :return: wrapped function
+    """
     def _idempotency_key(view_func):
         """
         Mark a view function as requiring idempotency key protection but the view should control the response.
         """
 
+        @wraps(view_func)
         def wrapped_view(*args, **kwargs):
             return view_func(*args, **kwargs)
 
@@ -27,8 +35,12 @@ def idempotency_key(*args, cache_name=None):
             wrapped_view.idempotency_key_cache_name = cache_name
         return wraps(view_func)(wrapped_view)
 
+    # if there is an argument passed and it is a callable then this will be the view function object so pass it to
+    # the wrapper
     if len(args) > 0 and callable(args[0]):
         return _idempotency_key(args[0])
+
+    # otherwise just return the wrapper object
     return _idempotency_key
 
 
