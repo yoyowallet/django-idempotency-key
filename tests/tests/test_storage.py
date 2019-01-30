@@ -23,9 +23,20 @@ def test_memory_storage_retrieve():
     assert value == 'value'
 
 
+def test_memory_storage_cache_name_not_present():
+    cache_name = 'default'
+    obj = MemoryKeyStorage()
+    key_exists, value = obj.retrieve_data(cache_name, 'key')
+    assert key_exists is False
+    assert value is None
+
+
 def test_memory_storage_retrieve_no_key():
     cache_name = 'default'
     obj = MemoryKeyStorage()
+    # This creates a cache with name default and adds a dummy key:value pair
+    obj.store_data(cache_name, 'somekey', None)
+    # now try to get a key that does not exist
     key_exists, value = obj.retrieve_data(cache_name, 'key')
     assert key_exists is False
     assert value is None

@@ -42,10 +42,7 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
 
     def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
         the_cache = self.idempotency_key_cache_data.get(cache_name)
-        if the_cache is None:
-            return False, None
-
-        if encoded_key in the_cache.keys():
+        if the_cache and encoded_key in the_cache.keys():
             return True, the_cache[encoded_key]
 
         return False, None
