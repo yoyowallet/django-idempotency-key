@@ -86,7 +86,7 @@ class IdempotencyKeyMiddleware:
 
     def generate_response(self, request, encoded_key, lock=None):
         if lock is None:
-            lock = utils.get_enable_lock()
+            lock = utils.get_lock_enable()
 
         if not lock:
             return self.perform_generate_response(request, encoded_key)

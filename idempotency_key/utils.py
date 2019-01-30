@@ -34,17 +34,20 @@ def get_cache_name():
 
 def get_lock_class():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return module_loading.import_string(idkey_settings.get('LOCK_CLASS', 'idempotency_key.locks.ThreadLock'))
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
+    return module_loading.import_string(lock_settings.get('CLASS', 'idempotency_key.locks.ThreadLock'))
 
 
 def get_lock_timeout():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return idkey_settings.get('LOCKING_TIMEOUT', 0.1)  # default to 100ms
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
+    return lock_settings.get('TIMEOUT', 0.1)  # default to 100ms
 
 
-def get_enable_lock():
+def get_lock_enable():
     idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    return idkey_settings.get('ENABLE_LOCK', True)
+    lock_settings = idkey_settings['LOCK'] if 'LOCK' in idkey_settings else dict()
+    return lock_settings.get('ENABLE', True)
 
 
 def get_store_on_statuses():

@@ -81,17 +81,7 @@ IDEMPOTENCY_KEY = {
     
     # Name of the django cache configuration to use for the CacheStorageKey storage class
     'CACHE_NAME': 'default',
-    
-    # The use of a lock around the storage object so that only one thread at a time can access it.
-    # By default this is set to true. WARNING: setting this to false may allow duplicate calls to occur if the timing 
-    # is right. 
-    'ENABLE_LOCK': True,
-    
-    # If the ENABLE_LOCK setting is True above then this represents the timeout (in seconds as a floating point number) 
-    # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED 
-    # response.
-    'LOCKING_TIMEOUT': 0.1,
-    
+       
     # When the response is to be stored you have the option of deciding when this happens based on the responses
     # status code. If the response status code matches one of the statuses below then it will be stored.
     # The statuses below are the defaults used if this setting is not specified.
@@ -105,5 +95,24 @@ IDEMPOTENCY_KEY = {
         status.HTTP_206_PARTIAL_CONTENT,
         status.HTTP_207_MULTI_STATUS,
     ]
+
+    # The following settings deal with the process/thread lock that can be placed around the cache storage object
+    # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
+    'LOCK': {    
+        # Specify the key object locking class to be used for locking access to the cache storage object.
+        # If not specified then defaults to 'idempotency_key.locks.SingleProcessLock'
+        'CLASS': 'idempotency_key.locks.SingleProcessLock',
+    
+        # The use of a lock around the storage object so that only one thread at a time can access it.
+        # By default this is set to true. WARNING: setting this to false may allow duplicate calls to occur if the timing 
+        # is right. 
+        'ENABLE': True,
+        
+        # If the ENABLE_LOCK setting is True above then this represents the timeout (in seconds as a floating point number) 
+        # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED 
+        # response.
+        'TIMEOUT': 0.1,
+    }
+
 }
 ```
