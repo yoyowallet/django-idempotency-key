@@ -1,7 +1,7 @@
 import abc
 import threading
 
-from redis import StrictRedis
+from redis import Redis
 
 from idempotency_key import utils
 
@@ -34,11 +34,15 @@ class MultiProcessRedisLock(IdempotencyKeyLock):
     """
     Should be used if a lock is required across processes. Not that this class uses Redis in order to perform the lock.
     """
-    storage_lock = StrictRedis().lock(
-        name=utils.get_lock_name(),
-        timeout=utils.get_lock_time_to_live(),  # Time before lock is forcefully released.
-        blocking_timeout=utils.get_lock_timeout(),
-    )
+
+    def __init__(self):
+        host, port = utils.get_lock_location()
+        self.redis_obj = Redis(host=host, port=port, )
+        self.storage_lock = self.redis_obj.lock(
+            name=utils.get_lock_name(),
+            timeout=utils.get_lock_time_to_live(),  # Time before lock is forcefully released.
+            blocking_timeout=utils.get_lock_timeout(),
+        )
 
     def acquire(self, *args, **kwargs) -> bool:
         return self.storage_lock.acquire()

@@ -103,6 +103,10 @@ IDEMPOTENCY_KEY = {
         # If not specified then defaults to 'idempotency_key.locks.SingleProcessLock'
         'CLASS': 'idempotency_key.locks.SingleProcessLock',
     
+        # Location of the Redis server if MultiProcessRedisLock is used otherwise this is ignored.
+        # The host name can be specified or both the host name and the port separated by a colon ':'        
+        'LOCATION': 'localhost:6379'
+    
         # The unique name to be used accross processes for the lock. Only used by the MultiProcessRedisLock class
         'NAME': 'MyLock',
         

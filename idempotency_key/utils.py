@@ -44,6 +44,16 @@ def get_lock_class():
     return module_loading.import_string(get_lock_settings().get('CLASS', 'idempotency_key.locks.ThreadLock'))
 
 
+def get_lock_location():
+    location = get_lock_settings().get('LOCATION', 'localhost:6379').split(':')
+    if location is None or len(location) == 0:
+        raise ValueError('Redis server location is invalid', location)
+
+    host = location[0]
+    port = int(location[1]) if len(location) >= 2 else 6379
+    return host, port
+
+
 def get_lock_timeout():
     return get_lock_settings().get('TIMEOUT', 0.1)  # default to 100ms
 
