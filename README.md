@@ -66,10 +66,6 @@ The following settings can be used to modify the behaviour of the idempotency ke
 from idempotency_key import status
 
 IDEMPOTENCY_KEY = {
-    # Specify the storage class to be used for idempotency keys
-    # If not specified then defaults to 'idempotency_key.storage.MemoryKeyStorage'
-    'STORAGE_CLASS': 'idempotency_key.storage.MemoryKeyStorage',
-
     # Specify the key encoder class to be used for idempotency keys.
     # If not specified then defaults to 'idempotency_key.encoders.BasicKeyEncoder'
     'ENCODER_CLASS': 'idempotency_key.encoders.BasicKeyEncoder',
@@ -78,23 +74,30 @@ IDEMPOTENCY_KEY = {
     # If not specified this defaults to HTTP_409_CONFLICT
     # If set to None then the original request's status code is used.
     'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT,
-    
-    # Name of the django cache configuration to use for the CacheStorageKey storage class
-    'CACHE_NAME': 'default',
-       
-    # When the response is to be stored you have the option of deciding when this happens based on the responses
-    # status code. If the response status code matches one of the statuses below then it will be stored.
-    # The statuses below are the defaults used if this setting is not specified.
-    'STORE_ON_STATUSES': [
-        status.HTTP_200_OK,
-        status.HTTP_201_CREATED,
-        status.HTTP_202_ACCEPTED,
-        status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
-        status.HTTP_204_NO_CONTENT,
-        status.HTTP_205_RESET_CONTENT,
-        status.HTTP_206_PARTIAL_CONTENT,
-        status.HTTP_207_MULTI_STATUS,
-    ]
+
+    'STORAGE': {
+        # Specify the storage class to be used for idempotency keys
+        # If not specified then defaults to 'idempotency_key.storage.MemoryKeyStorage'
+        'CLASS': 'idempotency_key.storage.MemoryKeyStorage',
+
+        # Name of the django cache configuration to use for the CacheStorageKey storage class.
+        # This can be overriden using the @idempotency_key(cache_name='MyCacheName') view/viewset function decorator.
+        'CACHE_NAME': 'default',
+
+        # When the response is to be stored you have the option of deciding when this happens based on the responses
+        # status code. If the response status code matches one of the statuses below then it will be stored.
+        # The statuses below are the defaults used if this setting is not specified.
+        'STORE_ON_STATUSES': [
+            status.HTTP_200_OK,
+            status.HTTP_201_CREATED,
+            status.HTTP_202_ACCEPTED,
+            status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            status.HTTP_204_NO_CONTENT,
+            status.HTTP_205_RESET_CONTENT,
+            status.HTTP_206_PARTIAL_CONTENT,
+            status.HTTP_207_MULTI_STATUS,
+        ]
+    }
 
     # The following settings deal with the process/thread lock that can be placed around the cache storage object
     # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
