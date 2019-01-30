@@ -26,20 +26,22 @@ def get_conflict_code():
     return get_idempotency_key_settings().get('CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
 
 
+def get_storage_settings():
+    return get_idempotency_key_settings().get('STORAGE', dict())
+
+
 def get_storage_class():
-    return module_loading.import_string(get_idempotency_key_settings().get(
-        'STORAGE_CLASS', 'idempotency_key.storage.MemoryKeyStorage')
+    return module_loading.import_string(get_storage_settings().get(
+        'CLASS', 'idempotency_key.storage.MemoryKeyStorage')
     )
 
+
 def get_storage_cache_name():
-    storage_settings = get_idempotency_key_settings().get('STORAGE', dict())
-    return storage_settings.get('CACHE_NAME', 'default')
+    return get_storage_settings().get('CACHE_NAME', 'default')
 
 
 def get_storage_store_on_statuses():
-    idkey_settings = getattr(settings, 'IDEMPOTENCY_KEY', dict())
-    storage_settings = idkey_settings.get('STORAGE', dict())
-    return storage_settings.get(
+    return get_storage_settings().get(
         'STORE_ON_STATUSES', [
             status.HTTP_200_OK,
             status.HTTP_201_CREATED,
@@ -51,8 +53,6 @@ def get_storage_store_on_statuses():
             status.HTTP_207_MULTI_STATUS,
         ]
     )
-def get_cache_name():
-    return get_idempotency_key_settings().get('CACHE_NAME', 'default')
 
 
 def get_lock_settings():
