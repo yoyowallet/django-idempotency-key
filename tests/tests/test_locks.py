@@ -11,7 +11,7 @@ def test_single_thread_lock():
 
 
 def test_multi_process_lock():
-    obj = locks.MultiProcessLock()
+    obj = locks.MultiProcessRedisLock()
     assert obj.acquire() is True
     assert obj.acquire() is False
     obj.release()

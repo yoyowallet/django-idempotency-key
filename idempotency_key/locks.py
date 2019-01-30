@@ -31,7 +31,7 @@ class ThreadLock(IdempotencyKeyLock):
         self.storage_lock.release()
 
 
-class MultiProcessLock(IdempotencyKeyLock):
+class MultiProcessRedisLock(IdempotencyKeyLock):
     """
     Should be used if a lock is required across processes. Not that this class uses Redis in order to perform the lock.
     """

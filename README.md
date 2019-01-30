@@ -103,7 +103,7 @@ IDEMPOTENCY_KEY = {
         # If not specified then defaults to 'idempotency_key.locks.SingleProcessLock'
         'CLASS': 'idempotency_key.locks.SingleProcessLock',
     
-        # The unique name to be used accross processes for the lock. Only used by the MultiProcessLock class
+        # The unique name to be used accross processes for the lock. Only used by the MultiProcessRedisLock class
         'NAME': 'MyLock',
         
         # The maximum time to live for the lock. If a lock is given and is never released this timeout forces the release
