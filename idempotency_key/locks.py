@@ -17,7 +17,7 @@ class IdempotencyKeyLock(abc.ABC):
         raise NotImplementedError()
 
 
-class SingleProcessLock(IdempotencyKeyLock):
+class ThreadLock(IdempotencyKeyLock):
     """
     Should be used only when there is one process sharing the storage class resource.
     This uses the built-in python threading module to protect a resource.
