@@ -53,6 +53,10 @@ class MyViewSet(ViewSet):
     def create_manual_exempt_2(self, request, *args, **kwargs):
         return Response(status=201, data={})
 
+    @idempotency_key(cache_name='FiveMinuteCache')
+    def create_with_my_cache(self, request, *args, **kwargs):
+        return Response(status=201, data={})
+
 
 class MyModelViewSet(ViewSet):
     def create(self, request, *args, **kwargs):

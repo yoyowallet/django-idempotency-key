@@ -43,12 +43,10 @@ def test_idempotency_key_response_object():
 
 
 @override_settings(
-    IDEMPOTENCY_KEY={
-        'STORE_ON_STATUSES': [status.HTTP_200_OK]
-    }
+    IDEMPOTENCY_KEY={'STORAGE': {'STORE_ON_STATUSES': [status.HTTP_200_OK]}, }
 )
 def test_get_store_on_statuses_default():
-    assert utils.get_store_on_statuses() == [
+    assert utils.get_storage_store_on_statuses() == [
         status.HTTP_200_OK
     ]
 
@@ -57,7 +55,7 @@ def test_get_store_on_statuses_default():
     IDEMPOTENCY_KEY={}
 )
 def test_get_store_on_statuses_not_specified():
-    assert utils.get_store_on_statuses() == [
+    assert utils.get_storage_store_on_statuses() == [
         status.HTTP_200_OK,
         status.HTTP_201_CREATED,
         status.HTTP_202_ACCEPTED,

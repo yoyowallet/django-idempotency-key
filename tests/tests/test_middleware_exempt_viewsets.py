@@ -1,6 +1,6 @@
 from functools import wraps
 
-from django.core.cache import cache
+from django.core.cache import cache, InvalidCacheBackendError, caches
 from django.test import modify_settings, override_settings
 import pytest
 
@@ -28,7 +28,7 @@ class TestMiddlewareExemptViewSets:
         name: '/viewsets/{}/'.format(name) for name in
         ['get', 'create', 'create-exempt', 'create-no-decorators', 'create-manual', 'create-exempt-test-1',
          'create-exempt-test-2', 'create-manual-exempt-1', 'create-manual-exempt-2', 'create-nested-decorator',
-         'create-nested-decorator-exempt']
+         'create-nested-decorator-exempt', 'create-with-my-cache']
     }
 
     def test_get_exempt(self, client):
@@ -195,9 +195,7 @@ class TestMiddlewareExemptViewSets:
         assert request.idempotency_key_encoded_key == '0000000000000000000000000000000000000000000000000000000000000000'
 
     @override_settings(
-        IDEMPOTENCY_KEY={
-            'STORAGE_CLASS': 'tests.tests.test_middleware.MyStorage'
-        }
+        IDEMPOTENCY_KEY={'STORAGE': {'CLASS': 'tests.tests.test_middleware.MyStorage'}, }
     )
     def test_middleware_custom_storage(self, client):
         """
@@ -330,7 +328,7 @@ class TestMiddlewareExemptViewSets:
         assert hasattr(request, 'idempotency_key_encoded_key') is False
 
     @override_settings(
-        IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_207_MULTI_STATUS]},
+        IDEMPOTENCY_KEY={'STORAGE': {'STORE_ON_STATUSES': [status.HTTP_207_MULTI_STATUS]}, },
     )
     def test_store_on_statuses_does_not_store(self, client):
         voucher_data = {
@@ -371,3 +369,93 @@ class TestMiddlewareExemptViewSets:
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+
+    @override_settings(
+        IDEMPOTENCY_KEY={
+            'STORAGE': {
+                'CLASS': 'idempotency_key.storage.CacheKeyStorage',
+                'CACHE_NAME': 'FiveMinuteCache',
+            },
+        },
+        CACHES={},
+    )
+    def test_middleware_invalid_cache_name(self, client):
+        """
+        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator where the cache name has not been configured under
+        settings.CACHE
+        """
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        with pytest.raises(InvalidCacheBackendError):
+            client.post(self.urls['create-with-my-cache'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+
+    @override_settings(
+        IDEMPOTENCY_KEY={
+            'STORAGE': {
+                'CLASS': 'idempotency_key.storage.CacheKeyStorage',
+                'CACHE_NAME': 'SevenDayCache',  # This should be overridden by the decorator
+            },
+        },
+    )
+    def test_middleware_cache_storage_using_custom_cache_name_on_decorator(self, client):
+        """
+        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator
+        """
+        caches['default'].clear()
+        caches['FiveMinuteCache'].clear()
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post(self.urls['create-with-my-cache'], voucher_data, secure=True,
+                               HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert status.HTTP_201_CREATED == response.status_code
+
+        response2 = client.post(self.urls['create-with-my-cache'], voucher_data, secure=True,
+                                HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_409_CONFLICT
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response2
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_encoded_key == '6c31a60e712161a06a4720b59d10b2a3443038ac5ccd56ee6a067ff55daf5149'
+        assert request.idempotency_key_cache_name == 'FiveMinuteCache'
+
+    @override_settings(
+        IDEMPOTENCY_KEY={
+            'STORAGE': {
+                'CLASS': 'idempotency_key.storage.CacheKeyStorage',
+                'CACHE_NAME': 'FiveMinuteCache',  # This should be overridden by the decorator
+            },
+        },
+    )
+    def test_middleware_storage_cache_name_provides_default_name(self, client):
+        """
+        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator
+        """
+        caches['FiveMinuteCache'].clear()
+        voucher_data = {
+            'id': 1,
+            'name': 'myvoucher0',
+            'internal_name': 'myvoucher0',
+        }
+
+        response = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        response2 = client.post(self.urls['create'], voucher_data, secure=True, HTTP_IDEMPOTENCY_KEY=self.the_key)
+        assert response2.status_code == status.HTTP_409_CONFLICT
+        request = response2.wsgi_request
+        assert request.idempotency_key_exists is True
+        assert request.idempotency_key_response == response2
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_cache_name == 'FiveMinuteCache'
