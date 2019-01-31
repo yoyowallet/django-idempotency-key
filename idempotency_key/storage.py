@@ -1,4 +1,5 @@
 import abc
+from collections import defaultdict
 import pickle
 from typing import Tuple
 
@@ -28,16 +29,24 @@ class IdempotencyKeyStorage(object):
         """
         raise NotImplementedError
 
+    @staticmethod
+    @abc.abstractmethod
+    def validate_storage(name: str):
+        """
+        Validate that the storage name exists. If the class is using django `CACHES` setting then this function ensures
+        that the cache is setup correctly in the settings file and will cause a failure at startup if it is not.
+        This function should raise an exception if the storage name cannot be validated.
+        :param name: The name of the storage.
+        """
+        raise NotImplementedError
+
 
 class MemoryKeyStorage(IdempotencyKeyStorage):
 
     def __init__(self):
-        self.idempotency_key_cache_data = dict()
+        self.idempotency_key_cache_data = defaultdict(dict)
 
     def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
-        if self.idempotency_key_cache_data.get(cache_name) is None:
-            self.idempotency_key_cache_data[cache_name] = dict()
-
         self.idempotency_key_cache_data[cache_name][encoded_key] = response
 
     def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
@@ -46,6 +55,10 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
             return True, the_cache[encoded_key]
 
         return False, None
+
+    @staticmethod
+    def validate_storage(name: str):
+        pass
 
 
 class CacheKeyStorage(IdempotencyKeyStorage):
@@ -60,3 +73,9 @@ class CacheKeyStorage(IdempotencyKeyStorage):
             return True, pickle.loads(str_response)
 
         return False, None
+
+    @staticmethod
+    def validate_storage(name: str):
+        # Check that the cache exists. If the cache is not found then an InvalidCacheBackendError is raised.
+        # Not that there is no get function on the caches object so we cannot perform a normal check.
+        caches[name]

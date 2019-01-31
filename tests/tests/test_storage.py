@@ -1,7 +1,8 @@
 import pickle
 
-from django.core.cache import caches
+from django.core.cache import caches, InvalidCacheBackendError
 from django.test import override_settings
+import pytest
 
 from idempotency_key.storage import MemoryKeyStorage, CacheKeyStorage
 
@@ -53,11 +54,28 @@ class TestDefaultCache:
     )
     def test_cache_storage_store_default_cache(self):
         obj = CacheKeyStorage()
-        obj.store_data('default', 'key', 'value')
+        cache_name = 'default'
+        obj.validate_storage(cache_name)
+        obj.store_data(cache_name, 'key', 'value')
 
-        cache = caches['default']
+        cache = caches[cache_name]
         assert 'key' in cache
         assert cache.get('key') == pickle.dumps('value')
+
+    @override_settings(
+        CACHES={
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                'LOCATION': 'a1394848-7dba-456b-93c5-5959bd293dc6',
+            }
+        }
+    )
+    def test_cache_storage_validation_failure(self):
+        obj = CacheKeyStorage()
+        cache_name = 'undefined_name'
+
+        with pytest.raises(InvalidCacheBackendError):
+            obj.validate_storage(cache_name)
 
 
 class TestNamedCache:
@@ -77,8 +95,10 @@ class TestNamedCache:
     )
     def test_cache_storage_store_named_cache(self):
         obj = CacheKeyStorage()
-        obj.store_data('FiveMinuteCache', 'key', 'value')
+        cache_name = 'FiveMinuteCache'
+        obj.validate_storage(cache_name)
+        obj.store_data(cache_name, 'key', 'value')
 
-        cache = caches['FiveMinuteCache']
+        cache = caches[cache_name]
         assert 'key' in cache
         assert cache.get('key') == pickle.dumps('value')
