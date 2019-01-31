@@ -19,7 +19,7 @@ setup(
     url='https://github.com/yoyowallet/django-idempotency-key',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Environment :: Web Environment'
+        'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: OS Independent',
