@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.conf import settings
 
 from idempotency_key import status
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -101,6 +102,7 @@ if REDIS_AVAILABLE:
     }
 else:
     import tempfile
+
     tempdir = tempfile.TemporaryDirectory()
 
     CACHES = {
@@ -109,6 +111,27 @@ else:
             'LOCATION': tempdir.name,
         }
     }
+
+CACHES.update(
+    {
+        "FiveMinuteCache": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "TIMEOUT": 5 * 60,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            },
+        },
+        "SevenDayCache": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "TIMEOUT": 7 * 24 * 60 * 60,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            },
+        },
+    }
+)
 
 # Default cache time to live is 30 minutes.
 DEFAULT_CACHE_TTL = 60 * 30
@@ -152,16 +175,20 @@ STATIC_URL = '/static/'
 
 # Idempotency Key
 IDEMPOTENCY_KEY = {
-    # Specify the storage class to be used for idempotency keys
-    'STORAGE_CLASS': 'idempotency_key.storage.MemoryKeyStorage',
 
     # Specify the key encoder class to be used for idempotency keys
     'ENCODER_CLASS': 'idempotency_key.encoders.BasicKeyEncoder',
 
-    # Set the response code on a conflict.
-    # If not specified this defaults to HTTP_409_CONFLICT
-    # If set to None then the original request's status code is used
-    'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT
+    'STORAGE': {
+        # Specify the storage class to be used for idempotency keys
+        'CLASS': 'idempotency_key.storage.MemoryKeyStorage',
+
+        # Set the response code on a conflict.
+        # If not specified this defaults to HTTP_409_CONFLICT
+        # If set to None then the original request's status code is used
+        'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT,
+    },
+
 }
 
 # djangorestframework

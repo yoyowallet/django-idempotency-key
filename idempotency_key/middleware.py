@@ -51,6 +51,7 @@ class IdempotencyKeyMiddleware:
         idempotency_key = getattr(callback, 'idempotency_key', None)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', False)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
+        idempotency_key_cache_name = getattr(callback, 'idempotency_key_cache_name', utils.get_storage_cache_name())
 
         if idempotency_key and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
@@ -64,10 +65,11 @@ class IdempotencyKeyMiddleware:
 
         request.idempotency_key_exempt = idempotency_key_exempt
         request.idempotency_key_manual = idempotency_key_manual
+        request.idempotency_key_cache_name = idempotency_key_cache_name
 
     def perform_generate_response(self, request, encoded_key):
         # Check if a response already exists for the encoded key
-        key_exists, response = self.storage.retrieve_data(encoded_key)
+        key_exists, response = self.storage.retrieve_data(request.idempotency_key_cache_name, encoded_key)
 
         # add the key exists result and the original request if it exists
         request.idempotency_key_exists = key_exists
@@ -161,8 +163,10 @@ class IdempotencyKeyMiddleware:
 
         if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             # If the response matches that given by the store_on_statuses function then store the data
-            if response.status_code in utils.get_store_on_statuses():
-                self.storage.store_data(request.idempotency_key_encoded_key, response)
+            if response.status_code in utils.get_storage_store_on_statuses():
+                self.storage.store_data(
+                    request.idempotency_key_cache_name, request.idempotency_key_encoded_key, response
+                )
 
         return response
 
@@ -189,6 +193,7 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         idempotency_key = getattr(callback, 'idempotency_key', False)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
+        idempotency_key_cache_name = getattr(callback, 'idempotency_key_cache_name', utils.get_storage_cache_name())
 
         if idempotency_key and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
@@ -205,3 +210,4 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         )
 
         request.idempotency_key_manual = idempotency_key_manual
+        request.idempotency_key_cache_name = idempotency_key_cache_name

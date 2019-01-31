@@ -5,6 +5,7 @@ from idempotency_key.middleware import IdempotencyKeyMiddleware
 def test_storage_when_locked_returns_423():
     class Request:
         idempotency_key_manual = False
+        idempotency_key_cache_name = 'default'
         pass
 
     request = Request()

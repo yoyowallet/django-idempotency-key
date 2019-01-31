@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^views/create-no-decorators/$', views.create_no_decorators),
     url(r'^views/create-manual-exempt-1/$', views.create_manual_exempt_1),
     url(r'^views/create-manual-exempt-2/$', views.create_manual_exempt_2),
+    url(r'^views/create-with-my-cache/$', views.create_with_my_cache),
 
     url(r'^viewsets/get/$', MyViewSet.as_view({'get': 'get'})),
     url(r'^viewsets/create/$', MyViewSet.as_view({'post': 'create'})),
@@ -42,7 +43,10 @@ urlpatterns = [
     url(r'^viewsets/create-no-decorators/$', MyViewSet.as_view({'post': 'create_no_decorators'})),
     url(r'^viewsets/create-manual-exempt-1/$', MyViewSet.as_view({'post': 'create_manual_exempt_1'})),
     url(r'^viewsets/create-manual-exempt-2/$', MyViewSet.as_view({'post': 'create_manual_exempt_2'})),
+    url(r'^viewsets/create-with-my-cache/$', MyViewSet.as_view({'post': 'create_with_my_cache'})),
+
     url(r'^viewsets/create-nested-decorator/$', MyViewSet2.as_view({'post': 'create'})),
+
     url(r'^viewsets/create-nested-decorator-exempt/$', MyViewSet2Exempt.as_view({'post': 'create'})),
 
 ]
