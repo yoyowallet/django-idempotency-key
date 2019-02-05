@@ -87,7 +87,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '80421fcccd0fcf080a80c3f06a392890daecbdbb1c69cd07392eaed9b759a850'
+        assert request.idempotency_key_encoded_key == '1c4bf5e1ea27f341eb8e310c349ad3c3dedabdcf54f1742737f728556867309b'
 
     def test_bad_request_no_key_specified(self, client):
         """
@@ -122,7 +122,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': None}
@@ -146,7 +146,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': status.HTTP_200_OK}
@@ -170,7 +170,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     def test_middleware_duplicate_request_manual_override(self, client):
         voucher_data = {
@@ -193,7 +193,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is True
-        assert request.idempotency_key_encoded_key == '06e770965417c19943861a9f718257702d182163f6798a79f0b4e2a33f3f2a48'
+        assert request.idempotency_key_encoded_key == 'b459278f612efbf9858116a94060e0482c011e9e475e91cf37098d73fac3c9b6'
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -247,7 +247,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response is None
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     def test_idempotency_key_decorator(self, client):
         voucher_data = {
@@ -268,7 +268,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     def test_idempotency_key_exempt_mutually_exclusive_1(self, client):
         with pytest.raises(DecoratorsMutuallyExclusiveError):
@@ -313,7 +313,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     @override_settings(
         IDEMPOTENCY_KEY={'STORAGE': {'STORE_ON_STATUSES': [status.HTTP_207_MULTI_STATUS]}, },
@@ -334,7 +334,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is False
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     @override_settings(
         IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_201_CREATED]},
@@ -356,7 +356,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     @override_settings(
         IDEMPOTENCY_KEY={'LOCK': {'ENABLE': False}},
@@ -377,7 +377,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -411,7 +411,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '380d507306731904a70650014cedaa4859ef38d9cdd4ff537dea410f2bee324d'
+        assert request.idempotency_key_encoded_key == '35216bd48550e06ed9de6508b56d4d9b05aa38631b8461bade54b5f160b64462'
         assert request.idempotency_key_cache_name == 'FiveMinuteCache'
 
     @override_settings(
@@ -443,5 +443,5 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == '1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d'
         assert request.idempotency_key_cache_name == 'FiveMinuteCache'

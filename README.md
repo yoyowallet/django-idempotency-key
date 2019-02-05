@@ -97,7 +97,7 @@ IDEMPOTENCY_KEY = {
             status.HTTP_206_PARTIAL_CONTENT,
             status.HTTP_207_MULTI_STATUS,
         ]
-    }
+    },
 
     # The following settings deal with the process/thread lock that can be placed around the cache storage object
     # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
@@ -108,7 +108,7 @@ IDEMPOTENCY_KEY = {
     
         # Location of the Redis server if MultiProcessRedisLock is used otherwise this is ignored.
         # The host name can be specified or both the host name and the port separated by a colon ':'        
-        'LOCATION': 'localhost:6379'
+        'LOCATION': 'localhost:6379',
     
         # The unique name to be used accross processes for the lock. Only used by the MultiProcessRedisLock class
         'NAME': 'MyLock',
@@ -126,7 +126,7 @@ IDEMPOTENCY_KEY = {
         # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED 
         # response.
         'TIMEOUT': 0.1,
-    }
+    },
 
 }
 ```

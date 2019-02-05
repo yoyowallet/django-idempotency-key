@@ -6,7 +6,7 @@ from django.test import modify_settings, override_settings
 import pytest
 
 from idempotency_key import status
-from idempotency_key.encoders import IdempotencyKeyEncoder
+from idempotency_key.encoders import IdempotencyKeyEncoder, BasicKeyEncoder
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from idempotency_key.storage import IdempotencyKeyStorage
 from tests.tests.utils import for_all_methods
@@ -88,7 +88,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '12965fd6967e3768b0220e2ae6fd5e7b920b0fce7248b09be4cc6cfe8d319f3d'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_bad_request_no_key_specified(self, client):
         """
@@ -123,7 +123,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': None}
@@ -147,7 +147,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': status.HTTP_200_OK}
@@ -171,7 +171,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_middleware_duplicate_request_manual_override(self, client):
         voucher_data = {
@@ -194,7 +194,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is True
-        assert request.idempotency_key_encoded_key == '022a4deb5bfcc846bbac37ae047f52219add8ccc354e557c9aa6bd8a33d66b94'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -248,7 +248,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response is None
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_idempotency_key_decorator(self, client):
         voucher_data = {
@@ -269,7 +269,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_idempotency_key_exempt_mutually_exclusive_1(self, client):
         with pytest.raises(DecoratorsMutuallyExclusiveError):
@@ -317,7 +317,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_nested_decorator(self, client):
         voucher_data = {
@@ -335,7 +335,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
-        assert request.idempotency_key_encoded_key == 'a11c925489ff44b7f4672ddc0b79d339b3f41067526968de7696e7a02e5e6689'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_nested_decorator_exempt(self, client):
         voucher_data = {
@@ -375,7 +375,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is False
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'STORAGE': {'STORE_ON_STATUSES': [status.HTTP_201_CREATED]}, },
@@ -397,7 +397,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -454,7 +454,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '6c31a60e712161a06a4720b59d10b2a3443038ac5ccd56ee6a067ff55daf5149'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
         assert request.idempotency_key_cache_name == 'FiveMinuteCache'
 
     @override_settings(
@@ -486,5 +486,5 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '814ed44a059114973f1cb334a542eb18a52923adc531d66b5e62479f29c2da6a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
         assert request.idempotency_key_cache_name == 'FiveMinuteCache'

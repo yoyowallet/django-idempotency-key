@@ -1,6 +1,5 @@
 import abc
 import hashlib
-import json
 
 from idempotency_key.exceptions import MissingIdempotencyKeyError
 
@@ -20,5 +19,5 @@ class BasicKeyEncoder(IdempotencyKeyEncoder):
         m.update(key.encode('UTF-8'))
         m.update(request.path_info.encode('UTF-8'))
         m.update(request.method.encode('UTF-8'))
-        m.update(json.dumps(request.POST).encode('UTF-8'))
+        m.update(request.body)
         return m.hexdigest()

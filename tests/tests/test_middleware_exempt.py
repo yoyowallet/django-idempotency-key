@@ -5,6 +5,7 @@ from django.test import modify_settings, override_settings
 import pytest
 
 from idempotency_key import status
+from idempotency_key.encoders import BasicKeyEncoder
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from tests.tests.utils import for_all_methods
 
@@ -98,7 +99,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': None}
@@ -121,7 +122,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'CONFLICT_STATUS_CODE': status.HTTP_200_OK}
@@ -144,7 +145,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_middleware_duplicate_request_manual_override(self, client):
         voucher_data = {
@@ -166,7 +167,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is True
-        assert request.idempotency_key_encoded_key == '06e770965417c19943861a9f718257702d182163f6798a79f0b4e2a33f3f2a48'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -218,7 +219,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is False
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_idempotency_key_decorator(self, client):
         voucher_data = {
@@ -238,7 +239,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     def test_idempotency_key_exempt_mutually_exclusive_1(self, client):
         with pytest.raises(DecoratorsMutuallyExclusiveError):
@@ -285,7 +286,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'STORAGE': {'STORE_ON_STATUSES': [status.HTTP_207_MULTI_STATUS]}, },
@@ -306,7 +307,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_exists is False
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={'STORE_ON_STATUSES': [status.HTTP_201_CREATED]},
@@ -328,7 +329,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
 
     @override_settings(
         IDEMPOTENCY_KEY={
@@ -362,7 +363,7 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == '380d507306731904a70650014cedaa4859ef38d9cdd4ff537dea410f2bee324d'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
         assert request.idempotency_key_cache_name == 'FiveMinuteCache'
 
     @override_settings(
@@ -394,5 +395,5 @@ class TestMiddlewareExempt:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
-        assert request.idempotency_key_encoded_key == 'f7a64a46c05113ce5828b8df7230c27e19e5934419c07b2feed9a52ba7bdbd5a'
+        assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
         assert request.idempotency_key_cache_name == 'FiveMinuteCache'

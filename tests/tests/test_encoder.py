@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from idempotency_key.encoders import BasicKeyEncoder
@@ -8,7 +10,7 @@ def test_basic_encoding():
     class Request:
         path_info = '/myURL/path/'
         method = 'POST'
-        POST = {'key': 'value'}
+        body = json.dumps({'key': 'value'}).encode("UTF-8")
 
     request = Request()
     obj = BasicKeyEncoder()
@@ -20,7 +22,7 @@ def test_basic_encoder_null_key():
     class Request:
         path_info = '/myURL/path/'
         method = 'POST'
-        POST = {'key': 'value'}
+        body = json.dumps({'key': 'value'}).encode("UTF-8")
 
     request = Request()
     obj = BasicKeyEncoder()
