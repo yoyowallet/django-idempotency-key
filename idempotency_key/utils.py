@@ -64,14 +64,7 @@ def get_lock_class():
 
 
 def get_lock_location():
-    location = get_lock_settings().get('LOCATION', 'localhost:6379')
-    if location is None or location == '':
-        raise ValueError('Redis server location is invalid', location)
-
-    location = location.split(':')
-    host = location[0]
-    port = int(location[1]) if len(location) >= 2 else 6379
-    return host, port
+    return get_lock_settings().get('LOCATION', 'Redis://localhost:6379/1')
 
 
 def get_lock_timeout():

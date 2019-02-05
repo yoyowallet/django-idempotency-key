@@ -36,8 +36,11 @@ class MultiProcessRedisLock(IdempotencyKeyLock):
     """
 
     def __init__(self):
-        host, port = utils.get_lock_location()
-        self.redis_obj = Redis(host=host, port=port, )
+        location = utils.get_lock_location()
+        if location is None or location == '':
+            raise ValueError('Redis server location must be set in the settings file.')
+
+        self.redis_obj = Redis.from_url(location)
         self.storage_lock = self.redis_obj.lock(
             name=utils.get_lock_name(),
             timeout=utils.get_lock_time_to_live(),  # Time before lock is forcefully released.

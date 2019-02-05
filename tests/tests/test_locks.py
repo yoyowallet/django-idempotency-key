@@ -1,4 +1,5 @@
 from django.test import override_settings
+import pytest
 
 from idempotency_key import locks
 
@@ -15,7 +16,7 @@ def test_single_thread_lock():
 @override_settings(
     IDEMPOTENCY_KEY={
         'LOCK': {
-            'LOCATION': 'localhost',
+            'LOCATION': 'Redis://localhost',
         }
     }
 )
@@ -31,7 +32,7 @@ def test_multi_process_lock_only_host():
 @override_settings(
     IDEMPOTENCY_KEY={
         'LOCK': {
-            'LOCATION': 'localhost:6379',
+            'LOCATION': 'Redis://localhost:6379/1',
         }
     }
 )
@@ -42,3 +43,27 @@ def test_multi_process_lock_host_and_port():
     obj.release()
     assert obj.acquire() is True
     obj.release()
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={
+        'LOCK': {
+            'LOCATION': '',
+        }
+    }
+)
+def test_multi_process_lock_empty_string_must_be_set():
+    with pytest.raises(ValueError):
+        locks.MultiProcessRedisLock()
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={
+        'LOCK': {
+            'LOCATION': None
+        }
+    }
+)
+def test_multi_process_lock_null_must_be_set():
+    with pytest.raises(ValueError):
+        locks.MultiProcessRedisLock()
