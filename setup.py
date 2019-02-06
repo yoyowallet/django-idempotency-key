@@ -7,7 +7,7 @@ with open('README.md') as f:
 
 setup(
     name='django-idempotency-key',
-    version='1.0.2',
+    version='1.0.3',
     author='Del Hyman-Jones',
     author_email='dev@yoyowallet.com',
     description='Django middleware for idempotency key support in view and viewset functions.',
