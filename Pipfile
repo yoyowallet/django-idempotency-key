@@ -20,7 +20,7 @@ redis = "*"
 django-redis = "*"
 
 [packages]
-django = "~=1.11"
+django = ">=1.11.19"
 patterns = "*"
 
 [requires]
