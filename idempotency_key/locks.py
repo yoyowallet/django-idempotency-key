@@ -1,14 +1,22 @@
+from __future__ import absolute_import, unicode_literals
 import abc
 import threading
+import six
+
+if six.PY2:
+    from .compat import Lock
+else:
+    from threading import Lock
 
 from redis import Redis
 
 from idempotency_key import utils
 
 
-class IdempotencyKeyLock(abc.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class IdempotencyKeyLock:
     @abc.abstractmethod
-    def acquire(self, *args, **kwargs) -> bool:
+    def acquire(self, *args, **kwargs):
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -21,9 +29,9 @@ class ThreadLock(IdempotencyKeyLock):
     Should be used only when there is one process sharing the storage class resource.
     This uses the built-in python threading module to protect a resource.
     """
-    storage_lock = threading.Lock()
+    storage_lock = Lock()
 
-    def acquire(self, *args, **kwargs) -> bool:
+    def acquire(self, *args, **kwargs):
         return self.storage_lock.acquire(blocking=True, timeout=utils.get_lock_timeout())
 
     def release(self):
@@ -47,7 +55,7 @@ class MultiProcessRedisLock(IdempotencyKeyLock):
             blocking_timeout=utils.get_lock_timeout(),
         )
 
-    def acquire(self, *args, **kwargs) -> bool:
+    def acquire(self, *args, **kwargs):
         return self.storage_lock.acquire()
 
     def release(self):

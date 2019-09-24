@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django.http import JsonResponse
 
 from idempotency_key import status
@@ -8,7 +10,7 @@ class MissingIdempotencyKeyError(Exception):
     def __init__(self, msg=None):
         if msg is None:
             msg = 'Idempotency key cannot be None.'
-        super().__init__(msg)
+        super(MissingIdempotencyKeyError, self).__init__(msg)
 
     """
     Raised when an idempotency key has not been specified

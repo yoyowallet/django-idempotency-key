@@ -1,7 +1,7 @@
+from __future__ import absolute_import, unicode_literals
 import abc
 from collections import defaultdict
 import pickle
-from typing import Tuple
 
 from django.core.cache import caches
 
@@ -9,7 +9,7 @@ from django.core.cache import caches
 class IdempotencyKeyStorage(object):
 
     @abc.abstractmethod
-    def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
+    def store_data(self, cache_name, encoded_key, response):
         """
         called when data should be stored in the storage medium
         :param cache_name: The name of the cache to use defined in settings under CACHES
@@ -20,7 +20,7 @@ class IdempotencyKeyStorage(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name, encoded_key):
         """
         Retrieve data from the sore using the specified key.
         :param cache_name: The name of the cache to use defined in settings under CACHES
@@ -31,7 +31,7 @@ class IdempotencyKeyStorage(object):
 
     @staticmethod
     @abc.abstractmethod
-    def validate_storage(name: str):
+    def validate_storage(name):
         """
         Validate that the storage name exists. If the class is using django `CACHES` setting then this function ensures
         that the cache is setup correctly in the settings file and will cause a failure at startup if it is not.
@@ -46,10 +46,10 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
     def __init__(self):
         self.idempotency_key_cache_data = defaultdict(dict)
 
-    def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
+    def store_data(self, cache_name, encoded_key, response):
         self.idempotency_key_cache_data[cache_name][encoded_key] = response
 
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name, encoded_key):
         the_cache = self.idempotency_key_cache_data.get(cache_name)
         if the_cache and encoded_key in the_cache.keys():
             return True, the_cache[encoded_key]
@@ -57,17 +57,17 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
         return False, None
 
     @staticmethod
-    def validate_storage(name: str):
+    def validate_storage(name):
         pass
 
 
 class CacheKeyStorage(IdempotencyKeyStorage):
 
-    def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
+    def store_data(self, cache_name, encoded_key, response):
         str_response = pickle.dumps(response)
         caches[cache_name].set(encoded_key, str_response)
 
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name, encoded_key):
         if encoded_key in caches[cache_name]:
             str_response = caches[cache_name].get(encoded_key)
             return True, pickle.loads(str_response)
@@ -75,7 +75,7 @@ class CacheKeyStorage(IdempotencyKeyStorage):
         return False, None
 
     @staticmethod
-    def validate_storage(name: str):
+    def validate_storage(name):
         # Check that the cache exists. If the cache is not found then an InvalidCacheBackendError is raised.
         # Not that there is no get function on the caches object so we cannot perform a normal check.
         caches[name]

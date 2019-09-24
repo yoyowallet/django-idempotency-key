@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 from functools import wraps
 
 from idempotency_key import utils
@@ -15,7 +16,7 @@ from idempotency_key import utils
 #   ...
 
 
-def idempotency_key(*args, cache_name=None):
+def idempotency_key(*args, **kwargs):
     """
     Allows an optional cache name to be specified so that different cache settings can be used on a per-view function
     basis.
@@ -23,6 +24,7 @@ def idempotency_key(*args, cache_name=None):
     :param cache_name: The name of the cache to use from the settings file under CACHES={...}
     :return: wrapped function
     """
+    cache_name = kwargs.get('cache_name')
 
     def _idempotency_key(view_func):
         """

@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 import logging
 
 from django.core.exceptions import ImproperlyConfigured
@@ -9,14 +10,14 @@ from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError, bad_req
 logger = logging.getLogger('django-idempotency-key.idempotency_key.middleware')
 
 
-class IdempotencyKeyMiddleware:
+class IdempotencyKeyMiddleware(object):
     """
     This middleware class assumes that all non-safe HTTP methods will require an idempotency key to be specified in
     the header.
     View functions can opt-out using the @idempotency_key_exempt decorator
     """
 
-    def __init__(self, get_response=None):
+    def __init__(self, get_response):
         self.get_response = get_response
         self.storage = utils.get_storage_class()()
         self.encoder = utils.get_encoder_class()()
