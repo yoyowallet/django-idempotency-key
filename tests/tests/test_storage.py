@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import pickle
 
 from django.core.cache import caches, InvalidCacheBackendError

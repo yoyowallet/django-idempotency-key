@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from functools import wraps
 
 from django.test import modify_settings

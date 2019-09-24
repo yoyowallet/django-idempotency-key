@@ -1,15 +1,15 @@
+from __future__ import unicode_literals
 from idempotency_key import status
 from idempotency_key.middleware import IdempotencyKeyMiddleware
 
 
 def test_storage_when_locked_returns_423():
-    class Request:
+    class Request(object):
         idempotency_key_manual = False
         idempotency_key_cache_name = 'default'
-        pass
 
     request = Request()
-    obj = IdempotencyKeyMiddleware()
+    obj = IdempotencyKeyMiddleware(None)
     lock = obj.storage_lock.acquire(blocking=True, timeout=-1)
     assert lock is True
 

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -65,13 +66,13 @@ class MyModelViewSet(ViewSet):
 
 class MyMixin(MyModelViewSet):
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        return super(MyMixin, self).create(request, *args, **kwargs)
 
 
 class ViewSetBase(MyModelViewSet):
     @idempotency_key
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        return super(ViewSetBase, self).create(request, *args, **kwargs)
 
 
 # NOTE: the base classes must be specified in the correct order where the decorators appear in the first base class
@@ -83,7 +84,7 @@ class MyViewSet2(ViewSetBase, MyMixin):
 class ViewSetBaseExempt(MyModelViewSet):
     @idempotency_key_exempt
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        return super(ViewSetBaseExempt, self).create(request, *args, **kwargs)
 
 
 # NOTE: the base classes must be specified in the correct order where the decorators appear in the first base class
