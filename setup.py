@@ -7,7 +7,7 @@ with open('README.md') as f:
 
 setup(
     name='django-idempotency-key',
-    version='1.0.3',
+    version='1.0.3+innoteq1',
     author='Del Hyman-Jones',
     author_email='dev@yoyowallet.com',
     description='Django middleware for idempotency key support in view and viewset functions.',
@@ -28,13 +28,16 @@ setup(
         'Framework :: Django :: 1.11',
         'Framework :: Django :: 2.0',
         'Framework :: Django :: 2.1',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
     install_requires=[
-        'Django>=1.11'
+        'Django>=1.11',
+        'six',
+        'backports.tempfile',
     ],
     project_urls={
         'Documentation': 'https://github.com/yoyowallet/django-idempotency-key/blob/master/README.md',
