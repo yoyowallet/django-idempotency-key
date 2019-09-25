@@ -26,6 +26,10 @@ def get_conflict_code():
     return get_idempotency_key_settings().get('CONFLICT_STATUS_CODE', status.HTTP_409_CONFLICT)
 
 
+def get_header_name():
+    return get_idempotency_key_settings().get('HEADER', 'HTTP_IDEMPOTENCY_KEY')
+
+
 def get_storage_settings():
     return get_idempotency_key_settings().get('STORAGE', dict())
 

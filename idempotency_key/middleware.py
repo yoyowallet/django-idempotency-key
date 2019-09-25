@@ -103,7 +103,7 @@ class IdempotencyKeyMiddleware:
             self.storage_lock.release()
 
     def process_request(self, request):
-        key = request.META.get('HTTP_IDEMPOTENCY_KEY')
+        key = request.META.get(utils.get_header_name())
         if key is not None:
             request.META['IDEMPOTENCY_KEY'] = key
 

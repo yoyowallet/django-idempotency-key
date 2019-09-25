@@ -1,7 +1,7 @@
 [![Circle CI](https://circleci.com/gh/yoyowallet/django-idempotency-key/tree/master.png?style=badge)](https://circleci.com/gh/yoyowallet/django-idempotency-key) [![codecov.io](https://codecov.io/gh/yoyowallet/django-idempotency-key/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/yoyowallet/django-idempotency-key)
 
 ## Idempotency key Django middleware
-Middleware to Django that pulls out the idempotency key from the request header and will automatically return the previous response data if the idempotency key was already specified. 
+Middleware to Django that pulls out the idempotency key from the request header and will automatically return the previous response data if the idempotency key was already specified.
 There are two middleware classes which allow view functions to opt-in or opt-out individually depending on your needs.
 
 ## Installation
@@ -36,7 +36,7 @@ MIDDLEWARE = [
 There are three decorators available that control how idempotency keys work with your view function.
 
 ### @idempotency_key
-This will ensure that the specified view function uses idempotency keys and will expect the client to send the HTTP_IDEMPOTENCY_KEY (idempotency-key) header. 
+This will ensure that the specified view function uses idempotency keys and will expect the client to send the HTTP_IDEMPOTENCY_KEY (idempotency-key) header.
 
 **NOTE:** If the IdempotencyKeyMiddleware class is used then this decorator is redundant.
 
@@ -75,6 +75,10 @@ IDEMPOTENCY_KEY = {
     # If set to None then the original request's status code is used.
     'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT,
 
+    # Set custom idempotency header
+    # HTTP_IDEMPOTENCY_KEY is default.
+    'HEADER': 'HTTP_X_CUSTOM_IDEMPOTENCY_HEADER',
+
     'STORAGE': {
         # Specify the storage class to be used for idempotency keys
         # If not specified then defaults to 'idempotency_key.storage.MemoryKeyStorage'
@@ -101,29 +105,29 @@ IDEMPOTENCY_KEY = {
 
     # The following settings deal with the process/thread lock that can be placed around the cache storage object
     # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
-    'LOCK': {    
+    'LOCK': {
         # Specify the key object locking class to be used for locking access to the cache storage object.
         # If not specified then defaults to 'idempotency_key.locks.ThreadLock'
         'CLASS': 'idempotency_key.locks.ThreadLock',
-    
+
         # Location of the Redis server if MultiProcessRedisLock is used otherwise this is ignored.
-        # The host name can be specified or both the host name and the port separated by a colon ':'        
+        # The host name can be specified or both the host name and the port separated by a colon ':'
         'LOCATION': 'localhost:6379',
-    
+
         # The unique name to be used accross processes for the lock. Only used by the MultiProcessRedisLock class
         'NAME': 'MyLock',
-        
+
         # The maximum time to live for the lock. If a lock is given and is never released this timeout forces the release
         # The lock time is in seconds and the default is None which means lock until it is manually released
         'TTL': None,
-    
+
         # The use of a lock around the storage object so that only one thread at a time can access it.
-        # By default this is set to true. WARNING: setting this to false may allow duplicate calls to occur if the timing 
-        # is right. 
+        # By default this is set to true. WARNING: setting this to false may allow duplicate calls to occur if the timing
+        # is right.
         'ENABLE': True,
-        
-        # If the ENABLE_LOCK setting is True above then this represents the timeout (in seconds as a floating point number) 
-        # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED 
+
+        # If the ENABLE_LOCK setting is True above then this represents the timeout (in seconds as a floating point number)
+        # to occur before the thread gives up waiting. If a timeout occurs the middleware will return a HTTP_423_LOCKED
         # response.
         'TIMEOUT': 0.1,
     },

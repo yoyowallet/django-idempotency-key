@@ -156,3 +156,14 @@ def test_get_lock_location_only_host():
 def test_get_lock_location_host_and_port():
     location = utils.get_lock_location()
     assert location == 'testname:1234'
+
+
+def test_get_default_header_name():
+    assert utils.get_header_name() == 'HTTP_IDEMPOTENCY_KEY'
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={'HEADER': 'HTTP_X_IDEMPOTENCY_KEY', }
+)
+def test_get_custom_header_name():
+    assert utils.get_header_name() == 'HTTP_X_IDEMPOTENCY_KEY'
