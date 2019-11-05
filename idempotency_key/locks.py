@@ -1,9 +1,10 @@
 import abc
 import threading
 
-from redis import Redis
-
 from idempotency_key import utils
+
+if utils.get_lock_settings().get('CLASS', 'idempotency_key.locks.ThreadLock') == "idempotency_key.locks.MultiProcessRedisLock":
+    from redis import Redis
 
 
 class IdempotencyKeyLock(abc.ABC):
