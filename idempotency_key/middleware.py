@@ -196,6 +196,7 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
                 callback = getattr(callback.cls, func_name, callback)
 
         idempotency_key = getattr(callback, 'idempotency_key', False)
+        idempotency_key_optional = getattr(callback, 'idempotency_key_optional', False)
         idempotency_key_exempt = getattr(callback, 'idempotency_key_exempt', None)
         idempotency_key_manual = getattr(callback, 'idempotency_key_manual', False)
         idempotency_key_cache_name = getattr(callback, 'idempotency_key_cache_name', utils.get_storage_cache_name())
@@ -210,9 +211,9 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
                 '@idempotency_key_manual and @idempotency_key_exempt decorators are mutually exclusive for '
                 'function "{}"'.format(func_name))
 
+        request.idempotency_key_optional = idempotency_key_optional
         request.idempotency_key_exempt = idempotency_key_exempt or (
                 idempotency_key_exempt is None and not idempotency_key_manual and not idempotency_key
         )
-
         request.idempotency_key_manual = idempotency_key_manual
         request.idempotency_key_cache_name = idempotency_key_cache_name
