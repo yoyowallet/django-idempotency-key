@@ -52,6 +52,7 @@ class IdempotencyKeyMiddleware:
             callback = getattr(callback.cls, func_name, callback)
 
         idempotency_key = getattr(callback, "idempotency_key", None)
+        idempotency_key_optional = getattr(callback, "idempotency_key_optional", False)
         idempotency_key_exempt = getattr(callback, "idempotency_key_exempt", False)
         idempotency_key_manual = getattr(callback, "idempotency_key_manual", False)
         idempotency_key_cache_name = getattr(
@@ -70,6 +71,7 @@ class IdempotencyKeyMiddleware:
                 'function "{}"'.format(func_name)
             )
 
+        request.idempotency_key_optional = idempotency_key_optional
         request.idempotency_key_exempt = idempotency_key_exempt
         request.idempotency_key_manual = idempotency_key_manual
         request.idempotency_key_cache_name = idempotency_key_cache_name
@@ -140,6 +142,8 @@ class IdempotencyKeyMiddleware:
 
         key = request.META.get("IDEMPOTENCY_KEY")
         if key is None:
+            if request.idempotency_key_optional:
+                return None
             return self._reject(
                 request,
                 "Idempotency key is required and was not specified in the header.",
