@@ -35,17 +35,19 @@ MIDDLEWARE = [
 ## Decorators
 There are three decorators available that control how idempotency keys work with your view function.
 
-### @idempotency_key
+### `@idempotency_key(optional=False)`
 This will ensure that the specified view function uses idempotency keys and will expect the client to send the HTTP_IDEMPOTENCY_KEY (idempotency-key) header. 
 
-**NOTE:** If the IdempotencyKeyMiddleware class is used then this decorator is redundant.
+When `optional=True`, the idempotency key header can be optional. If the idempotency key is missing, then the check will be skipped.
 
-### @idempotency_key_exempt
+**NOTE:** If the IdempotencyKeyMiddleware class is used then this decorator (with `optional=False`) is redundant.
+
+### `@idempotency_key_exempt`
 This will ensure that the specified view function is exempt from idempotency keys and multiple requests with the same data will run the view function every time.
 
 **NOTE:** If the ExemptIdempotencyKeyMiddleware class is used then this decorator is redundant.
 
-### @idempotency_key_manual
+### `@idempotency_key_manual`
 When specified the view function will dictate the response provided on a conflict. The decorator will set two variables on the request object that informs the user if the key exists in storage and what the response object was on the last call if the key exists.
 
 These two variables are defined as follows:
