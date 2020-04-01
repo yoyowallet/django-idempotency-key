@@ -36,6 +36,7 @@ urlpatterns = [
 
     url(r'^viewsets/get/$', MyViewSet.as_view({'get': 'get'})),
     url(r'^viewsets/create/$', MyViewSet.as_view({'post': 'create'})),
+    url(r'^viewsets/create-optional/$', MyViewSet.as_view({'post': 'create_optional'})),
     url(r'^viewsets/create-manual/$', MyViewSet.as_view({'post': 'create_manual'})),
     url(r'^viewsets/create-exempt/$', MyViewSet.as_view({'post': 'create_exempt'})),
     url(r'^viewsets/create-exempt-test-1/$', MyViewSet.as_view({'post': 'create_exempt_test_1'})),

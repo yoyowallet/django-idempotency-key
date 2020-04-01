@@ -46,9 +46,21 @@ class TestMiddlewareInclusive:
     the_key = '7495e32b-709b-4fae-bfd4-2497094bf3fd'
     urls = {
         name: '/viewsets/{}/'.format(name) for name in
-        ['get', 'create', 'create-exempt', 'create-no-decorators', 'create-manual', 'create-exempt-test-1',
-         'create-exempt-test-2', 'create-manual-exempt-1', 'create-manual-exempt-2', 'create-nested-decorator',
-         'create-nested-decorator-exempt', 'create-with-my-cache']
+        [
+            'get',
+            'create',
+            'create-optional',
+            'create-exempt',
+            'create-no-decorators',
+            'create-manual',
+            'create-exempt-test-1',
+            'create-exempt-test-2',
+            'create-manual-exempt-1',
+            'create-manual-exempt-2',
+            'create-nested-decorator',
+            'create-nested-decorator-exempt',
+            'create-with-my-cache',
+        ]
     }
 
     def test_get_exempt(self, client):
@@ -89,6 +101,12 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
         assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(request, self.the_key)
+
+    def test_post_optional(self, client):
+        response = client.post(self.urls['create-optional'], data={}, secure=True)
+        assert response.status_code == status.HTTP_201_CREATED
+        request = response.wsgi_request
+        assert request.idempotency_key_optional is True
 
     def test_bad_request_no_key_specified(self, client):
         """

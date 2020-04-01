@@ -24,6 +24,10 @@ class MyViewSet(ViewSet):
     def create(self, request, *args, **kwargs):
         return Response(status=201, data={})
 
+    @idempotency_key(optional=True)
+    def create_optional(self, request, *args, **kwargs):
+        return Response(status=201, data={})
+
     @idempotency_key_manual
     def create_manual(self, request, *args, **kwargs):
         if idempotency_key_exists(request):

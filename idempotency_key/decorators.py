@@ -15,11 +15,12 @@ from idempotency_key import utils
 #   ...
 
 
-def idempotency_key(*args, cache_name=None):
+def idempotency_key(*args, optional=False, cache_name=None):
     """
     Allows an optional cache name to be specified so that different cache settings can be used on a per-view function
     basis.
     :param args: optional arguments. This can contain the view function object if cache_name is not specified
+    :param optional: Mark idempotency key header as optional
     :param cache_name: The name of the cache to use from the settings file under CACHES={...}
     :return: wrapped function
     """
@@ -34,6 +35,7 @@ def idempotency_key(*args, cache_name=None):
             return view_func(*args, **kwargs)
 
         wrapped_view.idempotency_key = True
+        wrapped_view.idempotency_key_optional = optional
 
         if cache_name:
             wrapped_view.idempotency_key_cache_name = cache_name
