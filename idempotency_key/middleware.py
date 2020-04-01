@@ -129,6 +129,7 @@ class IdempotencyKeyMiddleware:
         key = request.META.get('IDEMPOTENCY_KEY')
         if key is None:
             if request.idempotency_key_optional:
+                request.idempotency_key_exempt = True
                 return None
             return self._reject(request, 'Idempotency key is required and was not specified in the header.')
 

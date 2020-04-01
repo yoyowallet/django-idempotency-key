@@ -107,6 +107,7 @@ class TestMiddlewareInclusive:
         assert response.status_code == status.HTTP_201_CREATED
         request = response.wsgi_request
         assert request.idempotency_key_optional is True
+        assert request.idempotency_key_exempt is True
 
     def test_bad_request_no_key_specified(self, client):
         """
