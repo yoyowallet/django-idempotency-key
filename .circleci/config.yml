@@ -8,8 +8,7 @@ jobs:
       - image: circleci/python:3.6
     steps:
       - checkout
-      - run: pip list
-      - run: pip install --no-cache-dir pipenv && pipenv install --dev
+      - run: pip install --no-cache-dir pipenv && pip list && pipenv install --dev
       - run: pip list
       - run: pipenv run -- make test
       #- codecov/upload:
