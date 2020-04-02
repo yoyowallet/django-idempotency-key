@@ -8,6 +8,7 @@ jobs:
       - image: circleci/python:3.6
     steps:
       - checkout
+      - run: sudo apt install python3-pip
       - run: pip install --no-cache-dir pipenv && pip list && pipenv install --dev
       - run: pip list
       - run: pipenv run -- make test
