@@ -18,9 +18,13 @@ django-debug-toolbar = "*"
 codecov = "*"
 redis = "*"
 django-redis = "*"
+black = "*"
 
 [packages]
 django = "==2.2.*"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
