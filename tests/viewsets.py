@@ -3,7 +3,11 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from idempotency_key.decorators import idempotency_key_exempt, idempotency_key, idempotency_key_manual
+from idempotency_key.decorators import (
+    idempotency_key_exempt,
+    idempotency_key,
+    idempotency_key_manual,
+)
 from idempotency_key.utils import idempotency_key_exists
 
 
@@ -11,14 +15,20 @@ class MyViewSet(ViewSet):
     renderer_classes = (JSONRenderer,)
 
     def get(self, request, *args, **kwargs):
-        return Response(status=200, data={'idempotency_key_exempt': request.idempotency_key_exempt})
+        return Response(
+            status=200, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+        )
 
     def create_no_decorators(self, request, *args, **kwargs):
-        return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
+        return Response(
+            status=201, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+        )
 
     @idempotency_key_exempt
     def create_exempt(self, request, *args, **kwargs):
-        return Response(status=201, data={'idempotency_key_exempt': request.idempotency_key_exempt})
+        return Response(
+            status=201, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+        )
 
     @idempotency_key
     def create(self, request, *args, **kwargs):
@@ -53,7 +63,7 @@ class MyViewSet(ViewSet):
     def create_manual_exempt_2(self, request, *args, **kwargs):
         return Response(status=201, data={})
 
-    @idempotency_key(cache_name='FiveMinuteCache')
+    @idempotency_key(cache_name="FiveMinuteCache")
     def create_with_my_cache(self, request, *args, **kwargs):
         return Response(status=201, data={})
 

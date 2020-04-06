@@ -21,10 +21,13 @@ class ThreadLock(IdempotencyKeyLock):
     Should be used only when there is one process sharing the storage class resource.
     This uses the built-in python threading module to protect a resource.
     """
+
     storage_lock = threading.Lock()
 
     def acquire(self, *args, **kwargs) -> bool:
-        return self.storage_lock.acquire(blocking=True, timeout=utils.get_lock_timeout())
+        return self.storage_lock.acquire(
+            blocking=True, timeout=utils.get_lock_timeout()
+        )
 
     def release(self):
         self.storage_lock.release()
@@ -37,8 +40,8 @@ class MultiProcessRedisLock(IdempotencyKeyLock):
 
     def __init__(self):
         location = utils.get_lock_location()
-        if location is None or location == '':
-            raise ValueError('Redis server location must be set in the settings file.')
+        if location is None or location == "":
+            raise ValueError("Redis server location must be set in the settings file.")
 
         self.redis_obj = Redis.from_url(location)
         self.storage_lock = self.redis_obj.lock(

@@ -7,7 +7,6 @@ from django.core.cache import caches
 
 
 class IdempotencyKeyStorage(object):
-
     @abc.abstractmethod
     def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
         """
@@ -42,7 +41,6 @@ class IdempotencyKeyStorage(object):
 
 
 class MemoryKeyStorage(IdempotencyKeyStorage):
-
     def __init__(self):
         self.idempotency_key_cache_data = defaultdict(dict)
 
@@ -62,7 +60,6 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
 
 
 class CacheKeyStorage(IdempotencyKeyStorage):
-
     def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
         str_response = pickle.dumps(response)
         caches[cache_name].set(encoded_key, str_response)
