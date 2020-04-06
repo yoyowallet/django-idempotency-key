@@ -42,13 +42,13 @@ def set_debug_toolbar_middleware_end(func):
 
 class TestDjangoDebugToolbar:
     """
-    There was an issue if django debug toolbar is specified before us in the
-    middleware chain then we ensure an ImproperlyConfigured exception is throw to warn
-    the user that idempotency keys will not work correctly.
-    There seems to be a specific package combination that causes this to occur
-    which can no longer be simulated so we just make sure here that the
-    ImproperlyConfigured exception is not thrown regardless of the django toolbar
-    position in the middleware.
+    There was an issue if django debug toolbar was specified before us in the
+    middleware chain then the idempotency code would be bypassed. The code was updated
+    so that an ImproperlyConfigured exception was throw to warn the user that
+    idempotency keys will not work correctly. This was an issue for Django 1.9 which is
+    no longer supported.
+    Now we just make sure that the ImproperlyConfigured exception is not thrown
+    regardless of the django toolbar position in the middleware.
     """
 
     urls = {name: "/views/{}/".format(name) for name in ["create"]}
