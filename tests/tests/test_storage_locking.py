@@ -17,6 +17,7 @@ def test_storage_when_locked_returns_423():
     assert response.status_code == status.HTTP_423_LOCKED
     obj.storage_lock.release()
 
-    # Now that the lock is open, running the function again should return None because no key will exist in the cache
+    # Now that the lock is open, running the function again should return None because
+    # no key will exist in the cache
     response = obj.generate_response(request, "mykey", lock=True)
     assert response is None

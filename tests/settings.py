@@ -67,9 +67,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ]
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "tests.wsgi.application"
@@ -136,11 +136,13 @@ CACHE_TTL = getattr(settings, "CACHE_TTL", DEFAULT_CACHE_TTL)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        )
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 # Internationalization
@@ -188,7 +190,7 @@ REST_FRAMEWORK = {
 from debug_toolbar.settings import PANELS_DEFAULTS
 
 DEBUG_TOOLBAR_PANELS = PANELS_DEFAULTS + [
-    "debug_toolbar.panels.profiling.ProfilingPanel",
+    "debug_toolbar.panels.profiling.ProfilingPanel"
 ]
 
 INTERNAL_IPS = ["127.0.0.1"]

@@ -81,8 +81,8 @@ class TestMiddlewareExempt:
 
     def test_bad_request_no_key_specified(self, client):
         """
-        POSTing to a view function that requires an idempotency key which is not specified in the header will cause a
-        400 BAD REQUEST to be generated.
+        POSTing to a view function that requires an idempotency key which is not
+        specified in the header will cause a 400 BAD REQUEST to be generated.
         """
         response = client.post(self.urls["create"], secure=True)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -92,11 +92,7 @@ class TestMiddlewareExempt:
 
     @override_settings(IDEMPOTENCY_KEY={})
     def test_middleware_duplicate_request(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -123,11 +119,7 @@ class TestMiddlewareExempt:
 
     @override_settings(IDEMPOTENCY_KEY={"CONFLICT_STATUS_CODE": None})
     def test_middleware_duplicate_request_use_original_status_code(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -154,11 +146,7 @@ class TestMiddlewareExempt:
 
     @override_settings(IDEMPOTENCY_KEY={"CONFLICT_STATUS_CODE": status.HTTP_200_OK})
     def test_middleware_duplicate_request_use_different_status_code(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -184,11 +172,7 @@ class TestMiddlewareExempt:
         )
 
     def test_middleware_duplicate_request_manual_override(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create-manual"],
@@ -219,11 +203,7 @@ class TestMiddlewareExempt:
         IDEMPOTENCY_KEY={"ENCODER_CLASS": "tests.tests.test_middleware.MyEncoder"}
     )
     def test_middleware_custom_encoder(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -250,18 +230,15 @@ class TestMiddlewareExempt:
         )
 
     @override_settings(
-        IDEMPOTENCY_KEY={"STORAGE": {"CLASS": "tests.tests.test_middleware.MyStorage"},}
+        IDEMPOTENCY_KEY={"STORAGE": {"CLASS": "tests.tests.test_middleware.MyStorage"}}
     )
     def test_middleware_custom_storage(self, client):
         """
-        In this test to prove the new custom storage class is being used by creating one that does not to store any
-        information. Therefore a 409 conflict should never occur and the key will never exist.
+        In this test to prove the new custom storage class is being used by creating
+        one that does not to store any information.
+        Therefore a 409 conflict should never occur and the key will never exist.
         """
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -287,11 +264,7 @@ class TestMiddlewareExempt:
         )
 
     def test_idempotency_key_decorator(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -362,11 +335,7 @@ class TestMiddlewareExempt:
         Test Django cache storage
         """
         cache.clear()
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -393,15 +362,11 @@ class TestMiddlewareExempt:
 
     @override_settings(
         IDEMPOTENCY_KEY={
-            "STORAGE": {"STORE_ON_STATUSES": [status.HTTP_207_MULTI_STATUS]},
-        },
+            "STORAGE": {"STORE_ON_STATUSES": [status.HTTP_207_MULTI_STATUS]}
+        }
     )
     def test_store_on_statuses_does_not_store(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -426,15 +391,9 @@ class TestMiddlewareExempt:
             request, self.the_key
         )
 
-    @override_settings(
-        IDEMPOTENCY_KEY={"STORE_ON_STATUSES": [status.HTTP_201_CREATED]},
-    )
+    @override_settings(IDEMPOTENCY_KEY={"STORE_ON_STATUSES": [status.HTTP_201_CREATED]})
     def test_store_on_statuses_does_store(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -464,9 +423,10 @@ class TestMiddlewareExempt:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                "CACHE_NAME": "SevenDayCache",  # This should be overridden by the decorator
-            },
-        },
+                # This should be overridden by the decorator
+                "CACHE_NAME": "SevenDayCache",
+            }
+        }
     )
     def test_middleware_cache_storage_using_custom_cache_name_on_decorator(
         self, client
@@ -476,11 +436,7 @@ class TestMiddlewareExempt:
         """
         caches["default"].clear()
         caches["FiveMinuteCache"].clear()
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create-with-my-cache"],
@@ -511,20 +467,17 @@ class TestMiddlewareExempt:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                "CACHE_NAME": "FiveMinuteCache",  # This should be overridden by the decorator
-            },
-        },
+                # This should be overridden by the decorator
+                "CACHE_NAME": "FiveMinuteCache",
+            }
+        }
     )
     def test_middleware_storage_cache_name_provides_default_name(self, client):
         """
         Tests @idempotency_key(cache_name='FiveMinuteCache') decorator
         """
         caches["FiveMinuteCache"].clear()
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],

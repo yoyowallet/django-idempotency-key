@@ -90,7 +90,7 @@ class TestNamedCache:
             "STORAGE": {
                 "STORAGE_CLASS": "idempotency_key.storage.CacheKeyStorage",
                 "CACHE_NAME": "FiveMinuteCache",
-            },
+            }
         },
     )
     def test_cache_storage_store_named_cache(self):

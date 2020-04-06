@@ -39,7 +39,7 @@ class IdempotencyKeyMiddleware:
             "Bad Request (%s): %s",
             reason,
             request.path,
-            extra={"status_code": 400, "request": request,},
+            extra={"status_code": 400, "request": request},
         )
         return response
 
