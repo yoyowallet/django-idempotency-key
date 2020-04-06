@@ -8,7 +8,11 @@ database:
 	psql -lqt | cut -d \| -f 1 | grep -wq idempotency-key || createdb idempotency-key
 	./manage.py migrate
 
-static_analysis: pep8 xenon
+static_analysis: pep8 xenon black
+
+black:
+	@echo "Running black over codebase"
+	black .
 
 pep8:
 	@echo "Running flake8 over codebase"
