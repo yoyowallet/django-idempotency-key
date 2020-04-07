@@ -126,8 +126,8 @@ IDEMPOTENCY_KEY = {
     # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
     'LOCK': {    
         # Specify the key object locking class to be used for locking access to the cache storage object.
-        # If not specified then defaults to 'idempotency_key.locks.ThreadLock'
-        'CLASS': 'idempotency_key.locks.ThreadLock',
+        # If not specified then defaults to 'idempotency_key.locks.basic.ThreadLock'
+        'CLASS': 'idempotency_key.locks.basic.ThreadLock',
     
         # Location of the Redis server if MultiProcessRedisLock is used otherwise this is ignored.
         # The host name can be specified or both the host name and the port separated by a colon ':'        
