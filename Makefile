@@ -2,7 +2,6 @@ build: clean database
 
 clean:
 	find . -type f -name "*.pyc" -delete
-	find . -type f -name "*,cover" -delete
 
 database:
 	psql -lqt | cut -d \| -f 1 | grep -wq idempotency-key || createdb idempotency-key
@@ -49,4 +48,5 @@ bump-minor:
 bump-patch:
 	bump2version patch
 
-.PHONY: bump-major bump-minor bump-patch bundle clean coverage database pep8 release release-test static_analysis test virtualenv xenon
+.PHONY: bump-major bump-minor bump-patch bundle clean coverage database pep8 black
+.PHONY: release release-test static_analysis test virtualenv xenon

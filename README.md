@@ -1,9 +1,30 @@
 [![Circle CI](https://circleci.com/gh/yoyowallet/django-idempotency-key/tree/master.png?style=badge)](https://circleci.com/gh/yoyowallet/django-idempotency-key) [![codecov.io](https://codecov.io/gh/yoyowallet/django-idempotency-key/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/yoyowallet/django-idempotency-key)
 
 ## Idempotency key Django middleware
-Middleware to Django that pulls out the idempotency key from the request header and will automatically return the previous response data if the idempotency key was already specified. 
-There are two middleware classes which allow view functions to opt-in or opt-out individually depending on your needs.
+This package aims to solve the issue of a client creating multiple of the same object 
+because requests made to a server were lost in transit and the client cannot be sure
+if the process was successful. 
 
+To solve this the client sends a key in the request header that uniquely identifies the
+current operation so that if the server has already created object then it will not be 
+recreated.
+
+This package allows API calls to opt-in or opt-out of using idempotency keys by default.
+There is also an option that allows the client to choose to use idempotency keys if the
+key is present in the header.
+
+If the request has previously succeeded then the original data will be returned and 
+nothing new is created. 
+ 
+## Requirements
+
+Django idempotency key requires the following:
+
+Python (3.6)
+Django (2.0, 2.1, 2.2)
+
+**NOTE**: Currently Django 3.x is **not** supported and has known issues.
+ 
 ## Installation
 
 `pip install django_idempotency_key`
