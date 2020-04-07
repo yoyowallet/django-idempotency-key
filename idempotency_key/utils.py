@@ -66,7 +66,7 @@ def get_lock_settings():
 
 def get_lock_class():
     return module_loading.import_string(
-        get_lock_settings().get("CLASS", "idempotency_key.locks.ThreadLock")
+        get_lock_settings().get("CLASS", "idempotency_key.locks.basic.ThreadLock")
     )
 
 
