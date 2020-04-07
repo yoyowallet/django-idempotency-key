@@ -15,8 +15,8 @@ logger = logging.getLogger("django-idempotency-key.idempotency_key.middleware")
 
 class IdempotencyKeyMiddleware:
     """
-    This middleware class assumes that all non-safe HTTP methods will require an idempotency key to be specified in
-    the header.
+    This middleware class assumes that all non-safe HTTP methods will require an
+    idempotency key to be specified in the header.
     View functions can opt-out using the @idempotency_key_exempt decorator
     """
 
@@ -48,7 +48,8 @@ class IdempotencyKeyMiddleware:
         func_name = callback.__name__
         if hasattr(callback, "actions"):
             func_name = callback.actions[request.method.lower()]
-            # get a reference to the function to access any attributes we might be interested in.
+            # get a reference to the function to access any attributes we might be
+            # interested in.
             callback = getattr(callback.cls, func_name, callback)
 
         idempotency_key = getattr(callback, "idempotency_key", None)
@@ -61,14 +62,14 @@ class IdempotencyKeyMiddleware:
 
         if idempotency_key and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
-                "@idempotency_key and @idempotency_key_exempt decorators are mutually exclusive for "
-                'function "{}"'.format(func_name)
+                "@idempotency_key and @idempotency_key_exempt decorators are mutually "
+                'exclusive for function "{}"'.format(func_name)
             )
 
         if idempotency_key_manual and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
-                "@idempotency_key_manual and @idempotency_key_exempt decorators are mutually exclusive for "
-                'function "{}"'.format(func_name)
+                "@idempotency_key_manual and @idempotency_key_exempt decorators are "
+                'mutually exclusive for function "{}"'.format(func_name)
             )
 
         request.idempotency_key_optional = idempotency_key_optional
@@ -90,7 +91,8 @@ class IdempotencyKeyMiddleware:
         if not request.idempotency_key_manual and key_exists:
             # Get the required return status code from settings
             status_code = utils.get_conflict_code()
-            # if None then return whatever the status code was originally otherwise use the specified status code
+            # if None then return whatever the status code was originally otherwise use
+            # the specified status code
             if status_code is not None:
                 response.status_code = status_code
             return response
@@ -104,7 +106,8 @@ class IdempotencyKeyMiddleware:
         if not lock:
             return self.perform_generate_response(request, encoded_key)
 
-        # If there was a timeout for a lock on the storage object then return a HTTP_423_LOCKED
+        # If there was a timeout for a lock on the storage object then return a
+        # HTTP_423_LOCKED
         if not self.storage_lock.acquire():
             return resource_locked(request, None)
 
@@ -114,20 +117,21 @@ class IdempotencyKeyMiddleware:
             self.storage_lock.release()
 
     def process_request(self, request):
-        key = request.META.get("HTTP_IDEMPOTENCY_KEY")
+        key = request.META.get(utils.get_header_name())
         if key is not None:
             request.META["IDEMPOTENCY_KEY"] = key
 
         # Use this attribute to check that process_view has been called.
         request.idempotency_key_done = False
 
-    def process_view(self, request, callback, callback_args, callback_kwargs):
+    def process_view(self, request, callback, _callback_args, _callback_kwargs):
         self._set_flags_from_callback(request, callback)
 
         # signal the process_view has been called
         request.idempotency_key_done = True
 
-        # Assume that anything defined as 'safe' by RFC7231 is exempt or if exempt is specified directly
+        # Assume that anything defined as 'safe' by RFC7231 is exempt or if exempt is
+        # specified directly
         if request.idempotency_key_exempt or request.method in (
             "GET",
             "HEAD",
@@ -159,8 +163,8 @@ class IdempotencyKeyMiddleware:
         return self.generate_response(request, encoded_key)
 
     def process_response(self, request, response):
-        # If the response is not in the 20X range then return the response because at this point protecting it with an
-        # idempotency key is meaningless.
+        # If the response is not in the 20X range then return the response because at
+        # this point protecting it with an idempotency key is meaningless.
         if response and response.status_code not in [
             status.HTTP_200_OK,
             status.HTTP_201_CREATED,
@@ -173,20 +177,22 @@ class IdempotencyKeyMiddleware:
         ]:
             return response
 
-        # Make sure that process_view is called otherwise the use of idempotency keys will be overridden without us
-        # knowing about it.
+        # Make sure that process_view is called otherwise the use of idempotency keys
+        # will be overridden without us knowing about it.
         if not getattr(request, "idempotency_key_done", False):
             raise ImproperlyConfigured(
                 "Idempotency key middleware's 'process_view' function was not called! "
-                "There maybe another middleware stopping this from happening which means your functions will not "
-                "be properly protected with idempotency keys."
+                "There maybe another middleware stopping this from happening which "
+                "means your functions will not be properly protected with idempotency "
+                "keys."
             )
 
         if getattr(request, "idempotency_key_exempt", True):
             return response
 
         if request.method not in ("GET", "HEAD", "OPTIONS", "TRACE"):
-            # If the response matches that given by the store_on_statuses function then store the data
+            # If the response matches that given by the store_on_statuses function then
+            # store the data
             if response.status_code in utils.get_storage_store_on_statuses():
                 self.storage.store_data(
                     request.idempotency_key_cache_name,
@@ -199,8 +205,10 @@ class IdempotencyKeyMiddleware:
 
 class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
     """
-    This middleware class assume all requests are exempt and do not require an idempotency key to be specified.
-    View functions opt-in using the @idempotency_key or @idempotency_key_manual decorators.
+    This middleware class assume all requests are exempt and do not require an
+    idempotency key to be specified.
+    View functions opt-in using the @idempotency_key or @idempotency_key_manual
+    decorators.
     """
 
     def _set_flags_from_callback(self, request, callback):
@@ -208,12 +216,13 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         # If there is an actions attribute then the function is wrapped in a DRF viewset
         if hasattr(callback, "actions"):
             actual_func_name = callback.actions.get(request.method.lower())
-            # if for some reason the method is not available in the viewset then just proceed as normal
-            # and let the framework handle the problem.
+            # if for some reason the method is not available in the viewset then just
+            # proceed as normal and let the framework handle the problem.
             if actual_func_name is not None:
                 func_name = actual_func_name
 
-                # get a reference to the function to access any attributes we might be interested in.
+                # get a reference to the function to access any attributes we might be
+                # interested in.
                 callback = getattr(callback.cls, func_name, callback)
 
         idempotency_key = getattr(callback, "idempotency_key", False)
@@ -226,14 +235,14 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
 
         if idempotency_key and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
-                "@idempotency_key and @idempotency_key_exempt decorators are mutually exclusive for "
-                'function "{}"'.format(func_name)
+                "@idempotency_key and @idempotency_key_exempt decorators are mutually "
+                'exclusive for function "{}"'.format(func_name)
             )
 
         if idempotency_key_manual and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
-                "@idempotency_key_manual and @idempotency_key_exempt decorators are mutually exclusive for "
-                'function "{}"'.format(func_name)
+                "@idempotency_key_manual and @idempotency_key_exempt decorators are "
+                'mutually exclusive for function "{}"'.format(func_name)
             )
 
         request.idempotency_key_optional = idempotency_key_optional
