@@ -43,17 +43,13 @@ def test_idempotency_key_response_object():
 
 
 @override_settings(
-    IDEMPOTENCY_KEY={'STORAGE': {'STORE_ON_STATUSES': [status.HTTP_200_OK]}, }
+    IDEMPOTENCY_KEY={"STORAGE": {"STORE_ON_STATUSES": [status.HTTP_200_OK]}}
 )
 def test_get_store_on_statuses_default():
-    assert utils.get_storage_store_on_statuses() == [
-        status.HTTP_200_OK
-    ]
+    assert utils.get_storage_store_on_statuses() == [status.HTTP_200_OK]
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={}
-)
+@override_settings(IDEMPOTENCY_KEY={})
 def test_get_store_on_statuses_not_specified():
     assert utils.get_storage_store_on_statuses() == [
         status.HTTP_200_OK,
@@ -67,92 +63,81 @@ def test_get_store_on_statuses_not_specified():
     ]
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={}
-)
+@override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_class_default():
     assert utils.get_lock_class() is storage.MemoryKeyStorage
 
 
 @override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'CLASS': 'idempotency_key.storage.CacheKeyStorage'}}
+    IDEMPOTENCY_KEY={"LOCK": {"CLASS": "idempotency_key.storage.CacheKeyStorage"}}
 )
 def test_get_lock_class_default():
     assert utils.get_lock_class() is storage.CacheKeyStorage
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={}
-)
+@override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_timeout_default():
     assert utils.get_lock_timeout() == 0.1
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'TIMEOUT': 1.8}}
-)
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"TIMEOUT": 1.8}})
 def test_get_lock_timeout_default():
     assert utils.get_lock_timeout() == 1.8
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={}
-)
+@override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_enable_default():
     assert utils.get_lock_enable() is True
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'ENABLE': False}}
-)
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"ENABLE": False}})
 def test_get_lock_enable_default():
     assert utils.get_lock_enable() is False
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={}
-)
+@override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_ttl_default():
     assert utils.get_lock_time_to_live() is None
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'TTL': 1}}
-)
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"TTL": 1}})
 def test_get_lock_ttl_default():
     assert utils.get_lock_time_to_live() == 1
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={}
-)
+@override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_name_default():
-    assert utils.get_lock_name() is 'MyLock'
+    assert utils.get_lock_name() is "MyLock"
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'NAME': 'testname'}}
-)
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"NAME": "testname"}})
 def test_get_lock_name_default():
-    assert utils.get_lock_name() == 'testname'
+    assert utils.get_lock_name() == "testname"
 
 
 def test_get_lock_location_default():
     location = utils.get_lock_location()
-    assert location == 'Redis://localhost:6379/1'
+    assert location == "Redis://localhost:6379/1"
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': 'testname'}}
-)
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"LOCATION": "testname"}})
 def test_get_lock_location_only_host():
     location = utils.get_lock_location()
-    assert location == 'testname'
+    assert location == "testname"
+
+
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"LOCATION": "testname:1234"}})
+def test_get_lock_location_host_and_port():
+    location = utils.get_lock_location()
+    assert location == "testname:1234"
+
+
+def test_get_default_header_name():
+    assert utils.get_header_name() == "HTTP_IDEMPOTENCY_KEY"
 
 
 @override_settings(
-    IDEMPOTENCY_KEY={'LOCK': {'LOCATION': 'testname:1234'}}
+    IDEMPOTENCY_KEY={"HEADER": "HTTP_X_IDEMPOTENCY_KEY",}
 )
-def test_get_lock_location_host_and_port():
-    location = utils.get_lock_location()
-    assert location == 'testname:1234'
+def test_get_custom_header_name():
+    assert utils.get_header_name() == "HTTP_X_IDEMPOTENCY_KEY"

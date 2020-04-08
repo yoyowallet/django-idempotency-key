@@ -14,14 +14,20 @@ pytest-cov = "*"
 "bump2version" = "*"
 twine = "*"
 djangorestframework = "*"
-django-debug-toolbar = "==1.10.1"
+django-debug-toolbar = "*"
 codecov = "*"
 redis = "*"
 django-redis = "*"
+black = "*"
 
 [packages]
-django = ">=1.11.19"
-patterns = "*"
+django = "==2.2.*"
+# Security fixes
+bleach = ">=3.1.4"
+urllib3 = ">=1.24.2"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
