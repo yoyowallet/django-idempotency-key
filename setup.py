@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md") as f:
     long_description = f.read()
 
 setup(
     name="django-idempotency-key",
-    version="1.1.0",
+    version="1.1.1",
     author="Del Hyman-Jones",
     author_email="dev@yoyowallet.com",
     description=(
@@ -32,14 +32,14 @@ setup(
         "Framework :: Django :: 2.2",
         "Programming Language :: Python :: 3.6",
     ],
-    install_requires=["Django>=2.0"],
+    install_requires=["Django>=2.0,<3"],
     project_urls={
         "Documentation": (
             "https://github.com/yoyowallet/django-idempotency-key/blob/master/README.md"
         ),
         "Source": "https://github.com/yoyowallet/django-idempotency-key",
     },
-    packages=["idempotency_key"],
+    packages=find_packages(exclude=["tests*"]),
     setup_requires=["setuptools>=38.6.0"],
     include_package_data=True,
     zip_safe=False,

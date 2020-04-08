@@ -20,6 +20,10 @@ updating.
 **[Breaking changes]** - There are changes that break existing compatibility.
 
 ---
+# 1.1.1
+- Fixed a problem with packaging on release where the new locks folder was missing.
+
+---
 # 1.1.0
   **[Security updates]**
    

@@ -30,11 +30,12 @@ coverage:
 	@echo file://${PWD}/htmlcov/index.html
 
 bundle: static_analysis coverage
-	rm -r ./dist/
+	rm -r ./dist/ || true
+	rm -r ./django_idempotency_key.egg-info/ || true
 	python setup.py sdist
 
 release-test:
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.1.0.tar.gz
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.1.1.tar.gz
 
 release: static_analysis coverage
 	twine upload dist/*
