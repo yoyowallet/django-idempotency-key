@@ -18,9 +18,16 @@ django-debug-toolbar = "*"
 codecov = "*"
 redis = "*"
 django-redis = "*"
+black = "*"
 
 [packages]
 django = "==2.2.*"
+# Security fixes
+bleach = ">=3.1.4"
+urllib3 = ">=1.24.2"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true

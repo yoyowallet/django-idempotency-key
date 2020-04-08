@@ -2,13 +2,16 @@ build: clean database
 
 clean:
 	find . -type f -name "*.pyc" -delete
-	find . -type f -name "*,cover" -delete
 
 database:
 	psql -lqt | cut -d \| -f 1 | grep -wq idempotency-key || createdb idempotency-key
 	./manage.py migrate
 
-static_analysis: pep8 xenon
+static_analysis: pep8 xenon black
+
+black:
+	@echo "Running black over codebase"
+	black .
 
 pep8:
 	@echo "Running flake8 over codebase"
@@ -45,4 +48,5 @@ bump-minor:
 bump-patch:
 	bump2version patch
 
-.PHONY: bump-major bump-minor bump-patch bundle clean coverage database pep8 release release-test static_analysis test virtualenv xenon
+.PHONY: bump-major bump-minor bump-patch bundle clean coverage database pep8 black
+.PHONY: release release-test static_analysis test virtualenv xenon
