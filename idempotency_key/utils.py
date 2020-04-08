@@ -66,7 +66,7 @@ def get_lock_settings():
 
 def get_lock_class():
     return module_loading.import_string(
-        get_lock_settings().get("CLASS", "idempotency_key.locks.ThreadLock")
+        get_lock_settings().get("CLASS", "idempotency_key.locks.basic.ThreadLock")
     )
 
 
@@ -88,3 +88,7 @@ def get_lock_time_to_live():
 
 def get_lock_name():
     return get_lock_settings().get("NAME", "MyLock")
+
+
+def get_header_name():
+    return get_idempotency_key_settings().get("HEADER", "HTTP_IDEMPOTENCY_KEY")
