@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md") as f:
     long_description = f.read()
@@ -39,7 +39,7 @@ setup(
         ),
         "Source": "https://github.com/yoyowallet/django-idempotency-key",
     },
-    packages=["idempotency_key"],
+    packages=find_packages(),
     setup_requires=["setuptools>=38.6.0"],
     include_package_data=True,
     zip_safe=False,

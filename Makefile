@@ -30,7 +30,7 @@ coverage:
 	@echo file://${PWD}/htmlcov/index.html
 
 bundle: static_analysis coverage
-	rm -r ./dist/
+	rm -r ./dist/ || true
 	python setup.py sdist
 
 release-test:
