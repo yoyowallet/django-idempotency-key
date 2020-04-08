@@ -50,6 +50,7 @@ class TestMiddlewareInclusive:
         for name in [
             "get",
             "create",
+            "create-optional",
             "create-exempt",
             "create-no-decorators",
             "create-manual",
@@ -111,6 +112,13 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_encoded_key == BasicKeyEncoder().encode_key(
             request, self.the_key
         )
+
+    def test_post_optional(self, client):
+        response = client.post(self.urls["create-optional"], data={}, secure=True)
+        assert response.status_code == status.HTTP_201_CREATED
+        request = response.wsgi_request
+        assert request.idempotency_key_optional is True
+        assert request.idempotency_key_exempt is True
 
     def test_bad_request_no_key_specified(self, client):
         """
