@@ -114,7 +114,7 @@ IDEMPOTENCY_KEY = {
     # If set to None then the original request's status code is used.
     'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT,
 
-    # Allows the idempotnecy key header sent from the client to be changed 
+    # Allows the idempotency key header sent from the client to be changed 
     'HEADER': 'HTTP_IDEMPOTENCY_KEY',
 
     'STORAGE': {
