@@ -58,6 +58,7 @@ class TestMiddlewareInclusive:
             "create-manual-exempt-1",
             "create-manual-exempt-2",
             "create-with-my-cache",
+            "create-custom-header",
         ]
     }
 
@@ -94,6 +95,7 @@ class TestMiddlewareInclusive:
         request = response.wsgi_request
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
 
         response = client.post(
             self.urls["create-no-decorators"],
@@ -106,6 +108,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1c4bf5e1ea27f341eb8e310c349ad3c3dedabdcf54f1742737f728556867309b"
@@ -121,6 +124,7 @@ class TestMiddlewareInclusive:
         request = response.wsgi_request
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
 
     @override_settings(IDEMPOTENCY_KEY={})
     def test_middleware_duplicate_request(self, client):
@@ -146,6 +150,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -175,6 +180,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -204,6 +210,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -234,6 +241,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is True
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "b459278f612efbf9858116a94060e0482c011e9e475e91cf37098d73fac3c9b6"
@@ -265,6 +273,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "0000000000000000000000000000000000000000000000000000000000000000"
@@ -275,8 +284,9 @@ class TestMiddlewareInclusive:
     )
     def test_middleware_custom_storage(self, client):
         """
-        In this test to prove the new custom storage class is being used by creating one that does not to store any
-        information. Therefore a 409 conflict should never occur and the key will never exist.
+        In this test to prove the new custom storage class is being used by creating
+        one that does not to store any information.
+        Therefore a 409 conflict should never occur and the key will never exist.
         """
         voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
@@ -300,6 +310,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response is None
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -328,6 +339,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -400,6 +412,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -432,6 +445,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is False
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -461,6 +475,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -489,6 +504,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_exists is True
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
@@ -498,7 +514,8 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                "CACHE_NAME": "SevenDayCache",  # This should be overridden by the decorator
+                # This should be overridden by the decorator
+                "CACHE_NAME": "SevenDayCache",
             }
         }
     )
@@ -532,6 +549,7 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "35216bd48550e06ed9de6508b56d4d9b05aa38631b8461bade54b5f160b64462"
@@ -542,7 +560,8 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                "CACHE_NAME": "FiveMinuteCache",  # This should be overridden by the decorator
+                # This should be overridden by the decorator
+                "CACHE_NAME": "FiveMinuteCache",
             }
         }
     )
@@ -573,8 +592,36 @@ class TestMiddlewareInclusive:
         assert request.idempotency_key_response == response2
         assert request.idempotency_key_exempt is False
         assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
         assert (
             request.idempotency_key_encoded_key
             == "1f4bc93e1a614e35350605b01133d77c1d4b15dd515e40fc6599ca3ff137143d"
         )
         assert request.idempotency_key_cache_name == "FiveMinuteCache"
+
+    @override_settings(IDEMPOTENCY_KEY={"HEADER": "HTTP_MY_CUSTOM_IDEMPOTENCY_KEY"})
+    def test_post_custom_header_pass(self, client):
+        response = client.post(
+            self.urls["create-custom-header"],
+            data={},
+            secure=True,
+            HTTP_MY_CUSTOM_IDEMPOTENCY_KEY=self.the_key,
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        request = response.wsgi_request
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
+
+    def test_post_custom_header_fail(self, client):
+        response = client.post(
+            self.urls["create-custom-header"],
+            data={},
+            secure=True,
+            HTTP_MY_CUSTOM_IDEMPOTENCY_KEY=self.the_key,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        request = response.wsgi_request
+        assert request.idempotency_key_exempt is False
+        assert request.idempotency_key_manual is False
+        assert request.idempotency_key_done is True
