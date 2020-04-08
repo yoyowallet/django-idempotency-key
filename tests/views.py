@@ -81,3 +81,9 @@ def create_manual_exempt_2(request, *args, **kwargs):
 @api_view(["POST"])
 def create_with_my_cache(request, *args, **kwargs):
     return Response(status=201, data={})
+
+
+@idempotency_key
+@api_view(["POST"])
+def create_custom_header(request, *args, **kwargs):
+    return Response(status=201, data={})

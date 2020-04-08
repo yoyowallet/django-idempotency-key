@@ -33,7 +33,8 @@ Django (2.0, 2.1, 2.2)
 
 First, add to your MIDDLEWARE settings under your settings file.
 
-If you want all non-safe view function to automatically use idempotency keys then use the following:
+If you want all non-safe view function to automatically use idempotency keys then use 
+the following:
 
 ```
 MIDDLEWARE = [
@@ -42,9 +43,12 @@ MIDDLEWARE = [
 ]
 ```
 
-**WARNING** - Adding this as middleware will require that all client requests to non-safe HTTP methods to supply an idempotency key specified in the request header under HTTP_IDEMPOTENCY_KEY. If this is missing then a 400 BAD REQUEST is returned.
+**WARNING** - Adding this as middleware will require that all client requests to 
+non-safe HTTP methods to supply an idempotency key specified in the request header 
+under HTTP_IDEMPOTENCY_KEY. If this is missing then a 400 BAD REQUEST is returned.
 
-However, if you prefer that all view functions are exempt by default and you will out-in on a per view function basis then use the following:
+However, if you prefer that all view functions are exempt by default and you will 
+out-in on a per view function basis then use the following:
 
 ```
 MIDDLEWARE = [
@@ -54,22 +58,31 @@ MIDDLEWARE = [
 ```
 
 ## Decorators
-There are three decorators available that control how idempotency keys work with your view function.
+There are three decorators available that control how idempotency keys work with your 
+view function.
 
 ### `@idempotency_key(optional=False)`
-This will ensure that the specified view function uses idempotency keys and will expect the client to send the HTTP_IDEMPOTENCY_KEY (idempotency-key) header. 
+This will ensure that the specified view function uses idempotency keys and will expect 
+the client to send the HTTP_IDEMPOTENCY_KEY (idempotency-key) header. 
 
-When `optional=True`, the idempotency key header can be optional. If the idempotency key is missing, then the check will be skipped.
+When `optional=True`, the idempotency key header can be optional. If the idempotency 
+key is missing, then the check will be skipped.
 
-**NOTE:** If the IdempotencyKeyMiddleware class is used then this decorator (with `optional=False`) is redundant.
+**NOTE:** If the IdempotencyKeyMiddleware class is used then this decorator 
+(with `optional=False`) is redundant.
 
 ### `@idempotency_key_exempt`
-This will ensure that the specified view function is exempt from idempotency keys and multiple requests with the same data will run the view function every time.
+This will ensure that the specified view function is exempt from idempotency keys and 
+multiple requests with the same data will run the view function every time.
 
-**NOTE:** If the ExemptIdempotencyKeyMiddleware class is used then this decorator is redundant.
+**NOTE:** If the ExemptIdempotencyKeyMiddleware class is used then this decorator is 
+redundant.
 
 ### `@idempotency_key_manual`
-When specified the view function will dictate the response provided on a conflict. The decorator will set two variables on the request object that informs the user if the key exists in storage and what the response object was on the last call if the key exists.
+When specified the view function will dictate the response provided on a conflict. 
+The decorator will set two variables on the request object that informs the user if the 
+key exists in storage and what the response object was on the last call if the key 
+exists.
 
 These two variables are defined as follows:
 
@@ -81,10 +94,13 @@ These two variables are defined as follows:
 `idempotency_key_response` will always return a Response object is set.
 
 ## Required header
-When an idempotency key is enabled on a view function the calling client must specify a unique key in the headers called HTTP_IDEMPOTENCY_KEY. If this is missing then a 400 BAD RESPONSE is returned.
+When an idempotency key is enabled on a view function the calling client must specify a 
+unique key in the headers called HTTP_IDEMPOTENCY_KEY. This header name can be changed 
+to something else if required. If this is missing then a 400 BAD RESPONSE is returned.
 
 ## Settings
-The following settings can be used to modify the behaviour of the idempotency key middleware.
+The following settings can be used to modify the behaviour of the idempotency key 
+middleware.
 ```
 from idempotency_key import status
 
@@ -98,17 +114,23 @@ IDEMPOTENCY_KEY = {
     # If set to None then the original request's status code is used.
     'CONFLICT_STATUS_CODE': status.HTTP_409_CONFLICT,
 
+    # Allows the idempotnecy key header sent from the client to be changed 
+    'HEADER': 'HTTP_IDEMPOTENCY_KEY',
+
     'STORAGE': {
         # Specify the storage class to be used for idempotency keys
         # If not specified then defaults to 'idempotency_key.storage.MemoryKeyStorage'
         'CLASS': 'idempotency_key.storage.MemoryKeyStorage',
 
-        # Name of the django cache configuration to use for the CacheStorageKey storage class.
-        # This can be overriden using the @idempotency_key(cache_name='MyCacheName') view/viewset function decorator.
+        # Name of the django cache configuration to use for the CacheStorageKey storage 
+        # class.
+        # This can be overriden using the @idempotency_key(cache_name='MyCacheName') 
+        # view/viewset function decorator.
         'CACHE_NAME': 'default',
 
-        # When the response is to be stored you have the option of deciding when this happens based on the responses
-        # status code. If the response status code matches one of the statuses below then it will be stored.
+        # When the response is to be stored you have the option of deciding when this 
+        # happens based on the responses status code. If the response status code 
+        # matches one of the statuses below then it will be stored.
         # The statuses below are the defaults used if this setting is not specified.
         'STORE_ON_STATUSES': [
             status.HTTP_200_OK,
@@ -126,8 +148,8 @@ IDEMPOTENCY_KEY = {
     # to ensure that multiple threads do not try to call the same view/viewset method at the same time.
     'LOCK': {    
         # Specify the key object locking class to be used for locking access to the cache storage object.
-        # If not specified then defaults to 'idempotency_key.locks.ThreadLock'
-        'CLASS': 'idempotency_key.locks.ThreadLock',
+        # If not specified then defaults to 'idempotency_key.locks.basic.ThreadLock'
+        'CLASS': 'idempotency_key.locks.basic.ThreadLock',
     
         # Location of the Redis server if MultiProcessRedisLock is used otherwise this is ignored.
         # The host name can be specified or both the host name and the port separated by a colon ':'        
