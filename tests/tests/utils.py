@@ -16,10 +16,12 @@ def for_all_methods(decorator):
 def set_middleware(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        with modify_settings(MIDDLEWARE={
-            'append': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
-            'remove': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
-        }):
+        with modify_settings(
+            MIDDLEWARE={
+                "append": ["idempotency_key.middleware.IdempotencyKeyMiddleware"],
+                "remove": ["idempotency_key.middleware.ExemptIdempotencyKeyMiddleware"],
+            }
+        ):
             return func(*args, **kwargs)
 
     return wrapper
@@ -28,10 +30,12 @@ def set_middleware(func):
 def set_exempt_middleware(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        with modify_settings(MIDDLEWARE={
-            'remove': ['idempotency_key.middleware.IdempotencyKeyMiddleware'],
-            'append': ['idempotency_key.middleware.ExemptIdempotencyKeyMiddleware'],
-        }):
+        with modify_settings(
+            MIDDLEWARE={
+                "remove": ["idempotency_key.middleware.IdempotencyKeyMiddleware"],
+                "append": ["idempotency_key.middleware.ExemptIdempotencyKeyMiddleware"],
+            }
+        ):
             return func(*args, **kwargs)
 
     return wrapper
