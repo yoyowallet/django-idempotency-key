@@ -7,7 +7,7 @@ with open("README.md") as f:
 
 setup(
     name="django-idempotency-key",
-    version="1.0.3",
+    version="1.1.0",
     author="Del Hyman-Jones",
     author_email="dev@yoyowallet.com",
     description=(

@@ -34,7 +34,7 @@ bundle: static_analysis coverage
 	python setup.py sdist
 
 release-test:
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.0.3.tar.gz
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.1.0.tar.gz
 
 release: static_analysis coverage
 	twine upload dist/*
