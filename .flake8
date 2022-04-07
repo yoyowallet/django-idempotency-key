@@ -1,0 +1,12 @@
+[flake8]
+; Taken from https://black.readthedocs.io/en/stable/compatible_configs.html#flake8
+
+extend-ignore = E203,E501,W503
+select = B,C,E,F,W,T4,B9
+
+; Note on line length:
+; We use flake8-bugbear's B950 instead of flake8's E501. It considers "max-line-length"
+; but only triggers when the value has been exceeded by more than 10%.
+max-line-length = 80
+
+max-complexity = 18

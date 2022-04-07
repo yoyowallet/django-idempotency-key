@@ -1,8 +1,7 @@
 from django.test import override_settings
 
-from idempotency_key import status
-from idempotency_key import storage
-from idempotency_key import utils
+from idempotency_key import status, storage, utils
+from idempotency_key.locks.basic import ThreadLock
 
 
 class Request(object):
@@ -65,13 +64,20 @@ def test_get_store_on_statuses_not_specified():
 
 @override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_class_default():
+    assert utils.get_lock_class() is ThreadLock
+
+
+@override_settings(
+    IDEMPOTENCY_KEY={"LOCK": {"CLASS": "idempotency_key.storage.MemoryKeyStorage"}}
+)
+def test_get_lock_class_default_memory_storage():
     assert utils.get_lock_class() is storage.MemoryKeyStorage
 
 
 @override_settings(
     IDEMPOTENCY_KEY={"LOCK": {"CLASS": "idempotency_key.storage.CacheKeyStorage"}}
 )
-def test_get_lock_class_default():
+def test_get_lock_class_default_cache_storage():
     assert utils.get_lock_class() is storage.CacheKeyStorage
 
 
@@ -81,7 +87,7 @@ def test_get_lock_timeout_default():
 
 
 @override_settings(IDEMPOTENCY_KEY={"LOCK": {"TIMEOUT": 1.8}})
-def test_get_lock_timeout_default():
+def test_get_lock_timeout_default_with_lock():
     assert utils.get_lock_timeout() == 1.8
 
 
@@ -91,27 +97,27 @@ def test_get_lock_enable_default():
 
 
 @override_settings(IDEMPOTENCY_KEY={"LOCK": {"ENABLE": False}})
-def test_get_lock_enable_default():
+def test_get_lock_enable_default_with_lock():
     assert utils.get_lock_enable() is False
 
 
 @override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_ttl_default():
-    assert utils.get_lock_time_to_live() is None
+    assert utils.get_lock_time_to_live() == 300
 
 
 @override_settings(IDEMPOTENCY_KEY={"LOCK": {"TTL": 1}})
-def test_get_lock_ttl_default():
+def test_get_lock_ttl_default_with_lock():
     assert utils.get_lock_time_to_live() == 1
 
 
 @override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_name_default():
-    assert utils.get_lock_name() is "MyLock"
+    assert utils.get_lock_name() == "MyLock"
 
 
 @override_settings(IDEMPOTENCY_KEY={"LOCK": {"NAME": "testname"}})
-def test_get_lock_name_default():
+def test_get_lock_name_default_with_lock():
     assert utils.get_lock_name() == "testname"
 
 
@@ -136,8 +142,6 @@ def test_get_default_header_name():
     assert utils.get_header_name() == "HTTP_IDEMPOTENCY_KEY"
 
 
-@override_settings(
-    IDEMPOTENCY_KEY={"HEADER": "HTTP_X_IDEMPOTENCY_KEY",}
-)
-def test_get_custom_header_name():
+@override_settings(IDEMPOTENCY_KEY={"HEADER": "HTTP_X_IDEMPOTENCY_KEY"})
+def test_get_custom_header_name_with_header():
     assert utils.get_header_name() == "HTTP_X_IDEMPOTENCY_KEY"
