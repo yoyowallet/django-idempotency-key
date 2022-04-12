@@ -1,23 +1,23 @@
 repos:
 
 - repo: https://github.com/PyCQA/isort
-  rev: 5.5.4
+  rev: 5.10.1
   hooks:
   - id: isort
 
 - repo: https://github.com/psf/black
-  rev: 21.12b0
+  rev: 22.3.0
   hooks:
   - id: black
 
 - repo: https://gitlab.com/pycqa/flake8
-  rev: 3.8.4
+  rev: 3.9.2
   hooks:
   - id: flake8
     additional_dependencies: [flake8-bugbear]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.2.0
+  rev: v4.2.0
   hooks:
   - id: check-added-large-files
   - id: check-ast
@@ -34,9 +34,6 @@ repos:
   - id: forbid-new-submodules
   - id: mixed-line-ending
     args: [--fix=lf]
-# Cannot use for now due to our factories.py files
-#  - id: name-tests-test
-#    args: [--django]
   - id: no-commit-to-branch
     args: [--branch=master]
   - id: trailing-whitespace

@@ -1,5 +1,5 @@
-from django.test import override_settings
 import pytest
+from django.test import override_settings
 
 from idempotency_key.locks import basic, redis
 

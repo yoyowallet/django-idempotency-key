@@ -1,8 +1,8 @@
 from functools import wraps
 
-from django.core.cache import cache, InvalidCacheBackendError, caches
-from django.test import modify_settings, override_settings
 import pytest
+from django.core.cache import InvalidCacheBackendError, cache, caches
+from django.test import modify_settings, override_settings
 
 from idempotency_key import status
 from idempotency_key.encoders import BasicKeyEncoder

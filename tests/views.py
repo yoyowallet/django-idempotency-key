@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from idempotency_key.decorators import (
-    idempotency_key_exempt,
     idempotency_key,
+    idempotency_key_exempt,
     idempotency_key_manual,
 )
 from idempotency_key.utils import idempotency_key_exists

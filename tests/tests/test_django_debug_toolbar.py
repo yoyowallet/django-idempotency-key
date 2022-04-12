@@ -1,8 +1,8 @@
 from functools import wraps
 
+import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.test import modify_settings, override_settings
-import pytest
 
 
 def set_debug_toolbar_middleware_start(func):

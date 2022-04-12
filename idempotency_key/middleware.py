@@ -2,8 +2,7 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 
-from idempotency_key import status
-from idempotency_key import utils
+from idempotency_key import status, utils
 from idempotency_key.exceptions import (
     DecoratorsMutuallyExclusiveError,
     bad_request,

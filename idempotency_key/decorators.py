@@ -2,7 +2,6 @@ from functools import wraps
 
 from idempotency_key import utils
 
-
 # NOTE:
 # The following decorators must be specified BEFORE the @api_view decorator or the function will not be marked
 # correctly.

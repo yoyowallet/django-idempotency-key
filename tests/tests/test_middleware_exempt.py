@@ -1,8 +1,8 @@
 from functools import wraps
 
+import pytest
 from django.core.cache import cache, caches
 from django.test import modify_settings, override_settings
-import pytest
 
 from idempotency_key import status
 from idempotency_key.encoders import BasicKeyEncoder
