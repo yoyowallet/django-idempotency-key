@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Build steps
+      uses: ./.github/actions/django-idempotency-key-build
+      with:
+        python-version: "3.10"
+    - name: Build and publish
+      uses: d1618033/gh-action-python-publish-using-poetry@1.2.0
+      with:
+        pypi_username: '__token__'
+        pypi_password: ${{ secrets.PYPI_TOKEN }}
