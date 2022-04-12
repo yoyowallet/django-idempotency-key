@@ -6,7 +6,7 @@ repos:
   - id: isort
 
 - repo: https://github.com/psf/black
-  rev: 20.8b1
+  rev: 21.12b0
   hooks:
   - id: black
 
@@ -23,12 +23,8 @@ repos:
   - id: check-ast
   - id: check-byte-order-marker
   - id: check-case-conflict
-  - id: check-executables-have-shebangs
   - id: check-json
-  - id: check-symlinks
   - id: check-toml
-  - id: check-vcs-permalinks
-  - id: check-xml
   - id: check-yaml
   - id: debug-statements
   - id: detect-private-key
