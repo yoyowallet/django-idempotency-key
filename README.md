@@ -1,4 +1,5 @@
-[![Circle CI](https://circleci.com/gh/yoyowallet/django-idempotency-key/tree/master.png?style=badge)](https://circleci.com/gh/yoyowallet/django-idempotency-key) [![codecov.io](https://codecov.io/gh/yoyowallet/django-idempotency-key/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/yoyowallet/django-idempotency-key)
+[![example workflow](https://github.com/yoyowallet/django-idempotency-key/actions/workflows/continuous_integration.yml/badge.svg?branch=master)](https://github.com/yoyowallet/django-idempotency-key/commit/master)
+[![codecov.io](https://codecov.io/gh/yoyowallet/django-idempotency-key/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/yoyowallet/django-idempotency-key)
 
 ## Idempotency key Django middleware
 This package aims to solve the issue of a client creating multiple of the same object
