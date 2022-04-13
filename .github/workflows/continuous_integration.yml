@@ -39,5 +39,8 @@ jobs:
       run: |
         pip install tox
 
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.4.0
+
     - name: tox tests
       run: tox
