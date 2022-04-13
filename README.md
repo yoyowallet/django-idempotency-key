@@ -26,14 +26,14 @@ Django (2.2, 3.2, 4.0)
 
 NOTE: M1 Apple laptops are yet to be tested but are expected to work with this library.
 
-The following is a list of DjangoRestFramework versions that support the respective
-Django version.
+The following is a list of DjangoRestFramework versions and the respective
+Django and python versions that it supports.
 
-Django | DRF
---- | ---
-2.2 | \>=3.8
-3.2 | \>=3.1.11
-4.0 | \>=3.1.13
+Python | Django | DRF
+--- | --- | ---
+ \>=3.7 | 2.2 | \>=3.8
+ \>=3.7 | 3.2 | \>=3.1.11
+ \>=3.8 | 4.0 | \>=3.1.13
 
 ## Installation
 

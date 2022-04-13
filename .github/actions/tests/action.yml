@@ -1,0 +1,32 @@
+name: "Django Idempotency Key Tests"
+inputs:
+  python-version:
+    description: 'The version of python already installed by the matrix strategy to test against'
+    required: true
+runs:
+  using: "composite"
+  steps:
+  - name: Check out repository
+    uses: actions/checkout@v2
+
+  - name: Set up Python ${{ inputs.python-version }}
+    uses: actions/setup-python@v2
+    with:
+      python-version: ${{ inputs.python-version }}
+
+  - name: Install tox
+    shell: bash
+    run: |
+      pip install tox
+
+  - name: Start Redis
+    uses: supercharge/redis-github-action@1.4.0
+
+  - name: tox tests for python 3.7
+    if: ${{inputs.python-version == '3.7'}}
+    run: tox -e django22-drf38,django22-drf39,django22-drf310,django22-drf311,django22-drf312,django22-drf313,django32-drf311,django32-drf312,django32-drf313
+
+  - name: tox tests for python >= 3.8
+    if: ${{inputs.python-version != '3.7'}}
+    run: |
+      tox

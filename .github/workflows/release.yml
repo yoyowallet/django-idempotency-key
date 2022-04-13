@@ -2,19 +2,38 @@ name: Release
 
 on:
   release:
-    types:
-      - created
+    types: [created]
 
 jobs:
-  publish:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
       uses: actions/checkout@v2
-    - name: Build steps
-      uses: ./.github/actions/django-idempotency-key-build
+
+    - uses: ./.github/actions/lint
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+      fail-fast: false
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - uses: ./.github/actions/tests
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.python-version }}
+
+  publish:
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
     - name: Build and publish
       uses: d1618033/gh-action-python-publish-using-poetry@1.2.0
       with:

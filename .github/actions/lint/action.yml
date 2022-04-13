@@ -1,0 +1,13 @@
+name: "Django Idempotency Key Tests"
+runs:
+  using: "composite"
+  steps:
+  - uses: actions/checkout@v2
+
+  - name: Set up Python 3.10.0
+    uses: actions/setup-python@v2
+    with:
+      python-version: "3.10"
+
+  - name: pre-commit
+    uses: pre-commit/action@v2.0.3
