@@ -32,8 +32,8 @@ Django and python versions that it supports.
 Python | Django | DRF
 --- | --- | ---
  \>=3.7 | 2.2 | \>=3.8
- \>=3.7 | 3.2 | \>=3.1.11
- \>=3.8 | 4.0 | \>=3.1.13
+ \>=3.7 | 3.2 | \>=3.11
+ \>=3.8 | 4.0 | \>=3.13
 
 ## Installation
 
