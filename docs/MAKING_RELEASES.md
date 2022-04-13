@@ -4,7 +4,7 @@ This document explains how to make a release of the idempotency library.
 Run the following:
 
 ---
-Run black and code analysis on the files to ensure everything is OK and no files have 
+Run black and code analysis on the files to ensure everything is OK and no files have
 changed.
 - `make static-analysis`
 

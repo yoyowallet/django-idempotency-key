@@ -1,10 +1,10 @@
 import pickle
 
-from django.core.cache import caches, InvalidCacheBackendError
-from django.test import override_settings
 import pytest
+from django.core.cache import InvalidCacheBackendError, caches
+from django.test import override_settings
 
-from idempotency_key.storage import MemoryKeyStorage, CacheKeyStorage
+from idempotency_key.storage import CacheKeyStorage, MemoryKeyStorage
 
 
 def test_memory_storage_store():

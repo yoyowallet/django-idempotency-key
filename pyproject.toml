@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "django-idempotency-key"
+version = "1.2.0"
+description = "Django middleware for idempotency key support in view and viewset functions."
+authors = ["YoyoDevs <dev@yoyowallet.com>"]
+license = "MIT"
+packages = [
+    {include = "idempotency_key"}
+]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<4"
+Django = ">=3.2"
+urllib3 = "^1.26.9"
+
+[tool.poetry.dev-dependencies]
+"bump2version" = "^1.0.1"
+"flake8" = "^4.0.1"
+black = "^22.3.0"
+codecov = "^2.1.12"
+django-debug-toolbar = "^3.2.4"
+django-redis = "^5.2.0"
+djangorestframework = "^3.13.1"
+pre-commit = "^2.18.1"
+pytest = "^7.1.1"
+pytest-cov = "^3.0.0"
+pytest-django = "^4.5.2"
+pytest-mock = "^3.7.0"
+redis = "^4.2.2"
+tox = "^3.24.5"
+twine = "^4.0.0"
+xenon = "^0.9.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

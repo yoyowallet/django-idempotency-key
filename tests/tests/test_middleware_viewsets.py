@@ -1,12 +1,12 @@
 from functools import wraps
 from typing import Tuple
 
-from django.core.cache import cache, InvalidCacheBackendError, caches
-from django.test import modify_settings, override_settings
 import pytest
+from django.core.cache import InvalidCacheBackendError, cache, caches
+from django.test import modify_settings, override_settings
 
 from idempotency_key import status
-from idempotency_key.encoders import IdempotencyKeyEncoder, BasicKeyEncoder
+from idempotency_key.encoders import BasicKeyEncoder, IdempotencyKeyEncoder
 from idempotency_key.exceptions import DecoratorsMutuallyExclusiveError
 from idempotency_key.storage import IdempotencyKeyStorage
 from tests.tests.utils import for_all_methods

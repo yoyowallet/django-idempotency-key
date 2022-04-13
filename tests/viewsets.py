@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from idempotency_key.decorators import (
-    idempotency_key_exempt,
     idempotency_key,
+    idempotency_key_exempt,
     idempotency_key_manual,
 )
 from idempotency_key.utils import idempotency_key_exists
