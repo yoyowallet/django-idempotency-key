@@ -165,15 +165,15 @@ STATIC_URL = "/static/"
 
 # Idempotency Key
 IDEMPOTENCY_KEY = {
+    # Set the response code on a conflict.
+    # If not specified this defaults to HTTP_409_CONFLICT
+    # If set to None then the original request's status code is used
+    "CONFLICT_STATUS_CODE": status.HTTP_409_CONFLICT,
     # Specify the key encoder class to be used for idempotency keys
     "ENCODER_CLASS": "idempotency_key.encoders.BasicKeyEncoder",
     "STORAGE": {
         # Specify the storage class to be used for idempotency keys
         "CLASS": "idempotency_key.storage.MemoryKeyStorage",
-        # Set the response code on a conflict.
-        # If not specified this defaults to HTTP_409_CONFLICT
-        # If set to None then the original request's status code is used
-        "CONFLICT_STATUS_CODE": status.HTTP_409_CONFLICT,
     },
 }
 
