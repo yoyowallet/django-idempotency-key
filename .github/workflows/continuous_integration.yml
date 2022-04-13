@@ -12,10 +12,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: "3.10"
-    - name: Run pre-commit
+    - name: pre-commit
       uses: pre-commit/action@v2.0.3
+
   test:
-    needs: lint
+    # needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -24,11 +25,19 @@ jobs:
 
     steps:
     - name: Check out repository
+
       uses: actions/checkout@v2
-    - name: Build steps
-      uses: ./.github/actions/django-idempotency-key-build
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python }}
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install poetry ${{ matrix.poetry-version }}
+      run: |
+        python -m ensurepip
+        python -m pip install --upgrade pip
+        python -m pip install poetry==${{ matrix.poetry-version }}
+
     - name: Test with pytest
       run: |
         poetry run make test
