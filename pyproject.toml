@@ -10,8 +10,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4"
-Django = ">=3.2"
-urllib3 = "^1.26.9"
+Django = ">=2.2"
+djangorestframework = ">=3.8"
 
 [tool.poetry.dev-dependencies]
 "bump2version" = "^1.0.1"
