@@ -35,7 +35,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build and publish
-      uses: d1618033/gh-action-python-publish-using-poetry@1.2.0
+      uses: d1618033/gh-action-python-publish-using-poetry@0.1.1
       with:
         pypi_username: '__token__'
         pypi_password: ${{ secrets.PYPI_TOKEN }}
