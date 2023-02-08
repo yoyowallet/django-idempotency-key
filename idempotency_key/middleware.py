@@ -56,7 +56,9 @@ class IdempotencyKeyMiddleware:
         idempotency_key_exempt = getattr(callback, "idempotency_key_exempt", False)
         idempotency_key_manual = getattr(callback, "idempotency_key_manual", False)
         idempotency_key_cache_name = getattr(
-            callback, "idempotency_key_cache_name", utils.get_storage_cache_name()
+            callback,
+            "idempotency_key_cache_name",
+            utils.get_storage_cache_name(),
         )
 
         if idempotency_key and idempotency_key_exempt:
@@ -229,7 +231,9 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         idempotency_key_exempt = getattr(callback, "idempotency_key_exempt", None)
         idempotency_key_manual = getattr(callback, "idempotency_key_manual", False)
         idempotency_key_cache_name = getattr(
-            callback, "idempotency_key_cache_name", utils.get_storage_cache_name()
+            callback,
+            "idempotency_key_cache_name",
+            utils.get_storage_cache_name(),
         )
 
         if idempotency_key and idempotency_key_exempt:

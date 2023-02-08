@@ -13,14 +13,16 @@ from idempotency_key.utils import idempotency_key_exists
 @api_view(["GET"])
 def get(request, *args, **kwargs):
     return Response(
-        status=200, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+        status=200,
+        data={"idempotency_key_exempt": request.idempotency_key_exempt},
     )
 
 
 @api_view(["POST"])
 def create_no_decorators(request, *args, **kwargs):
     return Response(
-        status=201, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+        status=201,
+        data={"idempotency_key_exempt": request.idempotency_key_exempt},
     )
 
 
@@ -28,7 +30,8 @@ def create_no_decorators(request, *args, **kwargs):
 @api_view(["POST"])
 def create_exempt(request, *args, **kwargs):
     return Response(
-        status=201, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+        status=201,
+        data={"idempotency_key_exempt": request.idempotency_key_exempt},
     )
 
 
