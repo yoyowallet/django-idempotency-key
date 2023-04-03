@@ -1,20 +1,20 @@
 repos:
 
 - repo: https://github.com/PyCQA/isort
-  rev: 5.10.1
+  rev: 5.11.5
   hooks:
-  - id: isort
+    - id: isort
 
 - repo: https://github.com/psf/black
   rev: 22.3.0
   hooks:
-  - id: black
+    - id: black
 
-- repo: https://gitlab.com/pycqa/flake8
-  rev: 3.9.2
+- repo: https://github.com/PyCQA/flake8
+  rev: 5.0.4
   hooks:
-  - id: flake8
-    additional_dependencies: [flake8-bugbear]
+    - id: flake8
+        additional_dependencies: [flake8-bugbear]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.2.0
