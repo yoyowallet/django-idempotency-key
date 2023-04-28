@@ -16,10 +16,10 @@ from idempotency_key import utils
 
 def idempotency_key(*args, optional=False, cache_name=None):
     """
-    Allows an optional cache name to be specified so that different cache settings
-    can be used on a per-view function basis.
+    Allows an optional cache name to be specified so that different cache settings can
+    be used on a per-view function basis.
     :param args: optional arguments. This can contain the view function object if
-        cache_name is not specified
+                 cache_name is not specified
     :param optional: Mark idempotency key header as optional
     :param cache_name: The name of the cache to use from the settings file under
         CACHES={...}
@@ -45,8 +45,8 @@ def idempotency_key(*args, optional=False, cache_name=None):
 
         return wrapped_view
 
-    # if there is an argument passed and it is a callable then this will be the
-    # view function object so pass it to the wrapper
+    # if there is an argument passed and it is a callable then this will be the view
+    # function object so pass it to the wrapper
     if len(args) > 0 and callable(args[0]):
         return _idempotency_key(args[0])
 
@@ -68,8 +68,8 @@ def idempotency_key_exempt(view_func):
 
 def idempotency_key_manual(view_func):
     """
-    Mark a view function as requiring idempotency key protection but the view
-    should control the response.
+    Mark a view function as requiring idempotency key protection but the view should
+    control the response.
     """
 
     def wrapped_view(*args, **kwargs):
