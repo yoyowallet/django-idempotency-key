@@ -32,8 +32,9 @@ class IdempotencyKeyStorage(object):
     @abc.abstractmethod
     def validate_storage(name: str):
         """
-        Validate that the storage name exists. If the class is using django `CACHES` setting then this function ensures
-        that the cache is setup correctly in the settings file and will cause a failure at startup if it is not.
+        Validate that the storage name exists. If the class is using django `CACHES`
+        setting then this function ensures that the cache is setup correctly in the
+        settings file and will cause a failure at startup if it is not.
         This function should raise an exception if the storage name cannot be validated.
         :param name: The name of the storage.
         """
@@ -73,6 +74,7 @@ class CacheKeyStorage(IdempotencyKeyStorage):
 
     @staticmethod
     def validate_storage(name: str):
-        # Check that the cache exists. If the cache is not found then an InvalidCacheBackendError is raised.
-        # Not that there is no get function on the caches object so we cannot perform a normal check.
+        # Check that the cache exists. If the cache is not found then an
+        # InvalidCacheBackendError is raised. Not that there is no get function
+        # on the caches object so we cannot perform a normal check.
         caches[name]

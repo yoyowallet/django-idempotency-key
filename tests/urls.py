@@ -36,7 +36,10 @@ urlpatterns = [
     path(r"views/create-custom-header/", views.create_custom_header),
     path(r"viewsets/get/", MyViewSet.as_view({"get": "get"})),
     path(r"viewsets/create/", MyViewSet.as_view({"post": "create"})),
-    path(r"viewsets/create-optional/", MyViewSet.as_view({"post": "create_optional"})),
+    path(
+        r"viewsets/create-optional/",
+        MyViewSet.as_view({"post": "create_optional"}),
+    ),
     path(r"views/create-manual-exempt-2/", views.create_manual_exempt_2),
     path(r"viewsets/create-manual/", MyViewSet.as_view({"post": "create_manual"})),
     path(r"viewsets/create-exempt/", MyViewSet.as_view({"post": "create_exempt"})),
@@ -64,7 +67,10 @@ urlpatterns = [
         r"viewsets/create-with-my-cache/",
         MyViewSet.as_view({"post": "create_with_my_cache"}),
     ),
-    path(r"viewsets/create-nested-decorator/", MyViewSet2.as_view({"post": "create"})),
+    path(
+        r"viewsets/create-nested-decorator/",
+        MyViewSet2.as_view({"post": "create"}),
+    ),
     path(
         r"viewsets/create-nested-decorator-exempt/",
         MyViewSet2Exempt.as_view({"post": "create"}),
