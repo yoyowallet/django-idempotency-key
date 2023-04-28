@@ -22,7 +22,7 @@ def idempotency_key(*args, optional=False, cache_name=None):
                  cache_name is not specified
     :param optional: Mark idempotency key header as optional
     :param cache_name: The name of the cache to use from the settings file under
-        CACHES={...}
+                       CACHES={...}
     :return: wrapped function
     """
 

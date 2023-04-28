@@ -549,7 +549,7 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                # This should be overridden by the decorator:
+                # This should be overridden by the decorator
                 "CACHE_NAME": "SevenDayCache",
             }
         }
@@ -593,7 +593,7 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                # This should be overridden by the decorator:
+                # This should be overridden by the decorator
                 "CACHE_NAME": "FiveMinuteCache",
             }
         }
