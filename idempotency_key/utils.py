@@ -71,7 +71,7 @@ def get_lock_class():
 
 
 def get_lock_location():
-    return get_lock_settings().get("LOCATION", "Redis://localhost:6379/1")
+    return get_lock_settings().get("LOCATION", "redis://localhost:6379/1")
 
 
 def get_lock_timeout():

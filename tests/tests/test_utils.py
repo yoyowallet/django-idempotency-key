@@ -123,7 +123,7 @@ def test_get_lock_name_default_with_lock():
 
 def test_get_lock_location_default():
     location = utils.get_lock_location()
-    assert location == "Redis://localhost:6379/1"
+    assert location == "redis://localhost:6379/1"
 
 
 @override_settings(IDEMPOTENCY_KEY={"LOCK": {"LOCATION": "testname"}})

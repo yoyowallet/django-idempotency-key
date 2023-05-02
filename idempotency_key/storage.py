@@ -75,6 +75,6 @@ class CacheKeyStorage(IdempotencyKeyStorage):
     @staticmethod
     def validate_storage(name: str):
         # Check that the cache exists. If the cache is not found then an
-        # InvalidCacheBackendError is raised. Not that there is no get function
-        # on the caches object so we cannot perform a normal check.
+        # InvalidCacheBackendError is raised. Note that there is no get function on the
+        # caches object, so we cannot perform a normal check.
         caches[name]

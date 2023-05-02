@@ -133,11 +133,7 @@ class TestMiddlewareInclusive:
 
     @override_settings(IDEMPOTENCY_KEY={})
     def test_middleware_duplicate_request(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -165,11 +161,7 @@ class TestMiddlewareInclusive:
 
     @override_settings(IDEMPOTENCY_KEY={"CONFLICT_STATUS_CODE": None})
     def test_middleware_duplicate_request_use_original_status_code(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -197,11 +189,7 @@ class TestMiddlewareInclusive:
 
     @override_settings(IDEMPOTENCY_KEY={"CONFLICT_STATUS_CODE": status.HTTP_200_OK})
     def test_middleware_duplicate_request_use_different_status_code(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -228,11 +216,7 @@ class TestMiddlewareInclusive:
         )
 
     def test_middleware_duplicate_request_manual_override(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create-manual"],
@@ -264,11 +248,7 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={"ENCODER_CLASS": "tests.tests.test_middleware.MyEncoder"}
     )
     def test_middleware_custom_encoder(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -304,11 +284,7 @@ class TestMiddlewareInclusive:
         one that does not to store any information. Therefore a 409 conflict should
         never occur and the key will never exist.
         """
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -338,7 +314,7 @@ class TestMiddlewareInclusive:
         voucher_data = {
             "id": 1,
             "name": "myvoucher0",
-            "internal_name": "myvoucher0",
+            "internal_namtests/testse": "myvoucher0",
         }
 
         response = client.post(
@@ -412,11 +388,7 @@ class TestMiddlewareInclusive:
         Test Django cache storage
         """
         cache.clear()
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -442,11 +414,7 @@ class TestMiddlewareInclusive:
         )
 
     def test_nested_decorator(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
         response = client.post(
             self.urls["create-nested-decorator"],
             voucher_data,
@@ -470,11 +438,7 @@ class TestMiddlewareInclusive:
         )
 
     def test_nested_decorator_exempt(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
         response = client.post(
             self.urls["create-nested-decorator-exempt"],
             voucher_data,
@@ -502,11 +466,7 @@ class TestMiddlewareInclusive:
         }
     )
     def test_store_on_statuses_does_not_store(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -535,11 +495,7 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={"STORAGE": {"STORE_ON_STATUSES": [status.HTTP_201_CREATED]}}
     )
     def test_store_on_statuses_does_store(self, client):
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
@@ -576,14 +532,10 @@ class TestMiddlewareInclusive:
     )
     def test_middleware_invalid_cache_name(self, client):
         """
-        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator where the
-        cache name has not been configured under settings.CACHE
+        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator where the cache
+        name has not been configured under settings.CACHE
         """
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         with pytest.raises(InvalidCacheBackendError):
             client.post(
@@ -597,7 +549,7 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                # This should be overridden by the decorator:
+                # This should be overridden by the decorator
                 "CACHE_NAME": "SevenDayCache",
             }
         }
@@ -610,11 +562,7 @@ class TestMiddlewareInclusive:
         """
         caches["default"].clear()
         caches["FiveMinuteCache"].clear()
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create-with-my-cache"],
@@ -645,7 +593,7 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                # This should be overridden by the decorator:
+                # This should be overridden by the decorator
                 "CACHE_NAME": "FiveMinuteCache",
             }
         }
@@ -655,11 +603,7 @@ class TestMiddlewareInclusive:
         Tests @idempotency_key(cache_name='FiveMinuteCache') decorator
         """
         caches["FiveMinuteCache"].clear()
-        voucher_data = {
-            "id": 1,
-            "name": "myvoucher0",
-            "internal_name": "myvoucher0",
-        }
+        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
         response = client.post(
             self.urls["create"],
