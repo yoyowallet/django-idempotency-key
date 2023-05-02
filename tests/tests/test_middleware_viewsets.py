@@ -280,8 +280,9 @@ class TestMiddlewareInclusive:
     )
     def test_middleware_custom_storage(self, client):
         """
-        In this test to prove the new custom storage class is being used by creating one that does not to store any
-        information. Therefore a 409 conflict should never occur and the key will never exist.
+        In this test to prove the new custom storage class is being used by creating
+        one that does not to store any information. Therefore a 409 conflict should
+        never occur and the key will never exist.
         """
         voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
@@ -310,7 +311,11 @@ class TestMiddlewareInclusive:
         )
 
     def test_idempotency_key_decorator(self, client):
-        voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
+        voucher_data = {
+            "id": 1,
+            "name": "myvoucher0",
+            "internal_namtests/testse": "myvoucher0",
+        }
 
         response = client.post(
             self.urls["create"],
@@ -527,8 +532,8 @@ class TestMiddlewareInclusive:
     )
     def test_middleware_invalid_cache_name(self, client):
         """
-        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator where the cache name has not been configured
-        under settings.CACHE
+        Tests @idempotency_key(cache_name='FiveMinuteCache') decorator where the cache
+        name has not been configured under settings.CACHE
         """
         voucher_data = {"id": 1, "name": "myvoucher0", "internal_name": "myvoucher0"}
 
@@ -544,7 +549,8 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                "CACHE_NAME": "SevenDayCache",  # This should be overridden by the decorator
+                # This should be overridden by the decorator
+                "CACHE_NAME": "SevenDayCache",
             }
         }
     )
@@ -587,7 +593,8 @@ class TestMiddlewareInclusive:
         IDEMPOTENCY_KEY={
             "STORAGE": {
                 "CLASS": "idempotency_key.storage.CacheKeyStorage",
-                "CACHE_NAME": "FiveMinuteCache",  # This should be overridden by the decorator
+                # This should be overridden by the decorator
+                "CACHE_NAME": "FiveMinuteCache",
             }
         }
     )

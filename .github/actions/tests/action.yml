@@ -7,10 +7,10 @@ runs:
   using: "composite"
   steps:
   - name: Check out repository
-    uses: actions/checkout@v2
+    uses: actions/checkout@v3
 
   - name: Set up Python ${{ inputs.python-version }}
-    uses: actions/setup-python@v2
+    uses: actions/setup-python@v4
     with:
       python-version: ${{ inputs.python-version }}
 
@@ -25,7 +25,7 @@ runs:
   - name: tox tests for python 3.7
     shell: bash
     if: ${{inputs.python-version == '3.7'}}
-    run: tox -e django22-drf38,django22-drf39,django22-drf310,django22-drf311,django22-drf312,django22-drf313,django32-drf311,django32-drf312,django32-drf313
+    run: tox -e py37-django22-drf38,py37-django22-drf39,py37-django22-drf310,py37-django22-drf311,py37-django22-drf312,py37-django22-drf313,py37-django32-drf311,py37-django32-drf312,py37-django32-drf313
 
   - name: tox tests for python >= 3.8
     shell: bash

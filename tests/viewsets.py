@@ -16,18 +16,21 @@ class MyViewSet(ViewSet):
 
     def get(self, request, *args, **kwargs):
         return Response(
-            status=200, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+            status=200,
+            data={"idempotency_key_exempt": request.idempotency_key_exempt},
         )
 
     def create_no_decorators(self, request, *args, **kwargs):
         return Response(
-            status=201, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+            status=201,
+            data={"idempotency_key_exempt": request.idempotency_key_exempt},
         )
 
     @idempotency_key_exempt
     def create_exempt(self, request, *args, **kwargs):
         return Response(
-            status=201, data={"idempotency_key_exempt": request.idempotency_key_exempt}
+            status=201,
+            data={"idempotency_key_exempt": request.idempotency_key_exempt},
         )
 
     @idempotency_key
@@ -88,8 +91,8 @@ class ViewSetBase(MyModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
-# NOTE: the base classes must be specified in the correct order where the decorators appear in the first base class
-# or they will not be detected by the middleware.
+# NOTE: the base classes must be specified in the correct order where the decorators
+# appear in the first base class or they will not be detected by the middleware.
 class MyViewSet2(ViewSetBase, MyMixin):
     pass
 
@@ -100,7 +103,7 @@ class ViewSetBaseExempt(MyModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
-# NOTE: the base classes must be specified in the correct order where the decorators appear in the first base class
-# or they will not be detected by the middleware.
+# NOTE: the base classes must be specified in the correct order where the decorators
+# appear in the first base class or they will not be detected by the middleware.
 class MyViewSet2Exempt(ViewSetBaseExempt, MyMixin):
     pass

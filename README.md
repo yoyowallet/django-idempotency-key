@@ -21,20 +21,20 @@ nothing new is created.
 
 Django idempotency key requires the following:
 
-Python (3.7, 3.8, 3.9, 3.10)
+Python (3.7 to 3.11)
 
-Django (2.2, 3.2, 4.0)
+Django (2.2, 3.2, 4.0, 4.1, 4.2)
 
-NOTE: M1 Apple laptops are yet to be tested but are expected to work with this library.
+The following is a list of Django versions and the respective
+DjangoRestFramework and python versions that it supports.
 
-The following is a list of DjangoRestFramework versions and the respective
-Django and python versions that it supports.
-
-Python | Django | DRF
---- | --- | ---
- \>=3.7 | 2.2 | \>=3.8
- \>=3.7 | 3.2 | \>=3.11
- \>=3.8 | 4.0 | \>=3.13
+Python  | Django | DRF
+--------|--------|--------
+ \>=3.7 | 2.2    | \>=3.8
+ \>=3.7 | 3.2    | \>=3.11
+ \>=3.8 | 4.0    | \>=3.13
+ \>=3.8 | 4.1    | \>=3.14
+ \>=3.8 | 4.2    | \>=3.14
 
 ## Installation
 
@@ -58,8 +58,8 @@ MIDDLEWARE = [
 non-safe HTTP methods to supply an idempotency key specified in the request header
 under HTTP_IDEMPOTENCY_KEY. If this is missing then a 400 BAD REQUEST is returned.
 
-However, if you prefer that all view functions are exempt by default and you will
-out-in on a per view function basis then use the following:
+However, if you prefer that all view functions are exempt by default, and you will
+opt in on a per view function basis then use the following:
 
 ```
 MIDDLEWARE = [

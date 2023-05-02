@@ -35,7 +35,7 @@ bundle: static_analysis coverage
 	poetry build
 
 release-test:
-	poetry run twine upload --repository-url https://test.pypi.org/legacy/ dist/django-idempotency-key-1.2.0.tar.gz
+	poetry run twine upload --repository-url https://test.pypi.org/legacy/ dist/django_idempotency_key-1.3.0.tar.gz
 
 release: static_analysis coverage
 	poetry run twine upload dist/*
