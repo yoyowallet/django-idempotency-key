@@ -2,40 +2,16 @@ name: Release
 
 on:
   release:
-    types: [created]
+    types:
+      - created
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-
-    - uses: ./.github/actions/lint
-
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
-      fail-fast: false
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-
-    - uses: ./.github/actions/tests
-      with:
-        python-version: ${{ matrix.python-version }}
-
   publish:
-    needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
-
     - name: Build and publish
-      uses: d1618033/gh-action-python-publish-using-poetry@0.1.1
+      uses: JRubics/poetry-publish@v1.16
       with:
-        pypi_username: '__token__'
-        pypi_password: ${{ secrets.PYPI_TOKEN }}
+        pypi_token: ${{ secrets.PYPI_TOKEN }}
