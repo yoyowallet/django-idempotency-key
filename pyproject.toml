@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "django-idempotency-key"
-version = "1.2.0"
+version = "1.3.0"
 description = "Django middleware for idempotency key support in view and viewset functions."
 authors = ["YoyoDevs <dev@yoyowallet.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/yoyowallet/django-idempotency-key"
 packages = [
     {include = "idempotency_key"}
 ]
