@@ -10,12 +10,16 @@ To solve this the client sends a key in the request header that uniquely identif
 current operation so that if the server has already created object then it will not be
 recreated.
 
+The code tries to implement the [pre-RFC IETF spec for this
+feature](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/).
+
 This package allows API calls to opt-in or opt-out of using idempotency keys by default.
 There is also an option that allows the client to choose to use idempotency keys if the
 key is present in the header.
 
-If the request has previously succeeded then the original data will be returned and
-nothing new is created.
+If the request has previously succeeded then the original response data and status will be
+returned and nothing new is created. If the original request (as determined by the key) is
+still in-flight, 409 ("Conflict") is returned.
 
 ## Requirements
 
@@ -138,6 +142,13 @@ IDEMPOTENCY_KEY = {
         # This can be overriden using the @idempotency_key(cache_name='MyCacheName')
         # view/viewset function decorator.
         'CACHE_NAME': 'default',
+
+
+        # An upper bound, in seconds, of request handling time.
+        # For the purposes of conflict detection, the middleware keeps track of
+        # requests in flight. These requests will be forgotten after
+        # 'INCOMPLETE_TTL' seconds.
+        'INCOMPLETE_TTL': 30,
 
         # When the response is to be stored you have the option of deciding when this
         # happens based on the responses status code. If the response status code

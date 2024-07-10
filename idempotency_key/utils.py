@@ -40,6 +40,10 @@ def get_storage_class():
     )
 
 
+def get_storage_incomplete_ttl():
+    return get_storage_settings().get("INCOMPLETE_TTL", 30)
+
+
 def get_storage_cache_name():
     return get_storage_settings().get("CACHE_NAME", "default")
 

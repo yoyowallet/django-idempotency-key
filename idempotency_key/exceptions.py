@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from idempotency_key import status
+from idempotency_key import status, utils
 
 
 class MissingIdempotencyKeyError(Exception):
@@ -33,3 +33,15 @@ def resource_locked(request, exception, *args, **kwargs):
     """
     data = {"error": "Resource Locked (423)"}
     return JsonResponse(data, status=status.HTTP_423_LOCKED)
+
+
+def conflict(request, exception, *args, **kwargs):
+    """
+    Generic 409 error handler.
+    """
+    status_code = utils.get_conflict_code()
+    if status_code == status.HTTP_409_CONFLICT:
+        data = {"error": "Conflict (409)"}
+    else:
+        data = {"error": f"({status_code})"}
+    return JsonResponse(data, status=status_code)

@@ -1,3 +1,4 @@
+from functools import wraps
 import logging
 
 from django.core.exceptions import ImproperlyConfigured
@@ -7,9 +8,29 @@ from idempotency_key.exceptions import (
     DecoratorsMutuallyExclusiveError,
     bad_request,
     resource_locked,
+    conflict,
 )
 
 logger = logging.getLogger("django-idempotency-key.idempotency_key.middleware")
+
+
+def locked(func):
+    @wraps(func)
+    def wrapper(self, request, encoded_key, *args, **kwargs):
+        lock_enabled = utils.get_lock_enable()
+
+        if not lock_enabled:
+            return func(self, request, encoded_key, *args, **kwargs)
+
+        if not self.storage_lock.acquire():
+            return resource_locked(request, None)
+
+        try:
+            return func(self, request, encoded_key, *args, **kwargs)
+        finally:
+            self.storage_lock.release()
+
+    return wrapper
 
 
 class IdempotencyKeyMiddleware:
@@ -21,7 +42,7 @@ class IdempotencyKeyMiddleware:
 
     def __init__(self, get_response=None):
         self.get_response = get_response
-        self.storage = utils.get_storage_class()()
+        self.storage = utils.get_storage_class()(utils.get_storage_incomplete_ttl())
         self.encoder = utils.get_encoder_class()()
         self.storage_lock = utils.get_lock_class()()
 
@@ -76,44 +97,38 @@ class IdempotencyKeyMiddleware:
         request.idempotency_key_manual = idempotency_key_manual
         request.idempotency_key_cache_name = idempotency_key_cache_name
 
-    def perform_generate_response(self, request, encoded_key):
+    @locked
+    def generate_response(self, request, encoded_key):
         # Check if a response already exists for the encoded key
         key_exists, response = self.storage.retrieve_data(
             request.idempotency_key_cache_name, encoded_key
         )
 
+        if not key_exists:
+            # First time we encounter this request, return early and proceed to handle this
+            # request. Create a storage entry with an empty response, so that if we see this
+            # request again while it's being handled, we can signal a conflict.
+            self.storage.store_data(
+                request.idempotency_key_cache_name, encoded_key, None
+            )
+            return None
+
+        if response is None:
+            # The key exists, but the response wasn't added yet, probably because that request is
+            # still being handled. Return conflict.
+            return conflict(request, None)
+
         # add the key exists result and the original request if it exists
         request.idempotency_key_exists = key_exists
         request.idempotency_key_response = response
 
-        # If not manual override and the key already exists
-        if not request.idempotency_key_manual and key_exists:
-            # Get the required return status code from settings
-            status_code = utils.get_conflict_code()
-            # if None then return whatever the status code was originally otherwise use
-            # the specified status code
-            if status_code is not None:
-                response.status_code = status_code
-            return response
+        if request.idempotency_key_manual:
+            # Manual override: proceed to handle the view, but the view function now
+            # has access to the previous response, in request.idempotency_key_response.
+            return None
 
-        return None
-
-    def generate_response(self, request, encoded_key, lock=None):
-        if lock is None:
-            lock = utils.get_lock_enable()
-
-        if not lock:
-            return self.perform_generate_response(request, encoded_key)
-
-        # If there was a timeout for a lock on the storage object then return a
-        # HTTP_423_LOCKED
-        if not self.storage_lock.acquire():
-            return resource_locked(request, None)
-
-        try:
-            return self.perform_generate_response(request, encoded_key)
-        finally:
-            self.storage_lock.release()
+        # Return the cached response to the client, _without_ handling it again.
+        return response
 
     def process_request(self, request):
         key = request.META.get(utils.get_header_name())
@@ -161,7 +176,31 @@ class IdempotencyKeyMiddleware:
         # Generate the response
         return self.generate_response(request, encoded_key)
 
+    @locked
     def process_response(self, request, response):
+        # Make sure that process_view is called otherwise the use of idempotency keys
+        # will be overridden without us knowing about it.
+        if not getattr(request, "idempotency_key_done", False):
+            raise ImproperlyConfigured(
+                "Idempotency key middleware's 'process_view' function was not called! "
+                "There maybe another middleware stopping this from happening which "
+                "means your functions will not be properly protected with idempotency "
+                "keys."
+            )
+
+        if getattr(request, "idempotency_key_exempt", True):
+            return response
+
+        if request.method in ("GET", "HEAD", "OPTIONS", "TRACE"):
+            return response
+
+        # Delete the cached data to mark that this request completed, either
+        # succesfully or not.
+        self.storage.delete_data(
+            request.idempotency_key_cache_name,
+            request.idempotency_key_encoded_key,
+        )
+
         # If the response is not in the 20X range then return the response because at
         # this point protecting it with an idempotency key is meaningless.
         if response and response.status_code not in [
@@ -176,28 +215,16 @@ class IdempotencyKeyMiddleware:
         ]:
             return response
 
-        # Make sure that process_view is called otherwise the use of idempotency keys
-        # will be overridden without us knowing about it.
-        if not getattr(request, "idempotency_key_done", False):
-            raise ImproperlyConfigured(
-                "Idempotency key middleware's 'process_view' function was not called! "
-                "There maybe another middleware stopping this from happening which "
-                "means your functions will not be properly protected with idempotency "
-                "keys."
+        # If the response matches that given by the store_on_statuses function then
+        # overwrite the incomplete data we stored in process_view with the complete
+        # data. Otherwise, delete the incomplete data to signal that the process
+        # handling was completed, albeit unsuccessfully.
+        if response.status_code in utils.get_storage_store_on_statuses():
+            self.storage.store_data(
+                request.idempotency_key_cache_name,
+                request.idempotency_key_encoded_key,
+                response,
             )
-
-        if getattr(request, "idempotency_key_exempt", True):
-            return response
-
-        if request.method not in ("GET", "HEAD", "OPTIONS", "TRACE"):
-            # If the response matches that given by the store_on_statuses function then
-            # store the data
-            if response.status_code in utils.get_storage_store_on_statuses():
-                self.storage.store_data(
-                    request.idempotency_key_cache_name,
-                    request.idempotency_key_encoded_key,
-                    response,
-                )
 
         return response
 
