@@ -51,7 +51,7 @@ class TestDjangoDebugToolbar:
     regardless of the django toolbar position in the middleware.
     """
 
-    urls = {name: "/views/{}/".format(name) for name in ["create"]}
+    urls = {name: f"/views/{name}/" for name in ["create"]}
 
     @set_debug_toolbar_middleware_start
     def test_post(self, client):

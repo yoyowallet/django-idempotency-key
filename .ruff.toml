@@ -1,0 +1,40 @@
+# https://docs.astral.sh/ruff/tutorial/#configuration
+# https://docs.astral.sh/ruff/settings/
+# Set the maximum line length to 88.
+line-length = 88
+indent-width = 4
+target-version="py39"
+
+[lint]
+select = [
+        "B", # flake8-bugbear
+        "C",
+        "DJ", # flake8-django
+        "E", # pycodestyle
+        "F", # Pyflakes
+        "I", # isort
+        "PL", # pylint
+        "UP", # pyupgrade
+        "W",
+        "B9"
+    ]
+ignore = ["E203", "B904", "DJ001", "DJ006", "W191"]
+
+
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+
+[lint.isort]
+known-first-party = ["deployer"]
+
+[lint.mccabe]   # DO NOT INCREASE THIS VALUE
+max-complexity = 18  # default: 10
+
+[lint.pylint]
+max-args = 10

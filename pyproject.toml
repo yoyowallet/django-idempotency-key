@@ -17,21 +17,25 @@ djangorestframework = ">=3"
 django-redis = ">=5.4.0"
 redis = ">=5.2.1"
 
+# pinned dependant packages for security updates and fixes
+certifi = ">=2023.7.22"
+cryptography = ">=41.0.2"
+requests = ">=2.31.0"
+
 [tool.poetry.group.dev.dependencies]
-black = "*"
 bump2version = "*"
 codecov = "*"
 django-debug-toolbar = "*"
-flake8 = "*"
-isort = "*"
-pre-commit = "*"
+pre-commit = "^4.0.1"
 pytest = "*"
-pytest-cov = "*"
+pytest-cov = ">=4.1.0"
 pytest-mock = "*"
 pytest-django = "*"
-tox = "*"
+tox = "^4.23.2"
 twine = "*"
 xenon = "*"
+virtualenv = "^20.28.0"
+ruff = "^0.8.2"
 
 [tool.black]
 line-length = 88

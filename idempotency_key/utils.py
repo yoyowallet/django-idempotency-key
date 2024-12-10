@@ -3,6 +3,9 @@ from django.utils import module_loading
 
 from idempotency_key import status
 
+DEFAULT_TTL_IN_SECONDS = 300
+DEFAULT_TIMEOUT_IN_SECONDS = 0.1
+
 
 def idempotency_key_exists(request):
     return getattr(request, "idempotency_key_exists", False)
@@ -13,7 +16,7 @@ def idempotency_key_response(request):
 
 
 def get_idempotency_key_settings():
-    return getattr(settings, "IDEMPOTENCY_KEY", dict())
+    return getattr(settings, "IDEMPOTENCY_KEY", {})
 
 
 def get_encoder_class():
@@ -31,7 +34,7 @@ def get_conflict_code():
 
 
 def get_storage_settings():
-    return get_idempotency_key_settings().get("STORAGE", dict())
+    return get_idempotency_key_settings().get("STORAGE", {})
 
 
 def get_storage_class():
@@ -61,7 +64,7 @@ def get_storage_store_on_statuses():
 
 
 def get_lock_settings():
-    return get_idempotency_key_settings().get("LOCK", dict())
+    return get_idempotency_key_settings().get("LOCK", {})
 
 
 def get_lock_class():
@@ -75,7 +78,9 @@ def get_lock_location():
 
 
 def get_lock_timeout():
-    return get_lock_settings().get("TIMEOUT", 0.1)  # default to 100ms
+    return get_lock_settings().get(
+        "TIMEOUT", DEFAULT_TIMEOUT_IN_SECONDS
+    )  # default to 100ms
 
 
 def get_lock_enable():
@@ -83,7 +88,9 @@ def get_lock_enable():
 
 
 def get_lock_time_to_live():
-    return get_lock_settings().get("TTL", 300)  # default to 5 minutes
+    return get_lock_settings().get(
+        "TTL", DEFAULT_TTL_IN_SECONDS
+    )  # default to 5 minutes
 
 
 def get_lock_name():

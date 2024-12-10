@@ -21,20 +21,21 @@ nothing new is created.
 
 Django idempotency key requires the following:
 
-Python (3.7 to 3.11)
+Python (3.9 to 3.13)
 
-Django (2.2, 3.2, 4.0, 4.1, 4.2)
+Django (3.2, 4.0, 4.1, 4.2)
 
 The following is a list of Django versions and the respective
 DjangoRestFramework and python versions that it supports.
 
-Python  | Django | DRF
---------|--------|--------
- \>=3.7 | 2.2    | \>=3.8
- \>=3.7 | 3.2    | \>=3.11
- \>=3.8 | 4.0    | \>=3.13
- \>=3.8 | 4.1    | \>=3.14
- \>=3.8 | 4.2    | \>=3.14
+Python   | Django | DRF
+---------|--------|--------
+ \>=3.9  | 3.2    | \>=3.11
+ \>=3.9  | 4.0    | \>=3.13
+ \>=3.9  | 4.1    | \>=3.14
+ \>=3.9  | 4.2    | \>=3.14
+ \>=3.10 | 5.0    | \>=3.15
+ \>=3.10 | 5.1    | \>=3.15
 
 ## Installation
 

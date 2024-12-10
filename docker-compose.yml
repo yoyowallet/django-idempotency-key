@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7 # Use the desired Redis version
+    container_name: redis_local
+    ports:
+      - "6379:6379" # Maps host port 6379 to container port 6379
+    command: ["redis-server", "--appendonly", "yes"] # Enables persistence
+    volumes:
+      - redis_data:/data # Persist data
+
+volumes:
+  redis_data:
+    driver: local

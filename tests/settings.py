@@ -87,7 +87,7 @@ DATABASES = {
 # Caches
 #
 
-REDIS_AVAILABLE = os.getenv("REDIS_AVAILABLE", False)
+REDIS_AVAILABLE = os.getenv("REDIS_AVAILABLE", "0").lower() in ["1", "true"]
 
 if REDIS_AVAILABLE:
     CACHES = {
@@ -187,7 +187,7 @@ REST_FRAMEWORK = {
 # django-debug-toolbar
 #
 # The toolbar is included by the test cases as this has know issues with this middleware
-from debug_toolbar.settings import PANELS_DEFAULTS
+from debug_toolbar.settings import PANELS_DEFAULTS  # noqa E402
 
 DEBUG_TOOLBAR_PANELS = PANELS_DEFAULTS + [
     "debug_toolbar.panels.profiling.ProfilingPanel"
