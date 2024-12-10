@@ -14,7 +14,7 @@ repos:
     hooks:
       - id: check-added-large-files
       - id: check-ast
-        language_version: python3.12
+        language_version: python3.9
       - id: check-byte-order-marker
       - id: check-case-conflict
       - id: check-executables-have-shebangs
