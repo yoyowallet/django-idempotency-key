@@ -34,7 +34,7 @@ bundle: coverage
 
 .PHONY: release-test
 release-test:
-	poetry run twine upload --repository-url https://test.pypi.org/legacy/dist/django_idempotency_key-1.3.0.tar.gz
+	poetry run twine upload --repository-url https://test.pypi.org/legacy/dist/django_idempotency_key-1.4.0.tar.gz
 
 .PHONY: release
 release: coverage
