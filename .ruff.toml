@@ -31,7 +31,7 @@ quote-style = "double"
 indent-style = "space"
 
 [lint.isort]
-known-first-party = ["deployer"]
+known-first-party = ["idempotency_key"]
 
 [lint.mccabe]   # DO NOT INCREASE THIS VALUE
 max-complexity = 18  # default: 10
