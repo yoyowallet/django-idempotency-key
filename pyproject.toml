@@ -11,11 +11,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4"
-Django = ">=2.2"
-djangorestframework = ">=3.8"
-django-redis = ">=5.2.0"
-redis = ">=4.5.4"
+python = ">=3.9,<4"
+Django = ">=3.2.25"
+djangorestframework = ">=3"
+django-redis = ">=5.4.0"
+redis = ">=5.2.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
