@@ -28,14 +28,14 @@ Django (3.2, 4.0, 4.1, 4.2)
 The following is a list of Django versions and the respective
 DjangoRestFramework and python versions that it supports.
 
-Python   | Django | DRF
----------|--------|--------
- \>=3.9  | 3.2    | \>=3.11
- \>=3.9  | 4.0    | \>=3.13
- \>=3.9  | 4.1    | \>=3.14
- \>=3.9  | 4.2    | \>=3.14
- \>=3.10 | 5.0    | \>=3.15
- \>=3.10 | 5.1    | \>=3.15
+Python          | Django | DRF
+----------------|--------|--------
+ \>=3.9, <3.13  | 3.2    | \>=3.11
+ \>=3.9         | 4.0    | \>=3.13
+ \>=3.9         | 4.1    | \>=3.14
+ \>=3.9         | 4.2    | \>=3.14
+ \>=3.10        | 5.0    | \>=3.15
+ \>=3.10        | 5.1    | \>=3.15
 
 ## Installation
 
