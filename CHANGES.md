@@ -29,9 +29,6 @@ updating.
 - Python 3.12 & 3.13
 - Django 5.0 & 5.1
 
-  **[Security updates]**
--
-
 ---
 # 1.3.0
   **[Dropped support]**
