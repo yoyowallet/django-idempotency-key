@@ -28,7 +28,7 @@ def set_exempt_middleware(func):
 class TestMiddlewareExemptViewSets:
     the_key = "7495e32b-709b-4fae-bfd4-2497094bf3fd"
     urls = {
-        name: "/viewsets/{}/".format(name)
+        name: f"/viewsets/{name}/"
         for name in [
             "get",
             "create",

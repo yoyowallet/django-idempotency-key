@@ -6,7 +6,7 @@ from django.http.request import HttpRequest
 from idempotency_key.exceptions import MissingIdempotencyKeyError
 
 
-class IdempotencyKeyEncoder(object):
+class IdempotencyKeyEncoder:
     @abc.abstractmethod
     def encode_key(self, request, key):
         raise NotImplementedError

@@ -22,13 +22,7 @@ runs:
   - name: Start Redis
     uses: supercharge/redis-github-action@1.4.0
 
-  - name: tox tests for python 3.7
+  - name: tox tests
     shell: bash
-    if: ${{inputs.python-version == '3.7'}}
-    run: tox -e py37-django22-drf38,py37-django22-drf39,py37-django22-drf310,py37-django22-drf311,py37-django22-drf312,py37-django22-drf313,py37-django32-drf311,py37-django32-drf312,py37-django32-drf313
-
-  - name: tox tests for python >= 3.8
-    shell: bash
-    if: ${{inputs.python-version != '3.7'}}
     run: |
       tox

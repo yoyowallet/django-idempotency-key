@@ -1,12 +1,11 @@
 import abc
 import pickle
 from collections import defaultdict
-from typing import Tuple
 
 from django.core.cache import caches
 
 
-class IdempotencyKeyStorage(object):
+class IdempotencyKeyStorage:
     @abc.abstractmethod
     def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
         """
@@ -19,7 +18,7 @@ class IdempotencyKeyStorage(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name: str, encoded_key: str) -> tuple[bool, object]:
         """
         Retrieve data from the sore using the specified key.
         :param cache_name: The name of the cache to use defined in settings under CACHES
@@ -48,7 +47,7 @@ class MemoryKeyStorage(IdempotencyKeyStorage):
     def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
         self.idempotency_key_cache_data[cache_name][encoded_key] = response
 
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name: str, encoded_key: str) -> tuple[bool, object]:
         the_cache = self.idempotency_key_cache_data.get(cache_name)
         if the_cache and encoded_key in the_cache.keys():
             return True, the_cache[encoded_key]
@@ -65,7 +64,7 @@ class CacheKeyStorage(IdempotencyKeyStorage):
         str_response = pickle.dumps(response)
         caches[cache_name].set(encoded_key, str_response)
 
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name: str, encoded_key: str) -> tuple[bool, object]:
         if encoded_key in caches[cache_name]:
             str_response = caches[cache_name].get(encoded_key)
             return True, pickle.loads(str_response)
@@ -77,4 +76,4 @@ class CacheKeyStorage(IdempotencyKeyStorage):
         # Check that the cache exists. If the cache is not found then an
         # InvalidCacheBackendError is raised. Note that there is no get function on the
         # caches object, so we cannot perform a normal check.
-        caches[name]
+        return caches[name]

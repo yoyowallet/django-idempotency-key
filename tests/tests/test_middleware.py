@@ -1,5 +1,4 @@
 from functools import wraps
-from typing import Tuple
 
 import pytest
 from django.core.cache import cache, caches
@@ -33,12 +32,12 @@ class MyEncoder(IdempotencyKeyEncoder):
 
 class MyStorage(IdempotencyKeyStorage):
     def __init__(self):
-        self.idempotency_key_cache_data = dict()
+        self.idempotency_key_cache_data = {}
 
     def store_data(self, cache_name: str, encoded_key: str, response: object) -> None:
         pass
 
-    def retrieve_data(self, cache_name: str, encoded_key: str) -> Tuple[bool, object]:
+    def retrieve_data(self, cache_name: str, encoded_key: str) -> tuple[bool, object]:
         return False, None
 
 
@@ -46,7 +45,7 @@ class MyStorage(IdempotencyKeyStorage):
 class TestMiddlewareInclusive:
     the_key = "7495e32b-709b-4fae-bfd4-2497094bf3fd"
     urls = {
-        name: "/views/{}/".format(name)
+        name: f"/views/{name}/"
         for name in [
             "get",
             "create",

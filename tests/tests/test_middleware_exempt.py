@@ -28,7 +28,7 @@ def set_exempt_middleware(func):
 class TestMiddlewareExempt:
     the_key = "7495e32b-709b-4fae-bfd4-2497094bf3fd"
     urls = {
-        name: "/views/{}/".format(name)
+        name: f"/views/{name}/"
         for name in [
             "get",
             "create",

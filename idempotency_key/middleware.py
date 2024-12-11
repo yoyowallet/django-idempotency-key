@@ -62,13 +62,13 @@ class IdempotencyKeyMiddleware:
         if idempotency_key and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
                 "@idempotency_key and @idempotency_key_exempt decorators are mutually "
-                'exclusive for function "{}"'.format(func_name)
+                f'exclusive for function "{func_name}"'
             )
 
         if idempotency_key_manual and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
                 "@idempotency_key_manual and @idempotency_key_exempt decorators are "
-                'mutually exclusive for function "{}"'.format(func_name)
+                f'mutually exclusive for function "{func_name}"'
             )
 
         request.idempotency_key_optional = idempotency_key_optional
@@ -235,13 +235,13 @@ class ExemptIdempotencyKeyMiddleware(IdempotencyKeyMiddleware):
         if idempotency_key and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
                 "@idempotency_key and @idempotency_key_exempt decorators are mutually "
-                'exclusive for function "{}"'.format(func_name)
+                f'exclusive for function "{func_name}"'
             )
 
         if idempotency_key_manual and idempotency_key_exempt:
             raise DecoratorsMutuallyExclusiveError(
                 "@idempotency_key_manual and @idempotency_key_exempt decorators are "
-                'mutually exclusive for function "{}"'.format(func_name)
+                f'mutually exclusive for function "{func_name}"'
             )
 
         request.idempotency_key_optional = idempotency_key_optional

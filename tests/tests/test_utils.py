@@ -2,13 +2,14 @@ from django.test import override_settings
 
 from idempotency_key import status, storage, utils
 from idempotency_key.locks.basic import ThreadLock
+from idempotency_key.utils import DEFAULT_TIMEOUT_IN_SECONDS, DEFAULT_TTL_IN_SECONDS
 
 
-class Request(object):
+class Request:
     pass
 
 
-class Response(object):
+class Response:
     pass
 
 
@@ -83,12 +84,15 @@ def test_get_lock_class_default_cache_storage():
 
 @override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_timeout_default():
-    assert utils.get_lock_timeout() == 0.1
+    assert utils.get_lock_timeout() == DEFAULT_TIMEOUT_IN_SECONDS
 
 
-@override_settings(IDEMPOTENCY_KEY={"LOCK": {"TIMEOUT": 1.8}})
+TEST_TIMEOUT_IN_SECONDS = 1.8
+
+
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"TIMEOUT": TEST_TIMEOUT_IN_SECONDS}})
 def test_get_lock_timeout_default_with_lock():
-    assert utils.get_lock_timeout() == 1.8
+    assert utils.get_lock_timeout() == TEST_TIMEOUT_IN_SECONDS
 
 
 @override_settings(IDEMPOTENCY_KEY={})
@@ -103,12 +107,15 @@ def test_get_lock_enable_default_with_lock():
 
 @override_settings(IDEMPOTENCY_KEY={})
 def test_get_lock_ttl_default():
-    assert utils.get_lock_time_to_live() == 300
+    assert utils.get_lock_time_to_live() == DEFAULT_TTL_IN_SECONDS
 
 
-@override_settings(IDEMPOTENCY_KEY={"LOCK": {"TTL": 1}})
+TEST_TTL_IN_SECONDS = 1
+
+
+@override_settings(IDEMPOTENCY_KEY={"LOCK": {"TTL": TEST_TTL_IN_SECONDS}})
 def test_get_lock_ttl_default_with_lock():
-    assert utils.get_lock_time_to_live() == 1
+    assert utils.get_lock_time_to_live() == TEST_TTL_IN_SECONDS
 
 
 @override_settings(IDEMPOTENCY_KEY={})

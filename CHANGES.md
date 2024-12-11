@@ -20,6 +20,16 @@ updating.
 **[Breaking changes]** - There are changes that break existing compatibility.
 
 ---
+# 1.4.0
+  **[Dropped support]**
+- Python 3.7 and 3.8
+- Django 2.2
+
+  **[Added support]**
+- Python 3.12 & 3.13
+- Django 5.0 & 5.1
+
+---
 # 1.3.0
   **[Dropped support]**
 
@@ -28,6 +38,7 @@ updating.
 - Added support for Django 4.1 and Django 4.2
 - Added HTTP_AUTHORIZATION header when generating encoded key for extra security. (Submitted by Artem)
 
+---
 # 1.2.0
   **[Dropped support]**
 
