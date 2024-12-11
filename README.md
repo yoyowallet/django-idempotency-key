@@ -23,7 +23,7 @@ Django idempotency key requires the following:
 
 Python (3.9 to 3.13)
 
-Django (3.2, 4.0, 4.1, 4.2)
+Django (3.2, 4.0, 4.1, 4.2, 5.0, 5.1)
 
 The following is a list of Django versions and the respective
 DjangoRestFramework and python versions that it supports.
